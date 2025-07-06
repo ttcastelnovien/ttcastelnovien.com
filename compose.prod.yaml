@@ -1,0 +1,6 @@
+services:
+  php:
+    build:
+      context: .
+      target: prod
+      dockerfile: docker/php.dockerfile

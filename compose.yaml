@@ -1,0 +1,65 @@
+services:
+  php:
+    container_name: ttcastelnovien_dot_com_php
+    image: ttcastelnoviendotcom/php
+    restart: unless-stopped
+    environment:
+      SERVER_NAME: ${SERVER_NAME:-localhost}
+      MERCURE_PUBLISHER_JWT_KEY: ${MERCURE_JWT_SECRET:-!ChangeThisMercureHubJWTSecretKey!}
+      MERCURE_SUBSCRIBER_JWT_KEY: ${MERCURE_JWT_SECRET:-!ChangeThisMercureHubJWTSecretKey!}
+      MERCURE_URL: ${MERCURE_URL:-http://php/.well-known/mercure}
+      MERCURE_PUBLIC_URL: ${MERCURE_PUBLIC_URL:-https://${SERVER_NAME:-localhost}/.well-known/mercure}
+      MERCURE_JWT_SECRET: ${MERCURE_JWT_SECRET:-!ChangeThisMercureHubJWTSecretKey!}
+    networks:
+      - net_database
+      - net_cache
+    volumes:
+      - vol_caddy_data:/data
+      - vol_caddy_config:/config
+    working_dir: /app
+
+  database:
+    container_name: ttcastelnovien_dot_com_database
+    environment:
+      PGPASSWORD: '${DB_PASSWORD}'
+      POSTGRES_DB: '${DB_DATABASE}'
+      POSTGRES_USER: '${DB_USERNAME}'
+      POSTGRES_PASSWORD: '${DB_PASSWORD}'
+    image: postgres:17.4
+    networks:
+      - net_database
+    restart: unless-stopped
+    volumes:
+      - vol_database:/var/lib/postgresql/data
+
+  cache:
+    container_name: ttcastelnovien_dot_com_cache
+    environment:
+      REDIS_PASSWORD: "${REDIS_PASSWORD}"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 1s
+      timeout: 3s
+      retries: 30
+    image: redis:latest
+    networks:
+      - net_cache
+    restart: unless-stopped
+    volumes:
+      - vol_cache:/data
+
+volumes:
+  vol_caddy_data:
+    name: vol_ttcastelnovien_dot_com_caddy_data
+  vol_caddy_config:
+    name: vol_ttcastelnovien_dot_com_caddy_config
+  vol_database:
+    name: vol_ttcastelnovien_dot_com_database
+  vol_cache:
+    name: vol_ttcastelnovien_dot_com_cache
+
+networks:
+  net_database:
+    name: net_ttcastelnovien_dot_com_database
+  net_cache:
+    name: net_ttcastelnovien_dot_com_cache

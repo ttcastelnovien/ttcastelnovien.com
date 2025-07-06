@@ -1,0 +1,81 @@
+services:
+  php:
+    image: ttcastelnoviendotcom/php
+    build:
+      context: .
+      target: frankenphp_dev
+    entrypoint: php artisan octane:frankenphp --workers=1 --max-requests=1
+    environment:
+      FRANKENPHP_WORKER_CONFIG: watch
+      XDEBUG_MODE: "${XDEBUG_MODE:-off}"
+      APP_ENV: "${APP_ENV:-local}"
+    labels:
+      caddy_0: "ttcastelnovien.aaa"
+      caddy_0.tls: internal
+      caddy_0.reverse_proxy: "{{upstreams 8000}}"
+      caddy_1: "dev-server.ttcastelnovien.aaa"
+      caddy_1.tls: internal
+      caddy_1.reverse_proxy: "{{upstreams 5173}}"
+    networks:
+      - net_mailer
+      - global_reverse_proxy
+    volumes:
+      - "$PWD:/app"
+    tty: true
+
+  adminer:
+    container_name: ttcastelnovien_dot_com_adminer
+    image: adminer:latest
+    labels:
+      caddy: "db.ttcastelnovien.aaa"
+      caddy.tls: internal
+      caddy.reverse_proxy: "{{upstreams 8080}}"
+    networks:
+      - net_database
+      - global_reverse_proxy
+    restart: unless-stopped
+
+  mailer:
+    container_name: ttcastelnovien_dot_com_mailer
+    image: axllent/mailpit
+    environment:
+      MP_SMTP_AUTH_ACCEPT_ANY: 1
+      MP_SMTP_AUTH_ALLOW_INSECURE: 1
+    labels:
+      caddy: "mailer.ttcastelnovien.aaa"
+      caddy.tls: internal
+      caddy.reverse_proxy: "{{upstreams 8025}}"
+    networks:
+      - net_mailer
+      - global_reverse_proxy
+    restart: unless-stopped
+  
+  cache_viewer:
+    container_name: ttcastelnovien_dot_com_cache_viewer
+    depends_on:
+      - cache
+    environment:
+      RI_REDIS_HOST: "${REDIS_HOST}"
+      RI_REDIS_PORT: "${REDIS_PORT}"
+      RI_REDIS_PASSWORD: "${REDIS_PASSWORD}"
+    image: redis/redisinsight:latest
+    labels:
+      caddy: "cache.ttcastelnovien.aaa"
+      caddy.tls: internal
+      caddy.reverse_proxy: "{{upstreams 8001}}"
+    networks:
+      - net_cache
+      - global_reverse_proxy
+    restart: unless-stopped
+    volumes:
+      - vol_cache_viewer:/db
+
+volumes:
+  vol_cache_viewer:
+    name: vol_ttcastelnovien_dot_com_cache_viewer
+  
+networks:
+  net_mailer:
+    name: net_ttcastelnovien_dot_com_mailer
+  global_reverse_proxy:
+    external: true
