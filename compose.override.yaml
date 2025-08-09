@@ -22,6 +22,10 @@ services:
     volumes:
       - "$PWD:/app"
     tty: true
+  
+  database:
+    ports:
+      - "45432:5432"
 
   adminer:
     container_name: ttcastelnovien_dot_com_adminer

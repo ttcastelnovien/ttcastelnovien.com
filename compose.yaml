@@ -35,6 +35,7 @@ services:
   cache:
     container_name: ttcastelnovien_dot_com_cache
     environment:
+      REDIS_USERNAME: "${REDIS_USERNAME}"
       REDIS_PASSWORD: "${REDIS_PASSWORD}"
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
