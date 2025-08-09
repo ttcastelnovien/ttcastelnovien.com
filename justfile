@@ -9,7 +9,7 @@ BUN := PHP + " bun"
 # *******************************
 
 # Recompile assets (CSS/JS) on every change
-watch:
+dev:
     {{ BUN }} run dev
 
 # Compile and optimize assets for production
@@ -18,11 +18,15 @@ build:
 
 # Launch PHPUnit tests
 test *path:
-    {{ PHP }} php bin/pest {{ path }}
+    {{ ARTISAN }} config:clear --ansi
+    {{ ARTISAN }} test {{ path }}
 
 # *******************************
 # Tools related
 # *******************************
+
+format *path:
+    {{ PHP }} ./vendor/bin/pint --parallel {{ path }}
 
 # Install php dependencies
 install_php:
