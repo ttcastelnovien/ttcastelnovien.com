@@ -3,4 +3,4 @@ services:
     build:
       context: .
       target: prod
-      dockerfile: docker/php.dockerfile
+      dockerfile: frankenphp/dockerfile

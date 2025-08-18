@@ -13,6 +13,7 @@ services:
     networks:
       - net_database
       - net_cache
+      - net_gotenberg
     volumes:
       - vol_caddy_data:/data
       - vol_caddy_config:/config
@@ -48,6 +49,16 @@ services:
     restart: unless-stopped
     volumes:
       - vol_cache:/data
+  
+  gotenberg:
+    container_name: ttcastelnovien_dot_com_gotenberg
+    image: ttcastelnoviendotcom/gotenberg
+    build:
+      context: .
+      dockerfile: gotenberg/Dockerfile
+    networks:
+      - net_gotenberg
+    restart: unless-stopped
 
 volumes:
   vol_caddy_data:
@@ -64,3 +75,5 @@ networks:
     name: net_ttcastelnovien_dot_com_database
   net_cache:
     name: net_ttcastelnovien_dot_com_cache
+  net_gotenberg:
+    name: net_ttcastelnovien_dot_com_gotenberg

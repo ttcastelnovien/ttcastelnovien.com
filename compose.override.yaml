@@ -4,6 +4,7 @@ services:
     build:
       context: .
       target: frankenphp_dev
+      dockerfile: frankenphp/Dockerfile
     entrypoint: php artisan octane:frankenphp --workers=1 --max-requests=1
     environment:
       FRANKENPHP_WORKER_CONFIG: watch
