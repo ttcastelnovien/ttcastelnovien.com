@@ -6,52 +6,27 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    /**
+     * Run the migrations.
+     */
     public function up(): void
     {
-        Schema::create('events', function (Blueprint $table) {
+        Schema::create('imports', function (Blueprint $table): void {
             $table->ulid('id')->primary();
 
             /*
             |--------------------------------------------------------------------------
-            | Présentation
+            | Colonnes
             |--------------------------------------------------------------------------
             */
 
-            $table->string('title')->index();
-            $table->text('description')->nullable();
-
-            /*
-            |--------------------------------------------------------------------------
-            | Lieu
-            |--------------------------------------------------------------------------
-            */
-
-            $table->boolean('at_home')->default(false);
-            $table->text('address')->nullable();
-            $table->decimal('latitude', 10, 8)->nullable();
-            $table->decimal('longitude', 11, 8)->nullable();
-
-            /*
-            |--------------------------------------------------------------------------
-            | Dates et heures
-            |--------------------------------------------------------------------------
-            */
-
-            $table->date('start_date');
-            $table->time('start_time')->nullable();
-            $table->date('end_date')->nullable();
-            $table->time('end_time')->nullable();
-            $table->time('check_in_time')->nullable();
-            $table->time('departure_time')->nullable();
-
-            /*
-            |--------------------------------------------------------------------------
-            | Metadata
-            |--------------------------------------------------------------------------
-            */
-
-            $table->string('opponent')->nullable();
-            $table->json('attachments')->nullable();
+            $table->timestamp('completed_at')->nullable();
+            $table->string('file_name');
+            $table->string('file_path');
+            $table->string('importer');
+            $table->unsignedInteger('processed_rows')->default(0);
+            $table->unsignedInteger('total_rows');
+            $table->unsignedInteger('successful_rows')->default(0);
 
             /*
             |--------------------------------------------------------------------------
@@ -59,7 +34,7 @@ return new class extends Migration
             |--------------------------------------------------------------------------
             */
 
-            $table->ulid('season_id');
+            $table->ulid('user_id');
 
             /*
             |--------------------------------------------------------------------------
@@ -74,71 +49,94 @@ return new class extends Migration
             | Contraintes
             |--------------------------------------------------------------------------
             */
-
-            $table->foreign('season_id')->references('id')->on('seasons')->cascadeOnDelete();
+            $table->foreign('user_id')->references('id')->on('users')->cascadeOnDelete();
         });
 
-        Schema::create('event_person', function (Blueprint $table) {
+        Schema::create('exports', function (Blueprint $table): void {
+            $table->id();
+
+            /*
+            |--------------------------------------------------------------------------
+            | Colonnes
+            |--------------------------------------------------------------------------
+            */
+
+            $table->timestamp('completed_at')->nullable();
+            $table->string('file_disk');
+            $table->string('file_name')->nullable();
+            $table->string('exporter');
+            $table->unsignedInteger('processed_rows')->default(0);
+            $table->unsignedInteger('total_rows');
+            $table->unsignedInteger('successful_rows')->default(0);
+
             /*
             |--------------------------------------------------------------------------
             | Relations
             |--------------------------------------------------------------------------
             */
 
-            $table->ulid('event_id');
-            $table->ulid('person_id');
+            $table->ulid('user_id');
+
+            /*
+            |--------------------------------------------------------------------------
+            | Historique
+            |--------------------------------------------------------------------------
+            */
+
+            $table->timestamps();
 
             /*
             |--------------------------------------------------------------------------
             | Contraintes
             |--------------------------------------------------------------------------
             */
+            $table->foreign('user_id')->references('id')->on('users')->cascadeOnDelete();
+        });
 
-            $table->foreign('event_id')->references('id')->on('events')->cascadeOnDelete();
-            $table->foreign('person_id')->references('id')->on('people')->cascadeOnDelete();
+        Schema::create('failed_import_rows', function (Blueprint $table): void {
+            $table->id();
 
             /*
             |--------------------------------------------------------------------------
-            | Index
+            | Colonnes
             |--------------------------------------------------------------------------
             */
 
-            $table->primary(['event_id', 'person_id']);
-        });
+            $table->json('data');
+            $table->text('validation_error')->nullable();
 
-        Schema::create('event_group', function (Blueprint $table) {
             /*
             |--------------------------------------------------------------------------
             | Relations
             |--------------------------------------------------------------------------
             */
 
-            $table->ulid('event_id');
-            $table->ulid('group_id');
+            $table->ulid('import_id');
+
+            /*
+            |--------------------------------------------------------------------------
+            | Historique
+            |--------------------------------------------------------------------------
+            */
+
+            $table->timestamps();
 
             /*
             |--------------------------------------------------------------------------
             | Contraintes
             |--------------------------------------------------------------------------
             */
-
-            $table->foreign('event_id')->references('id')->on('events')->cascadeOnDelete();
-            $table->foreign('group_id')->references('id')->on('groups')->cascadeOnDelete();
-
-            /*
-            |--------------------------------------------------------------------------
-            | Index
-            |--------------------------------------------------------------------------
-            */
-
-            $table->primary(['event_id', 'group_id']);
+            $table->foreign('import_id')->references('id')->on('imports')->cascadeOnDelete();
         });
     }
 
+    /**
+     * Reverse the migrations.
+     */
     public function down(): void
     {
-        Schema::dropIfExists('events');
-        Schema::dropIfExists('event_person');
-        Schema::dropIfExists('event_group');
+        Schema::dropIfExists('failed_import_rows');
+        Schema::dropIfExists('imports');
+        Schema::dropIfExists('exports');
     }
 };

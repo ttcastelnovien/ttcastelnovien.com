@@ -1,6 +1,5 @@
 <?php
 
-use App\Enums\UserRole;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -11,13 +10,39 @@ return new class extends Migration
     {
         Schema::create('invitations', function (Blueprint $table) {
             $table->ulid('id')->primary();
-            $table->string('firstname');
-            $table->string('lastname');
-            $table->string('licence')->unique();
-            $table->string('email');
-            $table->string('role')->default(UserRole::USER);
+
+            /*
+            |--------------------------------------------------------------------------
+            | Colonnes
+            |--------------------------------------------------------------------------
+            */
+
+            $table->json('roles');
             $table->dateTime('expires_at');
+
+            /*
+            |--------------------------------------------------------------------------
+            | Relations
+            |--------------------------------------------------------------------------
+            */
+
+            $table->ulid('person_id');
+
+            /*
+            |--------------------------------------------------------------------------
+            | Historique
+            |--------------------------------------------------------------------------
+            */
+
             $table->timestamps();
+
+            /*
+            |--------------------------------------------------------------------------
+            | Contraintes
+            |--------------------------------------------------------------------------
+            */
+
+            $table->foreign('person_id')->references('id')->on('people')->cascadeOnDelete();
         });
     }
 

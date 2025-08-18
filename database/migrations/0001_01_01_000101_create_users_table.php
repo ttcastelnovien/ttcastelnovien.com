@@ -1,6 +1,5 @@
 <?php
 
-use App\Enums\UserRole;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -11,21 +10,67 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->ulid('id')->primary();
+
+            /*
+            |--------------------------------------------------------------------------
+            | Colonnes
+            |--------------------------------------------------------------------------
+            */
+
             $table->string('username')->unique();
             $table->string('password');
-            $table->string('role')->default(UserRole::USER);
+            $table->string('roles');
             $table->boolean('is_active')->default(true);
-            $table->ulid('person_id');
             $table->rememberToken();
+
+            /*
+            |--------------------------------------------------------------------------
+            | Relations
+            |--------------------------------------------------------------------------
+            */
+
+            $table->ulid('person_id');
+
+            /*
+            |--------------------------------------------------------------------------
+            | Historique
+            |--------------------------------------------------------------------------
+            */
+
             $table->timestamps();
+
+            /*
+            |--------------------------------------------------------------------------
+            | Contraintes
+            |--------------------------------------------------------------------------
+            */
 
             $table->foreign('person_id')->references('id')->on('people')->cascadeOnDelete();
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
-            $table->ulid('user_id')->primary();
+            /*
+            |--------------------------------------------------------------------------
+            | Colonnes
+            |--------------------------------------------------------------------------
+            */
+
             $table->string('token');
             $table->timestamp('created_at')->nullable();
+
+            /*
+            |--------------------------------------------------------------------------
+            | Relations
+            |--------------------------------------------------------------------------
+            */
+
+            $table->ulid('user_id')->primary();
+
+            /*
+            |--------------------------------------------------------------------------
+            | Contraintes
+            |--------------------------------------------------------------------------
+            */
 
             $table->foreign('user_id')->references('id')->on('users')->cascadeOnDelete();
         });

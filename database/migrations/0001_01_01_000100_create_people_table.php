@@ -49,6 +49,7 @@ return new class extends Migration
             $table->string('nationality')->default('FR');
             $table->string('father_name')->nullable();
             $table->string('mother_name')->nullable();
+            $table->date('last_image_rights_authorization_date')->nullable();
 
             /*
             |--------------------------------------------------------------------------
@@ -59,6 +60,8 @@ return new class extends Migration
         });
 
         Schema::create('licences', function (Blueprint $table) {
+            $table->ulid('id')->primary();
+
             /*
             |--------------------------------------------------------------------------
             | Administratif
@@ -66,18 +69,7 @@ return new class extends Migration
             */
 
             $table->string('licence_type')->default(LicenceType::LOISIR);
-
-            /*
-            |--------------------------------------------------------------------------
-            | Obligations
-            |--------------------------------------------------------------------------
-            */
-
-            $table->boolean('needs_image_rights')->default(false);
-            $table->boolean('needs_exit_authorization')->default(false);
-            $table->boolean('needs_care_authorization')->default(false);
-            $table->boolean('needs_transport_authorization')->default(false);
-            $table->boolean('needs_medical_certificate')->default(false);
+            $table->boolean('validated')->default(false);
 
             /*
             |--------------------------------------------------------------------------
@@ -89,17 +81,8 @@ return new class extends Migration
             $table->boolean('has_exit_authorization')->nullable();
             $table->boolean('has_care_authorization')->nullable();
             $table->boolean('has_transport_authorization')->nullable();
-            $table->boolean('has_medical_certificate')->default(false);
+            $table->boolean('has_medical_certificate')->nullable();
             $table->boolean('has_health_declaration')->nullable();
-
-            /*
-            |--------------------------------------------------------------------------
-            | Médical
-            |--------------------------------------------------------------------------
-            */
-
-            $table->string('doctor_name')->nullable();
-            $table->string('doctor_identifier')->nullable();
 
             /*
             |--------------------------------------------------------------------------
@@ -120,7 +103,7 @@ return new class extends Migration
 
             /*
             |--------------------------------------------------------------------------
-            | Clés
+            | Contraintes
             |--------------------------------------------------------------------------
             */
 
@@ -133,8 +116,83 @@ return new class extends Migration
             |--------------------------------------------------------------------------
             */
 
-            $table->primary(['person_id', 'season_id']);
             $table->unique(['person_id', 'season_id']);
+        });
+
+        Schema::create('child_parent', function (Blueprint $table) {
+            /*
+            |--------------------------------------------------------------------------
+            | Relations
+            |--------------------------------------------------------------------------
+            */
+
+            $table->ulid('parent_id');
+            $table->ulid('child_id');
+
+            /*
+            |--------------------------------------------------------------------------
+            | Historique
+            |--------------------------------------------------------------------------
+            */
+
+            $table->timestamps();
+
+            /*
+            |--------------------------------------------------------------------------
+            | Contraintes
+            |--------------------------------------------------------------------------
+            */
+
+            $table->foreign('parent_id')->references('id')->on('people')->cascadeOnDelete();
+            $table->foreign('child_id')->references('id')->on('people')->cascadeOnDelete();
+
+            /*
+            |--------------------------------------------------------------------------
+            | Index
+            |--------------------------------------------------------------------------
+            */
+
+            $table->primary(['parent_id', 'child_id']);
+            $table->unique(['parent_id', 'child_id']);
+        });
+
+        Schema::create('medical_certificates', function (Blueprint $table) {
+            $table->ulid('id')->primary();
+
+            /*
+            |--------------------------------------------------------------------------
+            | Colonnes
+            |--------------------------------------------------------------------------
+            */
+
+            $table->string('doctor_name');
+            $table->string('doctor_identifier');
+            $table->date('date');
+            $table->string('file')->nullable();
+
+            /*
+            |--------------------------------------------------------------------------
+            | Relations
+            |--------------------------------------------------------------------------
+            */
+
+            $table->ulid('person_id');
+
+            /*
+            |--------------------------------------------------------------------------
+            | Historique
+            |--------------------------------------------------------------------------
+            */
+
+            $table->timestamps();
+
+            /*
+            |--------------------------------------------------------------------------
+            | Contraintes
+            |--------------------------------------------------------------------------
+            */
+
+            $table->foreign('person_id')->references('id')->on('people')->cascadeOnDelete();
         });
     }
 
@@ -142,5 +200,7 @@ return new class extends Migration
     {
         Schema::dropIfExists('people');
         Schema::dropIfExists('licences');
+        Schema::dropIfExists('child_parent');
+        Schema::dropIfExists('medical_certificates');
     }
 };

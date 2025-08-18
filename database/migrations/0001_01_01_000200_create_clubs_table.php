@@ -10,14 +10,35 @@ return new class extends Migration
     {
         Schema::create('clubs', function (Blueprint $table) {
             $table->ulid('id')->primary();
+
+            /*
+            |--------------------------------------------------------------------------
+            | Colonnes
+            |--------------------------------------------------------------------------
+            */
+
             $table->string('name')->unique();
             $table->string('short_name')->unique();
             $table->string('logo')->nullable();
+
+            /*
+            |--------------------------------------------------------------------------
+            | Historique
+            |--------------------------------------------------------------------------
+            */
+
             $table->timestamps();
         });
 
         Schema::create('halls', function (Blueprint $table) {
             $table->ulid('id')->primary();
+
+            /*
+            |--------------------------------------------------------------------------
+            | Colonnes
+            |--------------------------------------------------------------------------
+            */
+
             $table->string('name')->unique();
             $table->string('address_line_1');
             $table->string('address_line_2')->nullable();
@@ -26,8 +47,28 @@ return new class extends Migration
             $table->string('city');
             $table->decimal('latitude', 10, 8)->nullable();
             $table->decimal('longitude', 11, 8)->nullable();
+
+            /*
+            |--------------------------------------------------------------------------
+            | Relations
+            |--------------------------------------------------------------------------
+            */
+
             $table->ulid('club_id');
+
+            /*
+            |--------------------------------------------------------------------------
+            | Historique
+            |--------------------------------------------------------------------------
+            */
+
             $table->timestamps();
+
+            /*
+            |--------------------------------------------------------------------------
+            | Contraintes
+            |--------------------------------------------------------------------------
+            */
 
             $table->foreign('club_id')->references('id')->on('clubs')->cascadeOnDelete();
         });
