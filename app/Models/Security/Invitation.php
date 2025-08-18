@@ -1,10 +1,13 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Security;
 
 use App\Enums\UserRole;
+use App\Models\HumanResource\Person;
+use Illuminate\Database\Eloquent\Casts\AsEnumCollection;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Invitation extends Model
 {
@@ -24,11 +27,8 @@ class Invitation extends Model
 
     /** @var list<string> */
     protected $fillable = [
-        'firstname',
-        'lastname',
-        'licence',
-        'email',
-        'role',
+        'person_id',
+        'roles',
         'expires_at',
     ];
 
@@ -37,8 +37,20 @@ class Invitation extends Model
     {
         return [
             'expires_at' => 'datetime',
-            'role' => UserRole::class,
+            'roles' => AsEnumCollection::of(UserRole::class),
         ];
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Relations
+    |--------------------------------------------------------------------------
+    */
+
+    /** @return BelongsTo<Person> */
+    public function person(): BelongsTo
+    {
+        return $this->belongsTo(Person::class);
     }
 
     /*
