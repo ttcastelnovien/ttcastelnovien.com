@@ -2,15 +2,17 @@
 
 use App\Http\Controllers\Public\ICalController;
 use App\Http\Controllers\Public\InvitationController;
+use App\Services\OFXParser\OFXParser;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware('guest')
-    ->name('public.')
+Route::name('public.')
     ->group(function () {
-        Route::get('ical/{user}/stream', [ICalController::class, 'streamUserCalendar'])
+        Route::get('ical/{person}/stream', [ICalController::class, 'streamPersonCalendar'])
             ->name('ical.stream');
 
-        Route::get('ical/{user}/download', [ICalController::class, 'downloadUserCalendar'])
+        Route::get('ical/{person}/download', [ICalController::class, 'downloadPersonCalendar'])
             ->name('ical.download');
 
         Route::get('invite/{invitation}', [InvitationController::class, 'show'])
@@ -18,4 +20,15 @@ Route::middleware('guest')
 
         Route::post('invite/{invitation}', [InvitationController::class, 'accept'])
             ->name('invite.accept');
+
+        Route::get('ofx', function (): Response {
+            return \response()->view('ofx');
+        })->name('ofx');
+
+        Route::post('ofx', function (Request $request): Response {
+            $file = $request->file('file');
+            $parsed = $file->getContent();
+
+            dd(OFXParser::parse($parsed));
+        })->name('ofx.post');
     });
