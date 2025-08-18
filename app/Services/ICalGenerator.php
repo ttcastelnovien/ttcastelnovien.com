@@ -4,37 +4,49 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Models\Location;
-use App\Models\User;
-use Illuminate\Support\Carbon;
+use App\Models\Communication\Event;
+use App\Models\HumanResource\Person;
 use Illuminate\Support\Facades\Storage;
 use Spatie\IcalendarGenerator\Components\Calendar;
-use Spatie\IcalendarGenerator\Components\Event;
+use Spatie\IcalendarGenerator\Components\Event as CalendarEvent;
 
 class ICalGenerator
 {
-    public function generate(User $user): Calendar
+    public function generate(Person $person): Calendar
     {
         $calendar = Calendar::create('TTCastelnovien');
 
-        $userEvents = $user->events()->get();
-        $groupsEvents = $user->groups()->with('events')->get()->flatMap(function ($group) {
-            return $group->events;
-        });
+        $userEvents = $person->events()->get();
+        $groupsEvents = $person->groups()->with('events')->get()->flatMap(fn ($group) => $group->events);
+        $parentsEvents = $person->parents()->with('events')->get()->flatMap(fn ($parent) => $parent->events);
+        $childrenEvents = $person->children()->with('events')->get()->flatMap(fn ($child) => $child->events);
+        $parentsGroupsEvents = $person->parents()->with('groups')->get()->flatMap(fn ($parent) => $parent->groups->flatMap(fn ($group) => $group->events));
+        $childrenGroupsEvents = $person->children()->with('groups')->get()->flatMap(fn ($child) => $child->groups->flatMap(fn ($group) => $group->events));
 
-        $events = $userEvents->merge($groupsEvents)->unique('id');
-        $homeLocation = Location::firstWhere('name', 'Châteauneuf TT Castelnovien');
+        /** @var list<Event> $events */
+        $events = $userEvents
+            ->merge($groupsEvents)
+            ->merge($parentsEvents)
+            ->merge($childrenEvents)
+            ->merge($parentsGroupsEvents)
+            ->merge($childrenGroupsEvents)
+            ->unique('id');
+
+        $homeAddress = implode('\n', [
+            'Complexe Sportif François Gabart',
+            '3 Impasse du Chemin Piquet',
+            '16120 Châteauneuf-sur-Charente',
+        ]);
+
+        $homeCoordinates = [45.593205, -0.0544517];
 
         foreach ($events as $event) {
-            $event->load('location');
-
-            $calendar->event(function (Event $ev) use ($event, $homeLocation) {
+            $calendar->event(function (CalendarEvent $ev) use ($event, $homeAddress, $homeCoordinates) {
                 /**
                  * On gère en premier lieu les propriétés évidentes.
                  */
-                $ev
-                    ->name($event->title)
-                    ->url(route('events.show', ['event' => $event->id]));
+                $ev->name($event->title);
+                // $ev->url(route('events.show', ['event' => $event->id]));
 
                 /**
                  * On gère la description de l'événement.
@@ -46,51 +58,27 @@ class ICalGenerator
                 $complementaryInfo = [];
 
                 if ($event->opponent) {
-                    $complementaryInfo[] = "→ Adversaire : " . $event->opponent;
+                    $complementaryInfo[] = sprintf('→ Adversaire : %s', $event->opponent);
                 }
 
                 if ($event->check_in_time) {
-                    $complementaryInfo[] = "→ Heure de pointage : " . $event->check_in_time->format('H:i');
+                    $complementaryInfo[] = sprintf('→ Heure de pointage : %s', $event->check_in_time);
                 }
 
                 if ($event->departure_time) {
-                    $complementaryInfo[] = "→ Heure de départ : " . $event->departure_time->format('H:i');
+                    $complementaryInfo[] = sprintf('→ Heure de départ : %s', $event->departure_time);
                 }
 
-                $ev->description($description . "\n\n" . implode("\n", $complementaryInfo));
+                $ev->description(sprintf(
+                    '%s\n\n%s',
+                    str($description)->markdown()->sanitizeHtml()->toString(),
+                    implode("\n", $complementaryInfo)
+                ));
 
-                /**
-                 * Si l'événement ne contient pas d'heure, on le considère
-                 * comme un événement sur une ou plusieurs journées.
-                 */
-                if ($event->isAllDay()) {
-                    $ev->startsAt($event->start_date);
+                $ev->startsAt($event->start, withTime: $event->start_time !== null);
 
-                    /**
-                     * Si l'événement ne définit pas de date de fin,
-                     * on utilise la date de début.
-                     */
-                    if ($event->end_date) {
-                        $ev->endsAt($event->end_date);
-                    } else {
-                        $ev->endsAt($event->start_date);
-                    }
-                } else {
-                    $ev->startsAt(Carbon::create(
-                        year: $event->start_date->year,
-                        month: $event->start_date->month,
-                        day: $event->start_date->day,
-                        hour: $event->start_time ? $event->start_time->hour : 0,
-                        minute: $event->start_time ? $event->start_time->minute : 0,
-                    ));
-
-                    $ev->endsAt(Carbon::create(
-                        year: $event->end_date->year,
-                        month: $event->end_date->month,
-                        day: $event->end_date->day,
-                        hour: $event->end_time ? $event->end_time->hour : 0,
-                        minute: $event->end_time ? $event->end_time->minute : 0,
-                    ));
+                if (! is_null($event->end)) {
+                    $ev->endsAt($event->end, withTime: $event->end_time !== null);
                 }
 
                 /**
@@ -100,22 +88,14 @@ class ICalGenerator
                  * adresse a été définie, on utilise l'adresse
                  * de l'événement.
                  */
-                $eventLocation = $event->location ?: $homeLocation;
-                $location = $eventLocation->addressLine1;
+                $address = $event->address ?: $homeAddress;
 
-                if ($eventLocation->addressLine2) {
-                    $location .= ', ' . $eventLocation->addressLine2;
-                }
+                $ev->address($address);
 
-                if ($eventLocation->addressLine3) {
-                    $location .= ', ' . $eventLocation->addressLine3;
-                }
-
-                $location .= ', ' . $eventLocation->postal_code . ' ' . $eventLocation->city;
-                $ev->address($location);
-
-                if ($eventLocation->latitude && $eventLocation->longitude) {
-                    $ev->coordinates($eventLocation->latitude, $eventLocation->longitude);
+                if (is_null($event->latitude) || is_null($event->longitude)) {
+                    $ev->coordinates($homeCoordinates[0], $homeCoordinates[1]);
+                } else {
+                    $ev->coordinates($event->latitude, $event->longitude);
                 }
 
                 /**
@@ -124,7 +104,7 @@ class ICalGenerator
                  */
                 if ($event->attachments) {
                     foreach ($event->attachments as $attachment) {
-                        $ev->attachment(Storage::url($attachment));
+                        $ev->attachment(Storage::disk('local')->temporaryUrl($attachment, now()->addDay()));
                     }
                 }
             });
