@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Public\InvitationAcceptRequest;
-use App\Models\Invitation;
-use App\Models\User;
+use App\Models\Security\Invitation;
+use App\Models\Security\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
