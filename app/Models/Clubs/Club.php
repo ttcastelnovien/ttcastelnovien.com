@@ -1,14 +1,15 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Clubs;
 
-use Database\Factories\PersonFactory;
+use App\Models\Clubs\Hall;
+use Database\Factories\Clubs\ClubFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Season extends Model
+class Club extends Model
 {
     /*
     |--------------------------------------------------------------------------
@@ -16,7 +17,7 @@ class Season extends Model
     |--------------------------------------------------------------------------
     */
 
-    /** @use HasFactory<PersonFactory> */
+    /** @use HasFactory<ClubFactory> */
     use HasFactory, HasUlids;
 
     /*
@@ -27,8 +28,9 @@ class Season extends Model
 
     /** @var list<string> */
     protected $fillable = [
-        'starts_at',
-        'ends_at',
+        'name',
+        'short_name',
+        'logo',
     ];
 
     /*
@@ -37,20 +39,9 @@ class Season extends Model
     |--------------------------------------------------------------------------
     */
 
-    /** @return BelongsToMany<Person, self, Licence> */
-    public function people(): BelongsToMany
+    /** @return HasMany<Hall> */
+    public function halls(): HasMany
     {
-        return $this->belongsToMany(Person::class)->using(Licence::class);
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Accessors
-    |--------------------------------------------------------------------------
-    */
-
-    public function name(): string
-    {
-        return $this->starts_at->format('Y').' - '.$this->ends_at->format('Y');
+        return $this->hasMany(Hall::class);
     }
 }

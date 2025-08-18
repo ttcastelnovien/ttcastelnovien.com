@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use App\Models\Club;
-use App\Models\Hall;
+use App\Models\Clubs\Club;
+use App\Models\Clubs\Hall;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 

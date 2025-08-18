@@ -1,9 +1,9 @@
 <?php
 
-namespace Database\Factories;
+namespace Database\Factories\Security;
 
 use App\Enums\UserRole;
-use App\Models\User;
+use App\Models\Security\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -27,7 +27,11 @@ class UserFactory extends Factory
     {
         return [
             'username' => $this->faker->userName(),
-            'role' => $this->faker->randomElement([UserRole::USER, UserRole::ADMIN]),
+            'roles' => $this->faker->randomElement([
+                [UserRole::USER],
+                [UserRole::ADMIN],
+                [UserRole::ADMIN, UserRole::HISTORY],
+            ]),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
         ];

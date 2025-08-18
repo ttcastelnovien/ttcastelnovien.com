@@ -1,21 +1,21 @@
 <?php
 
-namespace Database\Factories;
+namespace Database\Factories\Clubs;
 
-use App\Models\Group;
+use App\Models\Communication\Group;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
  * @extends Factory<Group>
  */
-class GroupFactory extends Factory
+class ClubFactory extends Factory
 {
     /** @return array<string, mixed> */
     public function definition(): array
     {
         return [
             'name' => $this->faker->domainWord(),
-            'color' => $this->faker->hexColor(),
+            'short_name' => $this->faker->word(),
         ];
     }
 }

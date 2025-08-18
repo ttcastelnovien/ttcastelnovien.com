@@ -1,8 +1,8 @@
 <?php
 
-namespace Database\Factories;
+namespace Database\Factories\Communication;
 
-use App\Models\Event;
+use App\Models\Communication\Event;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**

@@ -1,14 +1,17 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Meta;
 
-use Database\Factories\EventFactory;
+use App\Models\Licence\Licence;
+use Database\Factories\HumanResource\PersonFactory;
+use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Event extends Model
+class Season extends Model
 {
     /*
     |--------------------------------------------------------------------------
@@ -16,7 +19,7 @@ class Event extends Model
     |--------------------------------------------------------------------------
     */
 
-    /** @use HasFactory<EventFactory> */
+    /** @use HasFactory<PersonFactory> */
     use HasFactory, HasUlids;
 
     /*
@@ -27,37 +30,40 @@ class Event extends Model
 
     /** @var list<string> */
     protected $fillable = [
-        'title',
-        'description',
-        'at_home',
-        'address_line_1',
-        'address_line_2',
-        'address_line_3',
-        'postal_code',
-        'city',
-        'latitude',
-        'longitude',
-        'start_date',
-        'start_time',
-        'end_date',
-        'end_time',
-        'opponent',
-        'check_in_time',
-        'departure_time',
-        'attachments',
+        'name',
+        'starts_at',
+        'ends_at',
     ];
 
     /** @return array<string, string> */
     protected function casts(): array
     {
         return [
-            'at_home' => 'boolean',
-            'latitude' => 'decimal:8',
-            'longitude' => 'decimal:8',
-            'start_date' => 'date',
-            'end_date' => 'date',
-            'attachments' => 'array',
+            'starts_at' => 'date',
+            'ends_at' => 'date',
         ];
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Scopes
+    |--------------------------------------------------------------------------
+    */
+
+    #[Scope]
+    protected function current(Builder $query): void
+    {
+        $query
+            ->where('starts_at', '<=', now())
+            ->where('ends_at', '>=', now());
+    }
+
+    #[Scope]
+    protected function previousSeason(Builder $query): void
+    {
+        $query
+            ->where('starts_at', '<=', $this->starts_at->subYear())
+            ->where('ends_at', '>=', $this->ends_at->subYear());
     }
 
     /*
@@ -66,24 +72,9 @@ class Event extends Model
     |--------------------------------------------------------------------------
     */
 
-    public function people(): BelongsToMany
+    /** @return HasMany<Licence> */
+    public function licences(): HasMany
     {
-        return $this->belongsToMany(Person::class);
-    }
-
-    public function groups(): BelongsToMany
-    {
-        return $this->belongsToMany(Group::class);
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Accessors
-    |--------------------------------------------------------------------------
-    */
-
-    public function isAllDay(): bool
-    {
-        return is_null($this->start_time) && is_null($this->end_time);
+        return $this->hasMany(Licence::class);
     }
 }

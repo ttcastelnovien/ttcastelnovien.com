@@ -2,14 +2,11 @@
 
 namespace Database\Seeders;
 
-use App\Models\Group;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Communication\Group;
 use Illuminate\Database\Seeder;
 
 class GroupSeeder extends Seeder
 {
-    use WithoutModelEvents;
-
     public function run(): void
     {
         Group::factory()->createMany([

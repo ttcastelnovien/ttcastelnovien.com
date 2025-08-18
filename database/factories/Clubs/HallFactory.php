@@ -1,8 +1,8 @@
 <?php
 
-namespace Database\Factories;
+namespace Database\Factories\Clubs;
 
-use App\Models\Group;
+use App\Models\Communication\Group;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**

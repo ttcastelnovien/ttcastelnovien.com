@@ -4,8 +4,8 @@ namespace Database\Seeders;
 
 use App\Enums\Sex;
 use App\Enums\UserRole;
-use App\Models\Person;
-use App\Models\User;
+use App\Models\HumanResource\Person;
+use App\Models\Security\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -31,7 +31,7 @@ class UserSeeder extends Seeder
 
         User::factory()->create([
             'username' => 'aurelien.devaux',
-            'role' => UserRole::ADMIN,
+            'roles' => [UserRole::ADMIN, UserRole::HISTORY],
             'person_id' => $person->id,
         ]);
     }

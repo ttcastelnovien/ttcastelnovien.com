@@ -1,9 +1,9 @@
 <?php
 
-namespace Database\Factories;
+namespace Database\Factories\HumanResource;
 
 use App\Enums\Sex;
-use App\Models\Person;
+use App\Models\HumanResource\Person;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**

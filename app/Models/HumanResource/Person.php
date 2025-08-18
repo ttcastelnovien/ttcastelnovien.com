@@ -1,13 +1,19 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\HumanResource;
 
 use App\Enums\Sex;
-use Database\Factories\PersonFactory;
+use App\Models\Communication\Event;
+use App\Models\Communication\Group;
+use App\Models\Licence\Licence;
+use App\Models\Licence\MedicalCertificate;
+use App\Models\Security\User;
+use Database\Factories\HumanResource\PersonFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Person extends Model
@@ -46,6 +52,7 @@ class Person extends Model
         'nationality',
         'father_name',
         'mother_name',
+        'last_image_rights_authorization_date',
     ];
 
     /** @return array<string, string> */
@@ -54,6 +61,7 @@ class Person extends Model
         return [
             'sex' => Sex::class,
             'birth_date' => 'date',
+            'last_image_rights_authorization_date' => 'date',
         ];
     }
 
@@ -69,10 +77,50 @@ class Person extends Model
         return $this->hasOne(User::class);
     }
 
-    /** @return BelongsToMany<Season, self, Licence> */
-    public function seasons(): BelongsToMany
+    /** @return HasMany<Licence> */
+    public function licences(): HasMany
     {
-        return $this->belongsToMany(Season::class)->using(Licence::class);
+        return $this->hasMany(Licence::class);
+    }
+
+    /** @return BelongsToMany<Person> */
+    public function parents(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            related: Person::class,
+            table: 'child_parent',
+            foreignPivotKey: 'child_id',
+            relatedPivotKey: 'parent_id',
+        );
+    }
+
+    /** @return BelongsToMany<Person> */
+    public function children(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            related: Person::class,
+            table: 'child_parent',
+            foreignPivotKey: 'parent_id',
+            relatedPivotKey: 'child_id',
+        );
+    }
+
+    /** @return HasMany<MedicalCertificate> */
+    public function medicalCertificates(): HasMany
+    {
+        return $this->hasMany(MedicalCertificate::class);
+    }
+
+    /** @return BelongsToMany<Event> */
+    public function events(): BelongsToMany
+    {
+        return $this->belongsToMany(Event::class);
+    }
+
+    /** @return BelongsToMany<Group> */
+    public function groups(): BelongsToMany
+    {
+        return $this->belongsToMany(Group::class);
     }
 
     /*
@@ -81,13 +129,25 @@ class Person extends Model
     |--------------------------------------------------------------------------
     */
 
-    public function fullName(): string
+    public function getFullNameAttribute(): string
     {
         return trim("{$this->first_name} {$this->last_name}");
     }
 
-    public function isMinor(): bool
+    public function getIsMinorAttribute(): bool
     {
         return $this->birth_date->isFuture() || $this->birth_date->diffInYears(now()) < 18;
+    }
+
+    public function getFullAddressAttribute(): string
+    {
+        $addressParts = [
+            $this->address_line_1,
+            $this->address_line_2,
+            $this->address_line_3,
+            "$this->postal_code $this->city",
+        ];
+
+        return implode('<br>', array_filter($addressParts));
     }
 }
