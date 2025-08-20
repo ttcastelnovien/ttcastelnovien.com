@@ -2,10 +2,23 @@
 
 use App\Http\Controllers\Public\ICalController;
 use App\Http\Controllers\Public\InvitationController;
+use App\Http\Middleware\HandleInertiaRequests;
 use App\Services\OFXParser\OFXParser;
+use App\Services\PDFGenerator\PDFGenerator;
+use App\Services\PDFGenerator\PDFTemplate;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Route;
+
+Route::middleware([HandleInertiaRequests::class])
+    ->name('public.')
+    ->group(function () {
+        Route::get('invite/{invitation}', [InvitationController::class, 'show'])
+            ->name('invite.show');
+
+        Route::post('invite/{invitation}', [InvitationController::class, 'accept'])
+            ->name('invite.accept');
+    });
 
 Route::name('public.')
     ->group(function () {
@@ -14,12 +27,6 @@ Route::name('public.')
 
         Route::get('ical/{person}/download', [ICalController::class, 'downloadPersonCalendar'])
             ->name('ical.download');
-
-        Route::get('invite/{invitation}', [InvitationController::class, 'show'])
-            ->name('invite.show');
-
-        Route::post('invite/{invitation}', [InvitationController::class, 'accept'])
-            ->name('invite.accept');
 
         Route::get('ofx', function (): Response {
             return \response()->view('ofx');
