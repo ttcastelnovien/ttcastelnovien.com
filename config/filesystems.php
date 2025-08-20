@@ -24,10 +24,10 @@ return [
             'report' => false,
         ],
 
-        'invoices' => [
+        'pdfs' => [
             'driver' => 'local',
-            'root' => storage_path('app/private/invoices'),
-            'url' => env('APP_URL').'/storage/invoices',
+            'root' => storage_path('app/private/pdfs'),
+            'url' => env('APP_URL').'/storage/pdfs',
             'serve' => true,
             'throw' => false,
             'report' => false,
