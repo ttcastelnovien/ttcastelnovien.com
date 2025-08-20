@@ -33,4 +33,6 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    'gotenberg_url' => env('GOTENBERG_URL'),
+
 ];
