@@ -38,4 +38,16 @@ Route::name('public.')
 
             dd(OFXParser::parse($parsed));
         })->name('ofx.post');
+
+        Route::get('pdfe', function () {
+            return response()->view('pdf.page_emulator');
+        })->name('pdf.emulate');
+
+        Route::get('pdf', function () {
+            $filename = PDFGenerator::generate(PDFTemplate::AVOIR);
+
+            return response()->download($filename, 'facture.pdf', [
+                'Content-Type' => 'application/pdf',
+            ]);
+        })->name('pdf');
     });

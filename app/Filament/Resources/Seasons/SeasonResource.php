@@ -4,7 +4,6 @@ namespace App\Filament\Resources\Seasons;
 
 use App\Filament\Enum\NavigationGroup;
 use App\Filament\Resources\Seasons\Pages\CreateSeason;
-use App\Filament\Resources\Seasons\Pages\EditSeason;
 use App\Filament\Resources\Seasons\Pages\ListSeasons;
 use App\Filament\Resources\Seasons\Schemas\SeasonForm;
 use App\Filament\Resources\Seasons\Tables\SeasonsTable;
@@ -42,9 +41,7 @@ class SeasonResource extends Resource
 
     public static function getRelations(): array
     {
-        return [
-            //
-        ];
+        return [];
     }
 
     public static function getPages(): array

@@ -24,7 +24,7 @@ class InvitationAcceptRequest extends FormRequest
     {
         return [
             'username' => ['required', 'string', 'max:255', 'unique:users,username'],
-            'password' => ['required', 'string', 'max:255'],
+            'password' => ['required', 'string', 'max:255', 'confirmed'],
         ];
     }
 }

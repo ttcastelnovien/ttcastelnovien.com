@@ -12,6 +12,7 @@ import { Invitation } from '@/types';
 type AcceptInvitationForm = {
 	username: string;
 	password: string;
+	password_confirmation: string;
 };
 
 interface PageProps {
@@ -22,23 +23,24 @@ export default function AcceptInvitation({ invitation }: PageProps) {
 	const { data, setData, post, processing, errors, reset } = useForm<Required<AcceptInvitationForm>>({
 		username: '',
 		password: '',
+		password_confirmation: '',
 	});
 
 	const submit: FormEventHandler = (e) => {
 		e.preventDefault();
-		post(route('public.invite.accept'), {
-			onFinish: () => reset('password'),
+		post(route('public.invite.accept', { invitation: invitation.id }), {
+			onFinish: () => reset('password', 'password_confirmation'),
 		});
 	};
 
 	return (
-		<AuthLayout title="Invitation à rejoindre le club" description="Reseignez vos informations pour accepter l'invitation">
+		<AuthLayout title="Invitation à rejoindre le club" description="Reseigne tes informations pour accepter l'invitation">
 			<Head title="Invitation à rejoindre TTCastelnovien" />
 
 			<form className="flex flex-col gap-6" onSubmit={submit}>
 				<div className="grid gap-6">
 					<div className="grid gap-2">
-						<Label htmlFor="username">username</Label>
+						<Label htmlFor="username">Définit ton nom d'utilisateur</Label>
 						<Input
 							id="username"
 							type="text"
@@ -52,7 +54,7 @@ export default function AcceptInvitation({ invitation }: PageProps) {
 					</div>
 
 					<div className="grid gap-2">
-						<Label htmlFor="password">Password</Label>
+						<Label htmlFor="password">Choisis ton mot de passe</Label>
 						<Input
 							id="password"
 							type="password"
@@ -65,9 +67,23 @@ export default function AcceptInvitation({ invitation }: PageProps) {
 						<InputError message={errors.password} />
 					</div>
 
+					<div className="grid gap-2">
+						<Label htmlFor="password_confirmation">Confirme ton mot de passe</Label>
+						<Input
+							id="password_confirmation"
+							type="password"
+							required
+							tabIndex={2}
+							autoComplete="new-password"
+							value={data.password_confirmation}
+							onChange={(e) => setData('password_confirmation', e.target.value)}
+						/>
+						<InputError message={errors.password_confirmation} />
+					</div>
+
 					<Button type="submit" className="mt-4 w-full" tabIndex={4} disabled={processing}>
 						{processing && <LoaderCircle className="h-4 w-4 animate-spin" />}
-						Accepter l'invitation
+						Rejoindre le club
 					</Button>
 				</div>
 			</form>

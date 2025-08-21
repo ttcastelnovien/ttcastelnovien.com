@@ -17,10 +17,10 @@ class InvitationController extends Controller
     {
         if (! $request->hasValidSignature()) {
             $request->session()->flash('error', "Lien d'invitation invalide.");
-            return Inertia::render('auth/login');
+            return redirect()->route('login');
         }
 
-        if (Auth::check() && $request->user()->licence === $invitation->licence) {
+        if (Auth::check() && $request->user()->person_id === $invitation->person_id) {
             $invitation->delete();
             return redirect()->route('dashboard');
         }
@@ -32,14 +32,14 @@ class InvitationController extends Controller
             return Inertia::render('auth/login');
         }
 
-        return Inertia::render('public/invite', [
-            'invitation' => $invitation,
+        return Inertia::render('security/accept_invitation', [
+            'invitation' => $invitation->only(['id']),
         ]);
     }
 
     public function accept(InvitationAcceptRequest $request, Invitation $invitation)
     {
-        if (Auth::check() && $request->user()->licence === $invitation->licence) {
+        if (Auth::check() && $request->user()->person_id === $invitation->person_id) {
             $invitation->delete();
             return redirect()->route('dashboard');
         }
@@ -57,10 +57,8 @@ class InvitationController extends Controller
         $user = User::create([
             'username' => $payload['username'],
             'password' => $passwordHash,
-            'licence' => $invitation->licence,
-            'firstname' => $invitation->firstname,
-            'lastname' => $invitation->lastname,
-            'role' => $invitation->role,
+            'person_id' => $invitation->person_id,
+            'roles' => $invitation->roles,
         ]);
 
         Auth::login($user);
