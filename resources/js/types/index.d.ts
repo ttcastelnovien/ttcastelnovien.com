@@ -36,20 +36,11 @@ export interface User {
 	firstname: string;
 	lastname: string;
 	username: string;
-	licence: string;
-	birthdate: string;
-	created_at: string;
-	updated_at: string;
+	roles: Array<string>;
 	[key: string]: unknown;
 }
 
 export interface Invitation {
 	id: number;
-	firstname: string;
-	lastname: string;
-	email: string;
-	licence: string;
-	created_at: string;
-	updated_at: string;
 	[key: string]: unknown;
 }

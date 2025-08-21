@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 
 class User extends Authenticatable implements FilamentUser, HasName
 {
@@ -42,6 +43,8 @@ class User extends Authenticatable implements FilamentUser, HasName
         'password',
         'roles',
         'is_active',
+        'person_id',
+        'reset_password_token',
     ];
 
     /** @var list<string> */
@@ -105,6 +108,21 @@ class User extends Authenticatable implements FilamentUser, HasName
     public function hasRole(UserRole $role): bool
     {
         return in_array($role, $this->user_roles, strict: true);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Mutators
+    |--------------------------------------------------------------------------
+    */
+
+    public function createResetPasswordToken(): string
+    {
+        $token = hash_hmac('sha256', Str::random(40), config('app.key'));
+        $this->reset_password_token = $token;
+        $this->save();
+
+        return $token;
     }
 
     /*

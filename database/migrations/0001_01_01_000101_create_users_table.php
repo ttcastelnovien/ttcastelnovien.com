@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('roles');
             $table->boolean('is_active')->default(true);
             $table->rememberToken();
+            $table->text('reset_password_token')->nullable();
 
             /*
             |--------------------------------------------------------------------------
@@ -47,38 +48,10 @@ return new class extends Migration
 
             $table->foreign('person_id')->references('id')->on('people')->cascadeOnDelete();
         });
-
-        Schema::create('password_reset_tokens', function (Blueprint $table) {
-            /*
-            |--------------------------------------------------------------------------
-            | Colonnes
-            |--------------------------------------------------------------------------
-            */
-
-            $table->string('token');
-            $table->timestamp('created_at')->nullable();
-
-            /*
-            |--------------------------------------------------------------------------
-            | Relations
-            |--------------------------------------------------------------------------
-            */
-
-            $table->ulid('user_id')->primary();
-
-            /*
-            |--------------------------------------------------------------------------
-            | Contraintes
-            |--------------------------------------------------------------------------
-            */
-
-            $table->foreign('user_id')->references('id')->on('users')->cascadeOnDelete();
-        });
     }
 
     public function down(): void
     {
         Schema::dropIfExists('users');
-        Schema::dropIfExists('password_reset_tokens');
     }
 };
