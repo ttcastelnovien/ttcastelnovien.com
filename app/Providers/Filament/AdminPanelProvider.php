@@ -3,6 +3,7 @@
 namespace App\Providers\Filament;
 
 use App\Filament\Enum\NavigationGroup;
+use Filament\Actions\Action;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -12,6 +13,7 @@ use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
 use Filament\Support\Facades\FilamentTimezone;
+use Filament\Support\Icons\Heroicon;
 use Filament\Widgets\AccountWidget;
 use Filament\Widgets\FilamentInfoWidget;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
@@ -70,6 +72,11 @@ class AdminPanelProvider extends PanelProvider
                 NavigationGroup::SPORTIF->getLabel(),
                 NavigationGroup::DOCUMENTAIRE->getLabel(),
                 NavigationGroup::META->getLabel(),
+            ])
+            ->userMenuItems([
+                Action::make('dashboard')
+                    ->url(fn (): string => route('dashboard'))
+                    ->icon(Heroicon::OutlinedArrowUturnLeft),
             ])
             ->sidebarCollapsibleOnDesktop();
     }
