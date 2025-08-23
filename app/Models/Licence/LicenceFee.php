@@ -7,6 +7,7 @@ namespace App\Models\Licence;
 use App\Enums\LicenceCategory;
 use App\Enums\LicenceType;
 use App\Models\Meta\Season;
+use App\Models\Traits\Blamable;
 use Cknow\Money\Casts\MoneyStringCast;
 use Illuminate\Database\Eloquent\Casts\AsEnumCollection;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
@@ -16,7 +17,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class LicenceFee extends Model
 {
-    use HasUlids;
+    use Blamable, HasUlids;
 
     protected $table = 'licence_fees';
 
@@ -31,7 +32,6 @@ class LicenceFee extends Model
         'name',
         'licence_types',
         'licence_categories',
-        'family_discounts',
         'price',
         'season_id',
     ];
@@ -43,7 +43,6 @@ class LicenceFee extends Model
             'licence_types' => AsEnumCollection::of(LicenceType::class),
             'licence_categories' => AsEnumCollection::of(LicenceCategory::class),
             'price' => MoneyStringCast::class,
-            'family_discounts' => 'array',
         ];
     }
 
@@ -64,10 +63,4 @@ class LicenceFee extends Model
     {
         return $this->hasMany(Licence::class);
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Accessors
-    |--------------------------------------------------------------------------
-    */
 }
