@@ -4,6 +4,7 @@ namespace App\Models\Communication;
 
 use App\Models\HumanResource\Person;
 use App\Models\Meta\Season;
+use App\Models\Traits\Blamable;
 use Database\Factories\Communication\GroupFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -21,7 +22,7 @@ class Group extends Model
     */
 
     /** @use HasFactory<GroupFactory> */
-    use HasFactory, HasUlids;
+    use Blamable, HasFactory, HasUlids;
 
     /*
     |--------------------------------------------------------------------------

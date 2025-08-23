@@ -8,6 +8,7 @@ use App\Models\Communication\Group;
 use App\Models\Licence\Licence;
 use App\Models\Licence\MedicalCertificate;
 use App\Models\Security\User;
+use App\Models\Traits\Blamable;
 use Database\Factories\HumanResource\PersonFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -25,7 +26,7 @@ class Person extends Model
     */
 
     /** @use HasFactory<PersonFactory> */
-    use HasFactory, HasUlids;
+    use Blamable, HasFactory, HasUlids;
 
     /*
     |--------------------------------------------------------------------------

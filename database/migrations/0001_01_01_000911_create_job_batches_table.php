@@ -12,9 +12,9 @@ return new class extends Migration
             $table->ulid('id')->primary();
 
             /*
-            |--------------------------------------------------------------------------
+            |-------------------------------------------------------------------
             | Colonnes
-            |--------------------------------------------------------------------------
+            |-------------------------------------------------------------------
             */
 
             $table->string('name');
@@ -23,13 +23,6 @@ return new class extends Migration
             $table->integer('failed_jobs');
             $table->longText('failed_job_ids');
             $table->mediumText('options')->nullable();
-
-            /*
-            |--------------------------------------------------------------------------
-            | Historique
-            |--------------------------------------------------------------------------
-            */
-
             $table->integer('cancelled_at')->nullable();
             $table->integer('created_at');
             $table->integer('finished_at')->nullable();

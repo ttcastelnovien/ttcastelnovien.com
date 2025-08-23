@@ -3,6 +3,7 @@
 namespace App\Models\Meta;
 
 use App\Models\Licence\Licence;
+use App\Models\Traits\Blamable;
 use Database\Factories\HumanResource\PersonFactory;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
@@ -20,7 +21,7 @@ class Season extends Model
     */
 
     /** @use HasFactory<PersonFactory> */
-    use HasFactory, HasUlids;
+    use Blamable, HasFactory, HasUlids;
 
     /*
     |--------------------------------------------------------------------------

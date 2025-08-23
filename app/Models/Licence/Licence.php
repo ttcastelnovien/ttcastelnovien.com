@@ -7,14 +7,18 @@ namespace App\Models\Licence;
 use App\Enums\LicenceCategory;
 use App\Enums\LicenceType;
 use App\Models\HumanResource\Person;
+use App\Models\Meta\Discount;
 use App\Models\Meta\Season;
+use App\Models\Traits\Blamable;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\Pivot;
+use Money\Money;
 
 class Licence extends Pivot
 {
-    use HasUlids;
+    use Blamable, HasUlids;
 
     protected $table = 'licences';
 
@@ -37,6 +41,8 @@ class Licence extends Pivot
         /** Suivi administratif */
         'validated',
         'sport_pass_validated',
+        /** Informations tarifaires */
+        'family_discount',
         /** Relations */
         'person_id',
         'season_id',
@@ -92,6 +98,12 @@ class Licence extends Pivot
     public function licenceFee(): BelongsTo
     {
         return $this->belongsTo(LicenceFee::class);
+    }
+
+    /** @return BelongsToMany<Discount> */
+    public function discounts(): BelongsToMany
+    {
+        return $this->belongsToMany(Discount::class);
     }
 
     /*
@@ -280,5 +292,10 @@ class Licence extends Pivot
         */
 
         return $this->has_health_declaration;
+    }
+
+    public function getFinalPriceAttribute(): Money
+    {
+        return $this->licenceFee->price;
     }
 }

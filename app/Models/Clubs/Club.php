@@ -2,6 +2,7 @@
 
 namespace App\Models\Clubs;
 
+use App\Models\Traits\Blamable;
 use Database\Factories\Clubs\ClubFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -17,7 +18,7 @@ class Club extends Model
     */
 
     /** @use HasFactory<ClubFactory> */
-    use HasFactory, HasUlids;
+    use Blamable, HasFactory, HasUlids;
 
     /*
     |--------------------------------------------------------------------------

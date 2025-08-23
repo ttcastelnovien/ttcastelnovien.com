@@ -12,21 +12,14 @@ return new class extends Migration
             $table->ulid('id')->primary();
 
             /*
-            |--------------------------------------------------------------------------
+            |-------------------------------------------------------------------
             | Colonnes
-            |--------------------------------------------------------------------------
+            |-------------------------------------------------------------------
             */
 
             $table->string('queue')->index();
             $table->longText('payload');
             $table->unsignedTinyInteger('attempts');
-
-            /*
-            |--------------------------------------------------------------------------
-            | Historique
-            |--------------------------------------------------------------------------
-            */
-
             $table->unsignedInteger('reserved_at')->nullable();
             $table->unsignedInteger('available_at');
             $table->unsignedInteger('created_at');

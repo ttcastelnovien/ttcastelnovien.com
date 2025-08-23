@@ -4,6 +4,7 @@ namespace App\Models\Communication;
 
 use App\Models\HumanResource\Person;
 use App\Models\Meta\Season;
+use App\Models\Traits\Blamable;
 use Database\Factories\Communication\EventFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -21,7 +22,7 @@ class Event extends Model
     */
 
     /** @use HasFactory<EventFactory> */
-    use HasFactory, HasUlids;
+    use Blamable, HasFactory, HasUlids;
 
     /*
     |--------------------------------------------------------------------------

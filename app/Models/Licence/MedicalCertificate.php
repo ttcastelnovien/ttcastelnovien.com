@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace App\Models\Licence;
 
 use App\Models\HumanResource\Person;
+use App\Models\Traits\Blamable;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class MedicalCertificate extends Model
 {
-    use HasUlids;
+    use Blamable, HasUlids;
 
     protected $table = 'medical_certificates';
 
