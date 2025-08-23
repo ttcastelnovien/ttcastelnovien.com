@@ -6,15 +6,16 @@ namespace App\Models\Meta;
 
 use App\Enums\LicenceDiscountType;
 use App\Models\Licence\Licence;
+use App\Models\Traits\Blamable;
 use Cknow\Money\Casts\MoneyStringCast;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Discount extends Model
 {
-    use HasUlids;
+    use Blamable, HasUlids;
 
     protected $table = 'discounts';
 
@@ -53,9 +54,9 @@ class Discount extends Model
         return $this->belongsTo(Season::class);
     }
 
-    /** @return HasMany<Licence> */
-    public function licences(): HasMany
+    /** @return BelongsToMany<Licence> */
+    public function licences(): BelongsToMany
     {
-        return $this->hasMany(Licence::class);
+        return $this->belongsToMany(Licence::class);
     }
 }
