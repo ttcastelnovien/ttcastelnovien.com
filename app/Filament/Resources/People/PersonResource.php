@@ -5,7 +5,10 @@ namespace App\Filament\Resources\People;
 use App\Filament\Enum\NavigationGroup;
 use App\Filament\Resources\People\Pages\ListPeople;
 use App\Filament\Resources\People\Pages\ViewPerson;
+use App\Filament\Resources\People\RelationManagers\ChildrenRelationManager;
+use App\Filament\Resources\People\RelationManagers\LicencesRelationManager;
 use App\Filament\Resources\People\RelationManagers\MedicalCertificatesRelationManager;
+use App\Filament\Resources\People\RelationManagers\ParentsRelationManager;
 use App\Filament\Resources\People\Schemas\PersonForm;
 use App\Filament\Resources\People\Schemas\PersonInfolist;
 use App\Filament\Resources\People\Tables\PeopleTable;
@@ -51,7 +54,10 @@ class PersonResource extends Resource
     public static function getRelations(): array
     {
         return [
+            LicencesRelationManager::class,
             MedicalCertificatesRelationManager::class,
+            ParentsRelationManager::class,
+            ChildrenRelationManager::class,
         ];
     }
 

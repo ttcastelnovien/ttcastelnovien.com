@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources\People\Schemas;
 
-use App\Filament\Resources\People\PersonResource;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
@@ -35,38 +34,6 @@ class PersonInfolist
                             TextEntry::make('nationality')->label('Nationalité')->inlineLabel(),
                             TextEntry::make('father_name')->label('Nom du père si pas FR')->inlineLabel(),
                             TextEntry::make('mother_name')->label('Nom de la mère si pas FR')->inlineLabel(),
-                        ]),
-                        Tab::make('Famille')->components([
-                            TextEntry::make('parents_links')
-                                ->label('Parents')
-                                ->inlineLabel()
-                                ->html()
-                                ->state(function ($record): string {
-                                    $links = $record->parents->map(function ($parent) {
-                                        return sprintf(
-                                            '<a href="%s">%s</a>',
-                                            PersonResource::getUrl('view', ['record' => $parent]),
-                                            e($parent->full_name),
-                                        );
-                                    })->implode('<br>');
-
-                                    return $links !== '' ? $links : 'Aucun';
-                                }),
-                            TextEntry::make('children_links')
-                                ->label('Enfants')
-                                ->inlineLabel()
-                                ->html()
-                                ->state(function ($record): string {
-                                    $links = $record->children->map(function ($child) {
-                                        return sprintf(
-                                            '<a href="%s">%s</a>',
-                                            PersonResource::getUrl('view', ['record' => $child]),
-                                            e($child->full_name),
-                                        );
-                                    })->implode('<br>');
-
-                                    return $links !== '' ? $links : 'Aucun';
-                                }),
                         ]),
                         Tab::make('Historique')->components([
                             TextEntry::make('created_at')->dateTime()->label('Créée le')->inlineLabel(),
