@@ -77,68 +77,10 @@ return new class extends Migration
 
             $table->foreign('season_id')->references('id')->on('seasons')->cascadeOnDelete();
         });
-
-        Schema::create('event_person', function (Blueprint $table) {
-            /*
-            |--------------------------------------------------------------------------
-            | Relations
-            |--------------------------------------------------------------------------
-            */
-
-            $table->ulid('event_id');
-            $table->ulid('person_id');
-
-            /*
-            |--------------------------------------------------------------------------
-            | Contraintes
-            |--------------------------------------------------------------------------
-            */
-
-            $table->foreign('event_id')->references('id')->on('events')->cascadeOnDelete();
-            $table->foreign('person_id')->references('id')->on('people')->cascadeOnDelete();
-
-            /*
-            |--------------------------------------------------------------------------
-            | Index
-            |--------------------------------------------------------------------------
-            */
-
-            $table->primary(['event_id', 'person_id']);
-        });
-
-        Schema::create('event_group', function (Blueprint $table) {
-            /*
-            |--------------------------------------------------------------------------
-            | Relations
-            |--------------------------------------------------------------------------
-            */
-
-            $table->ulid('event_id');
-            $table->ulid('group_id');
-
-            /*
-            |--------------------------------------------------------------------------
-            | Contraintes
-            |--------------------------------------------------------------------------
-            */
-
-            $table->foreign('event_id')->references('id')->on('events')->cascadeOnDelete();
-            $table->foreign('group_id')->references('id')->on('groups')->cascadeOnDelete();
-
-            /*
-            |--------------------------------------------------------------------------
-            | Index
-            |--------------------------------------------------------------------------
-            */
-
-            $table->primary(['event_id', 'group_id']);
-        });
     }
 
     public function down(): void
     {
         Schema::dropIfExists('events');
-        Schema::dropIfExists('event_person');
-        Schema::dropIfExists('event_group');
     }
 };

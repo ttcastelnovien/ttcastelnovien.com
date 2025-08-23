@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('clubs', function (Blueprint $table) {
+        Schema::create('groups', function (Blueprint $table) {
             $table->ulid('id')->primary();
 
             /*
@@ -17,36 +17,8 @@ return new class extends Migration
             |--------------------------------------------------------------------------
             */
 
-            $table->string('name')->unique();
-            $table->string('short_name')->unique();
-            $table->string('logo')->nullable();
-
-            /*
-            |--------------------------------------------------------------------------
-            | Historique
-            |--------------------------------------------------------------------------
-            */
-
-            $table->timestamps();
-        });
-
-        Schema::create('halls', function (Blueprint $table) {
-            $table->ulid('id')->primary();
-
-            /*
-            |--------------------------------------------------------------------------
-            | Colonnes
-            |--------------------------------------------------------------------------
-            */
-
-            $table->string('name')->unique();
-            $table->string('address_line_1');
-            $table->string('address_line_2')->nullable();
-            $table->string('address_line_3')->nullable();
-            $table->string('postal_code');
-            $table->string('city');
-            $table->decimal('latitude', 10, 8)->nullable();
-            $table->decimal('longitude', 11, 8)->nullable();
+            $table->string('name');
+            $table->string('color')->default('#000000');
 
             /*
             |--------------------------------------------------------------------------
@@ -54,7 +26,7 @@ return new class extends Migration
             |--------------------------------------------------------------------------
             */
 
-            $table->ulid('club_id');
+            $table->ulid('season_id');
 
             /*
             |--------------------------------------------------------------------------
@@ -70,13 +42,20 @@ return new class extends Migration
             |--------------------------------------------------------------------------
             */
 
-            $table->foreign('club_id')->references('id')->on('clubs')->cascadeOnDelete();
+            $table->foreign('season_id')->references('id')->on('seasons')->cascadeOnDelete();
+
+            /*
+            |--------------------------------------------------------------------------
+            | Index
+            |--------------------------------------------------------------------------
+            */
+
+            $table->index('name');
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('clubs');
-        Schema::dropIfExists('halls');
+        Schema::dropIfExists('groups');
     }
 };

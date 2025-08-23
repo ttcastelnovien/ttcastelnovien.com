@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('jobs', function (Blueprint $table) {
+        Schema::create('clubs', function (Blueprint $table) {
             $table->ulid('id')->primary();
 
             /*
@@ -17,9 +17,9 @@ return new class extends Migration
             |--------------------------------------------------------------------------
             */
 
-            $table->string('queue')->index();
-            $table->longText('payload');
-            $table->unsignedTinyInteger('attempts');
+            $table->string('name')->unique();
+            $table->string('short_name')->unique();
+            $table->string('logo')->nullable();
 
             /*
             |--------------------------------------------------------------------------
@@ -27,14 +27,12 @@ return new class extends Migration
             |--------------------------------------------------------------------------
             */
 
-            $table->unsignedInteger('reserved_at')->nullable();
-            $table->unsignedInteger('available_at');
-            $table->unsignedInteger('created_at');
+            $table->timestamps();
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('jobs');
+        Schema::dropIfExists('clubs');
     }
 };
