@@ -2,8 +2,8 @@
 
 namespace App\Models\Communication;
 
-use App\Models\Meta\Season;
 use App\Models\HumanResource\Person;
+use App\Models\Meta\Season;
 use Database\Factories\Communication\GroupFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;

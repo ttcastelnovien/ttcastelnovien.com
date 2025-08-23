@@ -28,9 +28,9 @@ final class TransactionalMailer
     private static bool $initialised = false;
 
     /**
-     * @param list<Recipient> $recipients
-     * @param array<string, mixed> $data
-     * @param array<array-key, array{name: string, file: UploadedFile}> $attachments
+     * @param  list<Recipient>  $recipients
+     * @param  array<string, mixed>  $data
+     * @param  array<array-key, array{name: string, file: UploadedFile}>  $attachments
      */
     public static function send(
         MailObject $object,

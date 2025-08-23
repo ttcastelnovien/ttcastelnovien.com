@@ -10,7 +10,9 @@ use SimpleXMLElement;
 final readonly class Status
 {
     public StatusCode $code;
+
     public string $severity;
+
     public ?string $message;
 
     public function __construct(

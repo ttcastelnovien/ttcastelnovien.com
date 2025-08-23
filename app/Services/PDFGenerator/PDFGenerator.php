@@ -11,6 +11,7 @@ use Gotenberg\Gotenberg;
 use Gotenberg\Stream;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Support\Facades\Storage;
+
 use function Illuminate\Filesystem\join_paths;
 
 final class PDFGenerator

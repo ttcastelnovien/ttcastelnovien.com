@@ -2,7 +2,6 @@
 
 namespace App\Models\Clubs;
 
-use App\Models\Clubs\Hall;
 use Database\Factories\Clubs\ClubFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;

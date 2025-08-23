@@ -3,16 +3,13 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Enums\MailObject;
-use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
 use App\Models\HumanResource\Person;
-use App\Models\Security\Invitation;
 use App\Models\Security\User;
 use App\Services\Mailer\Recipient;
 use App\Services\Mailer\TransactionalMailer;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;

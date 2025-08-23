@@ -30,6 +30,7 @@ class NewPasswordController extends Controller
 
         if ($user === null) {
             session()->flash('error', 'Aucun utilisateur trouvé avec ce lien de réinitialisation.');
+
             return redirect()->route('password.request');
         }
 
@@ -56,11 +57,13 @@ class NewPasswordController extends Controller
 
         if ($user === null) {
             session()->flash('error', 'Aucun utilisateur trouvé avec ce nom d\'utilisateur.');
+
             return redirect()->route('password.request');
         }
 
         if ($user->reset_password_token !== $payload['token']) {
             session()->flash('error', 'Le lien de réinitialisation du mot de passe est invalide ou a expiré.');
+
             return redirect()->route('password.request');
         }
 

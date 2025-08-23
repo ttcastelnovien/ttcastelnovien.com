@@ -6,8 +6,8 @@ namespace App\Models\Licence;
 
 use App\Enums\LicenceCategory;
 use App\Enums\LicenceType;
-use App\Models\Meta\Season;
 use App\Models\HumanResource\Person;
+use App\Models\Meta\Season;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\Pivot;

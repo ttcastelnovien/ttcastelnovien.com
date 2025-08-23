@@ -96,6 +96,7 @@ final readonly class OFXUtils
         )) {
             return "<$matches[1]>$matches[2]</$matches[1]>";
         }
+
         return $line;
     }
 
@@ -131,6 +132,7 @@ final readonly class OFXUtils
         }
 
         $normalizedAmount = ltrim((string) $amount, '+');
+
         return $moneyParser->parse($normalizedAmount, $currency);
     }
 }

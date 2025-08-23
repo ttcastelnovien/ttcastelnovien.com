@@ -3,14 +3,10 @@
 namespace App\Filament\Resources\People\Schemas;
 
 use App\Filament\Resources\People\PersonResource;
-use App\Filament\Resources\People\RelationManagers\MedicalCertificatesRelationManager;
 use Filament\Infolists\Components\TextEntry;
-use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Schema;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Table;
 
 class PersonInfolist
 {

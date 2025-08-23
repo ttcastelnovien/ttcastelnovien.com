@@ -2,7 +2,6 @@
 
 namespace App\Models\Communication;
 
-use App\Models\Communication\Group;
 use App\Models\HumanResource\Person;
 use App\Models\Meta\Season;
 use Database\Factories\Communication\EventFactory;

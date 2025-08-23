@@ -17,11 +17,13 @@ class InvitationController extends Controller
     {
         if (! $request->hasValidSignature()) {
             $request->session()->flash('error', "Lien d'invitation invalide.");
+
             return redirect()->route('login');
         }
 
         if (Auth::check() && $request->user()->person_id === $invitation->person_id) {
             $invitation->delete();
+
             return redirect()->route('dashboard');
         }
 
@@ -41,6 +43,7 @@ class InvitationController extends Controller
     {
         if (Auth::check() && $request->user()->person_id === $invitation->person_id) {
             $invitation->delete();
+
             return redirect()->route('dashboard');
         }
 

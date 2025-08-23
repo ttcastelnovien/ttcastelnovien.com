@@ -5,10 +5,8 @@ declare(strict_types=1);
 namespace App\Models\Accounting;
 
 use App\Enums\AccountingJournalType;
-use App\Enums\LicenceDiscountType;
 use App\Models\Licence\Licence;
 use App\Models\Meta\Season;
-use Cknow\Money\Casts\MoneyStringCast;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
