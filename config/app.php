@@ -35,4 +35,9 @@ return [
 
     'gotenberg_url' => env('GOTENBERG_URL'),
 
+    'google' => [
+        'impersonated_user' => env('GOOGLE_USER_IMPERSONATED'),
+        'shared_drive_id' => env('GOOGLE_SHARED_DRIVE_ID'),
+    ],
+
 ];

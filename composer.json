@@ -15,6 +15,7 @@
         "codeat3/blade-maki-icons": "1.9.0",
         "filament/filament": "4.0.1",
         "getbrevo/brevo-php": "^2.0",
+        "google/apiclient": "^2.18",
         "gotenberg/gotenberg-php": "^2.14",
         "inertiajs/inertia-laravel": "2.0.5",
         "laravel/framework": "12.24.0",
@@ -45,6 +46,9 @@
         }
     },
     "scripts": {
+        "pre-autoload-dump": [
+            "Google\\Task\\Composer::cleanup"
+        ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover --ansi",
@@ -78,7 +82,10 @@
     "extra": {
         "laravel": {
             "dont-discover": []
-        }
+        },
+        "google/apiclient-services": [
+            "Drive"
+        ]
     },
     "config": {
         "optimize-autoloader": true,
