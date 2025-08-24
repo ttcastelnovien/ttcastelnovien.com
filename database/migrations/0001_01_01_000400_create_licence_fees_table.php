@@ -20,7 +20,7 @@ return new class extends Migration
             $table->text('name');
             $table->json('licence_types');
             $table->json('licence_categories');
-            $table->text('price');
+            $table->integer('price');
             $table->timestamps();
 
             /*
@@ -41,7 +41,7 @@ return new class extends Migration
 
             $table->foreign('season_id')->references('id')->on('seasons')->cascadeOnDelete();
             $table->foreign('created_by_id')->references('id')->on('users')->nullOnDelete();
-            $table->foreign('created_by_id')->references('id')->on('users')->nullOnDelete();
+            $table->foreign('updated_by_id')->references('id')->on('users')->nullOnDelete();
         });
     }
 

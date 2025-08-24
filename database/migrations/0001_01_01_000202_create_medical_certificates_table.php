@@ -43,7 +43,7 @@ return new class extends Migration
 
             $table->foreign('person_id')->references('id')->on('people')->cascadeOnDelete();
             $table->foreign('created_by_id')->references('id')->on('users')->nullOnDelete();
-            $table->foreign('created_by_id')->references('id')->on('users')->nullOnDelete();
+            $table->foreign('updated_by_id')->references('id')->on('users')->nullOnDelete();
         });
     }
 

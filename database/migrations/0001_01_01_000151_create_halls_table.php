@@ -45,7 +45,7 @@ return new class extends Migration
 
             $table->foreign('club_id')->references('id')->on('clubs')->cascadeOnDelete();
             $table->foreign('created_by_id')->references('id')->on('users')->nullOnDelete();
-            $table->foreign('created_by_id')->references('id')->on('users')->nullOnDelete();
+            $table->foreign('updated_by_id')->references('id')->on('users')->nullOnDelete();
         });
     }
 

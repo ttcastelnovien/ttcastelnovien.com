@@ -22,7 +22,7 @@ return new class extends Migration
 
             $table->text('name');
             $table->text('type');
-            $table->text('amount');
+            $table->integer('amount');
             $table->timestamps();
 
             /*
@@ -43,7 +43,7 @@ return new class extends Migration
 
             $table->foreign('season_id')->references('id')->on('seasons')->cascadeOnDelete();
             $table->foreign('created_by_id')->references('id')->on('users')->nullOnDelete();
-            $table->foreign('created_by_id')->references('id')->on('users')->nullOnDelete();
+            $table->foreign('updated_by_id')->references('id')->on('users')->nullOnDelete();
         });
     }
 
