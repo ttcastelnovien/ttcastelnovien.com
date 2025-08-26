@@ -8,7 +8,7 @@ use App\Enums\LicenceCategory;
 use App\Enums\LicenceType;
 use App\Models\Meta\Season;
 use App\Models\Traits\Blamable;
-use Cknow\Money\Casts\MoneyStringCast;
+use Cknow\Money\Casts\MoneyIntegerCast;
 use Illuminate\Database\Eloquent\Casts\AsEnumCollection;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
@@ -42,8 +42,21 @@ class LicenceFee extends Model
         return [
             'licence_types' => AsEnumCollection::of(LicenceType::class),
             'licence_categories' => AsEnumCollection::of(LicenceCategory::class),
-            'price' => MoneyStringCast::class,
+            'price' => MoneyIntegerCast::class,
         ];
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Lifecycle callbacks
+    |--------------------------------------------------------------------------
+    */
+
+    protected static function booted(): void
+    {
+        static::creating(function (LicenceFee $licenceFee) {
+            $licenceFee->season_id = Season::current()->first()->id;
+        });
     }
 
     /*
