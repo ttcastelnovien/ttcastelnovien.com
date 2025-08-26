@@ -5,16 +5,13 @@ declare(strict_types=1);
 namespace App\Models\Accounting;
 
 use App\Enums\AccountingJournalType;
-use App\Models\Licence\Licence;
-use App\Models\Meta\Season;
+use App\Models\Traits\Blamable;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Journal extends Model
 {
-    use HasUlids;
+    use Blamable, HasUlids;
 
     protected $table = 'journals';
 
@@ -28,9 +25,8 @@ class Journal extends Model
     protected $fillable = [
         'name',
         'type',
-        'prefix_in',
-        'prefix_out',
-        'season_id',
+        'debit_prefix',
+        'credit_prefix',
     ];
 
     /** @return array<string, string> */
@@ -39,23 +35,5 @@ class Journal extends Model
         return [
             'type' => AccountingJournalType::class,
         ];
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Relations
-    |--------------------------------------------------------------------------
-    */
-
-    /** @return BelongsTo<Season> */
-    public function season(): BelongsTo
-    {
-        return $this->belongsTo(Season::class);
-    }
-
-    /** @return HasMany<Licence> */
-    public function licences(): HasMany
-    {
-        return $this->hasMany(Licence::class);
     }
 }
