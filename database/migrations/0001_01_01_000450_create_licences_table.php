@@ -27,12 +27,12 @@ return new class extends Migration
             |-------------------------------------------------------------------
             */
 
-            $table->boolean('has_image_rights')->nullable();
-            $table->boolean('has_exit_authorization')->nullable();
-            $table->boolean('has_care_authorization')->nullable();
-            $table->boolean('has_transport_authorization')->nullable();
-            $table->boolean('has_medical_certificate')->nullable();
-            $table->boolean('has_health_declaration')->nullable();
+            $table->boolean('has_image_rights')->default(false);
+            $table->boolean('has_exit_authorization')->default(false);
+            $table->boolean('has_care_authorization')->default(false);
+            $table->boolean('has_transport_authorization')->default(false);
+            $table->boolean('has_medical_certificate')->default(false);
+            $table->boolean('has_health_declaration')->default(false);
             $table->timestamps();
 
             /*

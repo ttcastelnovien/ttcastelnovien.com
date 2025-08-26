@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('discounts', function (Blueprint $table): void {
+        Schema::create('licence_discounts', function (Blueprint $table): void {
             $table->ulid('id')->primary();
 
             /*
@@ -20,7 +20,6 @@ return new class extends Migration
             |-------------------------------------------------------------------
             */
 
-            $table->text('name');
             $table->text('type');
             $table->integer('amount');
             $table->timestamps();
@@ -31,6 +30,7 @@ return new class extends Migration
             |-------------------------------------------------------------------
             */
 
+            $table->ulid('licence_id');
             $table->ulid('season_id');
             $table->ulid('created_by_id')->nullable()->default(null);
             $table->ulid('updated_by_id')->nullable()->default(null);
@@ -41,6 +41,7 @@ return new class extends Migration
             |-------------------------------------------------------------------
             */
 
+            $table->foreign('licence_id')->references('id')->on('licences')->cascadeOnDelete();
             $table->foreign('season_id')->references('id')->on('seasons')->cascadeOnDelete();
             $table->foreign('created_by_id')->references('id')->on('users')->nullOnDelete();
             $table->foreign('updated_by_id')->references('id')->on('users')->nullOnDelete();
@@ -52,6 +53,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('discounts');
+        Schema::dropIfExists('licence_discounts');
     }
 };

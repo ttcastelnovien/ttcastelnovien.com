@@ -7,14 +7,13 @@ namespace App\Models\Licence;
 use App\Enums\LicenceCategory;
 use App\Enums\LicenceType;
 use App\Models\HumanResource\Person;
-use App\Models\Meta\Discount;
 use App\Models\Meta\Season;
 use App\Models\Traits\Blamable;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\Pivot;
-use Money\Money;
+use Illuminate\Support\Collection;
 
 class Licence extends Pivot
 {
@@ -100,10 +99,10 @@ class Licence extends Pivot
         return $this->belongsTo(LicenceFee::class);
     }
 
-    /** @return BelongsToMany<Discount> */
-    public function discounts(): BelongsToMany
+    /** @return HasMany<LicenceDiscount> */
+    public function licenceDiscounts(): HasMany
     {
-        return $this->belongsToMany(Discount::class);
+        return $this->hasMany(LicenceDiscount::class, 'licence_id', 'id');
     }
 
     /*
@@ -294,8 +293,18 @@ class Licence extends Pivot
         return $this->has_health_declaration;
     }
 
-    public function getFinalPriceAttribute(): Money
+    public function getFinalPriceAttribute(): string
     {
-        return $this->licenceFee->price;
+        $price = $this->licenceFee->price;
+        /** @var Collection<LicenceDiscount> $discounts */
+        $discounts = $this->licenceDiscounts()->get();
+
+        if ($discounts->isNotEmpty()) {
+            $discounts->each(function ($discount) use (&$price) {
+                $price = $price->subtract($discount->amount);
+            });
+        }
+
+        return $price->formatByIntl();
     }
 }
