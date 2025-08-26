@@ -26,6 +26,8 @@ class LicenceTable
                 TextColumn::make('full_name')
                     ->label('Nom')
                     ->searchable(),
+                TextColumn::make('final_price')
+                    ->label('Montant'),
                 TextColumn::make('licence_type')
                     ->label('Type')
                     ->searchable(),
