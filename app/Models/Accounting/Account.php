@@ -2,22 +2,20 @@
 
 declare(strict_types=1);
 
-namespace App\Models\Meta;
+namespace App\Models\Accounting;
 
-use App\Enums\LicenceDiscountType;
-use App\Models\Licence\Licence;
+use App\Models\Meta\Season;
 use App\Models\Traits\Blamable;
-use Cknow\Money\Casts\MoneyStringCast;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Discount extends Model
+class Account extends Model
 {
     use Blamable, HasUlids;
 
-    protected $table = 'discounts';
+    protected $table = 'accounts';
 
     /*
     |--------------------------------------------------------------------------
@@ -28,19 +26,10 @@ class Discount extends Model
     /** @var list<string> */
     protected $fillable = [
         'name',
-        'type',
-        'amount',
-        'season_id',
+        'code',
+        'description',
+        'parent_id',
     ];
-
-    /** @return array<string, string> */
-    protected function casts(): array
-    {
-        return [
-            'type' => LicenceDiscountType::class,
-            'amount' => MoneyStringCast::class,
-        ];
-    }
 
     /*
     |--------------------------------------------------------------------------
@@ -54,9 +43,15 @@ class Discount extends Model
         return $this->belongsTo(Season::class);
     }
 
-    /** @return BelongsToMany<Licence> */
-    public function licences(): BelongsToMany
+    /** @return BelongsTo<Account> */
+    public function parent(): BelongsTo
     {
-        return $this->belongsToMany(Licence::class);
+        return $this->belongsTo(Account::class, 'parent_id');
+    }
+
+    /** @return HasMany<Account> */
+    public function children(): HasMany
+    {
+        return $this->hasMany(Account::class);
     }
 }
