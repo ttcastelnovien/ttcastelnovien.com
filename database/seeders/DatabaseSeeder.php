@@ -13,6 +13,7 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             GroupSeeder::class,
             ClubSeeder::class,
+            AccountingAccountSeeder::class,
         ]);
     }
 }
