@@ -27,7 +27,6 @@ class Account extends Model
     protected $fillable = [
         'name',
         'code',
-        'description',
         'parent_id',
     ];
 
@@ -53,5 +52,16 @@ class Account extends Model
     public function children(): HasMany
     {
         return $this->hasMany(Account::class);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Accessors
+    |--------------------------------------------------------------------------
+    */
+
+    public function getFullNameAttribute(): string
+    {
+        return sprintf('%s - %s', $this->code, $this->name);
     }
 }
