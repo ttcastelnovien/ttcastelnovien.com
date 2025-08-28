@@ -12,6 +12,7 @@ use App\Models\Licence\LicenceFee;
 use App\Models\Meta\Season;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Fieldset;
 use Filament\Schemas\Schema;
@@ -78,12 +79,12 @@ class LicenceForm
                             ->label('Type de réduction')
                             ->options(LicenceDiscountType::class)
                             ->preload()
-                            ->distinct()
-                            ->disableOptionsWhenSelectedInSiblingRepeaterItems()
                             ->required(),
                         MoneyInput::make('amount')
                             ->label('Montant de la réduction')
                             ->required(),
+                        TextInput::make('reference')
+                            ->label('Référence'),
                     ]),
                 Toggle::make('validated')
                     ->label('Validé FFTT')
