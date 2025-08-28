@@ -1,6 +1,5 @@
 # Versions
 FROM dunglas/frankenphp:1-php8.4 AS frankenphp_upstream
-FROM node:lts-alpine AS node_upstream
 
 # Base image
 FROM frankenphp_upstream AS frankenphp_base
@@ -42,6 +41,12 @@ ENV PHP_INI_SCAN_DIR=":$PHP_INI_DIR/app.conf.d"
 COPY --link frankenphp/conf.d/10-app.ini $PHP_INI_DIR/app.conf.d/
 COPY --link frankenphp/Caddyfile /etc/frankenphp/Caddyfile
 
+RUN set -eux; \
+    curl -fsSL https://deb.nodesource.com/setup_22.x | bash - && \
+    apt-get install -y nodejs; \
+    npm install -g npm@latest; \
+    sync;
+
 # Dev image
 FROM frankenphp_base AS frankenphp_dev
 
@@ -57,29 +62,6 @@ RUN set -eux; \
     sync;
 
 COPY --link frankenphp/conf.d/20-app.dev.ini $PHP_INI_DIR/app.conf.d/
-
-RUN set -eux; \
-    curl -fsSL https://deb.nodesource.com/setup_22.x | bash - && \
-    apt-get install -y nodejs; \
-    sync;
-
-# Frontend steps
-FROM node_upstream AS node_deps
-
-WORKDIR /app
-
-COPY --link package.json package-lock.json ./
-
-RUN set -eux; \
-    npm install -g npm@latest; \
-    npm ci; \
-    sync;
-
-COPY --link . ./
-
-RUN set -eux; \
-    npm run build:ssr; \
-    sync;
 
 # Production image
 FROM frankenphp_base AS frankenphp_prod
@@ -99,12 +81,14 @@ RUN set -eux; \
 # copy sources
 COPY --link . ./
 
-# install and build frontend dependencies
-COPY --from=node_deps /app/public/build ./public/build
-COPY --from=node_deps /app/bootstrap/ssr ./bootstrap/ssr
-
 RUN set -eux; \
     composer dump-autoload --classmap-authoritative --no-dev; sync;
+
+# install and build frontend dependencies
+RUN set -eux; \
+    npm ci; \
+    npm run build:ssr; \
+    sync;
 
 # entrypoint
 COPY frankenphp/entrypoint.sh /usr/local/bin/entrypoint.sh
