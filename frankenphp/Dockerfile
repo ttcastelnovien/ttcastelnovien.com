@@ -76,8 +76,8 @@ COPY --link frankenphp/conf.d/20-app.prod.ini $PHP_INI_DIR/app.conf.d/
 COPY --link . ./
 
 RUN set -eux; \
-    composer install --no-cache --prefer-dist --no-dev --no-progress; \
-    composer dump-autoload --classmap-authoritative --no-dev; \
+    composer install --no-cache --prefer-dist --no-progress; \
+    composer dump-autoload --classmap-authoritative; \
     sync;
 
 # install and build frontend dependencies
