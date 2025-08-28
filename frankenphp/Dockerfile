@@ -85,12 +85,6 @@ RUN set -eux; \
 RUN set -eux; \
     bun install --production --frozen-lockfile; sync;
 
-# laravel specific
-RUN set -eux; \
-    php artisan optimize; \
-    bun run build:ssr; \
-    sync;
-
 # entrypoint
 
 COPY frankenphp/entrypoint.sh /usr/local/bin/entrypoint.sh
