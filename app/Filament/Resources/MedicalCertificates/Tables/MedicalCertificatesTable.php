@@ -12,7 +12,6 @@ use Filament\Actions\ViewAction;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Illuminate\Support\Facades\Storage;
 
 class MedicalCertificatesTable
 {
@@ -40,7 +39,7 @@ class MedicalCertificatesTable
                     DeleteAction::make(),
                     Action::make('Télécharger')
                         ->icon(Heroicon::ArrowDownTray)
-                        ->url(fn ($record) => Storage::disk('certificates')->temporaryUrl($record->file, now()->addMinutes(30)->endOfHour()))
+                        ->url(fn ($record) => route('files.open_from_drive', ['fileId' => $record->file]))
                         ->openUrlInNewTab(),
                 ]),
             ])

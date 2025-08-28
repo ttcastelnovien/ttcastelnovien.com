@@ -2,11 +2,12 @@
 
 namespace App\Filament\Resources\MedicalCertificates\Schemas;
 
+use App\Filament\Forms\Components\DriveFileUpload;
 use App\Models\HumanResource\Person;
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 
 class MedicalCertificateForm
@@ -34,10 +35,17 @@ class MedicalCertificateForm
                 DatePicker::make('date')
                     ->label('Date du certificat')
                     ->required(),
-                FileUpload::make('file')
-                    ->disk('certificates')
-                    ->visibility('private')
+                DriveFileUpload::make('file')
                     ->label('Fichier')
+                    ->visibleOn('create')
+                    ->setFileName(fn () => 'certificat_medical')
+                    ->setDrivePath(function (Get $get) {
+                        return [
+                            'LICENCIÉS',
+                            Person::find($get('person_id'))->lastname_firstname,
+                            'ADHÉSION',
+                        ];
+                    })
                     ->acceptedFileTypes(['application/pdf']),
             ]);
     }

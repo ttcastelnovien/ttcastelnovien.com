@@ -132,7 +132,12 @@ class Person extends Model
 
     public function getFullNameAttribute(): string
     {
-        return trim("{$this->first_name} {$this->last_name}");
+        return trim($this->first_name).' '.trim(mb_strtoupper($this->last_name));
+    }
+
+    public function getLastnameFirstnameAttribute(): string
+    {
+        return trim(mb_strtoupper($this->last_name)).' '.trim($this->first_name);
     }
 
     public function getIsMinorAttribute(): bool
