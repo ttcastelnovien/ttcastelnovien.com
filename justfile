@@ -2,7 +2,7 @@ CWD := `docker compose exec php pwd`
 PHP := "docker compose exec php"
 COMPOSER := PHP + " composer"
 ARTISAN := PHP + " php artisan"
-BUN := PHP + " bun"
+NPM := PHP + " npm"
 
 # *******************************
 # Application related
@@ -10,11 +10,11 @@ BUN := PHP + " bun"
 
 # Recompile assets (CSS/JS) on every change
 dev:
-    {{ BUN }} run dev
+    {{ NPM }} run dev
 
 # Compile and optimize assets for production
 build:
-    {{ BUN }} run build
+    {{ NPM }} run build
 
 # Launch PHPUnit tests
 test *path:
@@ -34,7 +34,7 @@ install_php:
 
 # Install frontend dependencies
 install_front:
-    {{ BUN }} install
+    {{ NPM }} install
 
 # composer alias
 composer +arguments:
@@ -48,16 +48,16 @@ artisan *arguments:
 php *arguments:
     {{ PHP }} {{ arguments }}
 
-# bun alias
-bun +arguments:
-    {{ BUN }} {{ arguments }}
+# npm alias
+npm +arguments:
+    {{ NPM }} {{ arguments }}
 
 # Install all dependencies
 install: install_php install_front
 
 # Review possible dependencies to upgrade
 ncu:
-    {{ BUN }} run deps:upgrade
+    {{ NPM }} run deps:upgrade
 
 # Review possible dependencies to upgrade
 outdated:
@@ -68,7 +68,7 @@ first_install:
     {{ COMPOSER }} run-script post-root-package-install
     {{ ARTISAN }} key:generate --ansi
     {{ ARTISAN }} migrate --no-interaction
-    {{ BUN }} install
+    {{ NPM }} install
     PEST_NO_SUPPORT=true {{ COMPOSER }} remove phpunit/phpunit --dev --no-update
     PEST_NO_SUPPORT=true {{ COMPOSER }} require pestphp/pest pestphp/pest-plugin-laravel --no-update --dev
     PEST_NO_SUPPORT=true {{ COMPOSER }} update
