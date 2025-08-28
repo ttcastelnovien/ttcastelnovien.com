@@ -67,7 +67,7 @@ COPY --link frankenphp/conf.d/20-app.dev.ini $PHP_INI_DIR/app.conf.d/
 FROM frankenphp_base AS frankenphp_prod
 
 # Set environment variables for production
-ENV APP_ENV=prod
+ENV APP_ENV=production
 
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 COPY --link frankenphp/conf.d/20-app.prod.ini $PHP_INI_DIR/app.conf.d/
