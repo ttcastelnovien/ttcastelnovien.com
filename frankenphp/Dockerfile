@@ -82,3 +82,14 @@ RUN set -eux; \
 	composer dump-autoload --classmap-authoritative --no-dev; \
 	composer dump-env prod; \
 	composer run-script --no-dev post-install-cmd; sync;
+
+# install frontend dependencies
+RUN set -eux; \
+    bun install --production --frozen-lockfile; sync;
+
+# laravel specific: set permissions, create storage link, cache config & routes
+RUN set -eux; \
+    php artisan optimize; \
+    bun run build:ssr; \
+    php artisan inertia:start-ssr; \
+    sync;

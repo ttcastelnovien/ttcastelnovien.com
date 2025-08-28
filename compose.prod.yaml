@@ -4,3 +4,13 @@ services:
       context: .
       target: prod
       dockerfile: frankenphp/dockerfile
+    restart: always
+  
+  database:
+    restart: always
+  
+  cache:
+    restart: always
+  
+  gotenberg:
+    restart: always
