@@ -20,6 +20,7 @@ return new class extends Migration
             $table->text('name');
             $table->date('starts_at');
             $table->date('ends_at');
+            $table->text('drive_id')->default('');
             $table->timestamps();
 
             /*

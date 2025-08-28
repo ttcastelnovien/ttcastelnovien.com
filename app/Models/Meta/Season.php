@@ -34,6 +34,7 @@ class Season extends Model
         'name',
         'starts_at',
         'ends_at',
+        'drive_id',
     ];
 
     /** @return array<string, string> */

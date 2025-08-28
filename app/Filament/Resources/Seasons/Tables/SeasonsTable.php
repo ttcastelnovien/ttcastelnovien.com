@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Seasons\Tables;
 
+use Filament\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
@@ -21,6 +22,9 @@ class SeasonsTable
                     ->label('Fin')
                     ->date()
                     ->sortable(),
+            ])
+            ->recordActions([
+                EditAction::make(),
             ]);
     }
 }
