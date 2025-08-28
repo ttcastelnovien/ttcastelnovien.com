@@ -2,7 +2,7 @@ services:
   php:
     build:
       context: .
-      target: prod
+      target: frankenphp_prod
       dockerfile: frankenphp/Dockerfile
     labels:
       caddy: "ttcastelnovien.com"
