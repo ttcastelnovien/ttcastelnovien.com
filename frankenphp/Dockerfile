@@ -1,6 +1,6 @@
 # Versions
 FROM dunglas/frankenphp:1-php8.4 AS frankenphp_upstream
-FROM oven/bun:latest AS bun_upstream
+FROM node:lts-alpine AS node_upstream
 
 # Base image
 FROM frankenphp_upstream AS frankenphp_base
@@ -53,29 +53,32 @@ ENV FRANKENPHP_WORKER_CONFIG=watch
 RUN mv "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini"
 
 RUN set -eux; \
-    install-php-extensions \
-        xdebug \
-    ;
+    install-php-extensions xdebug; \
+    sync;
 
 COPY --link frankenphp/conf.d/20-app.dev.ini $PHP_INI_DIR/app.conf.d/
 
-RUN curl -fsSL https://bun.sh/install | BUN_INSTALL="/usr" bash;
+RUN set -eux; \
+    curl -fsSL https://deb.nodesource.com/setup_22.x | bash - && \
+    apt-get install -y nodejs; \
+    sync;
 
 # Frontend steps
-FROM bun_upstream AS bun_deps
+FROM node_upstream AS node_deps
 
 WORKDIR /app
 
-COPY --link package.json bun.lock ./
+COPY --link package.json package-lock.json ./
 
 RUN set -eux; \
-    bun install --frozen-lockfile; \
+    npm install -g npm@latest; \
+    npm ci; \
     sync;
 
 COPY --link . ./
 
 RUN set -eux; \
-    bun run build:ssr; \
+    npm run build:ssr; \
     sync;
 
 # Production image
@@ -97,8 +100,8 @@ RUN set -eux; \
 COPY --link . ./
 
 # install and build frontend dependencies
-COPY --from=bun_deps /app/public/build ./public/build
-COPY --from=bun_deps /app/bootstrap/ssr ./bootstrap/ssr
+COPY --from=node_deps /app/public/build ./public/build
+COPY --from=node_deps /app/bootstrap/ssr ./bootstrap/ssr
 
 RUN set -eux; \
     composer dump-autoload --classmap-authoritative --no-dev; sync;
