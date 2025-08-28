@@ -81,9 +81,11 @@ RUN rm -Rf frankenphp/
 RUN set -eux; \
     composer dump-autoload --classmap-authoritative --no-dev; sync;
 
-# install frontend dependencies
+# install and build frontend dependencies
 RUN set -eux; \
-    bun install --frozen-lockfile; sync;
+    bun install --frozen-lockfile; \
+    bun run build:ssr; \
+    sync;
 
 # entrypoint
 COPY frankenphp/entrypoint.sh /usr/local/bin/entrypoint.sh
