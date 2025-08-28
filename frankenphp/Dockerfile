@@ -86,7 +86,6 @@ RUN set -eux; \
     bun install --frozen-lockfile; sync;
 
 # entrypoint
-
 COPY frankenphp/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
