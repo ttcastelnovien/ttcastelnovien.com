@@ -14,7 +14,7 @@ services:
       - net_gotenberg
     restart: always
     volumes:
-      - "$PWD:/app"
+      - "$PWD/secrets:/app/secrets"
       - vol_caddy_data:/data
       - vol_caddy_config:/config
   
