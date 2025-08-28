@@ -4,6 +4,7 @@ set -e
 echo "laravel preparation..."
 
 php artisan optimize --no-ansi
+php artisan filament:optimize
 
 cleanup() {
     echo "container stopping..."
