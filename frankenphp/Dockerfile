@@ -1,5 +1,6 @@
 # Versions
 FROM dunglas/frankenphp:1-php8.4 AS frankenphp_upstream
+FROM oven/bun:latest AS bun_upstream
 
 # Base image
 FROM frankenphp_upstream AS frankenphp_base
@@ -41,8 +42,6 @@ ENV PHP_INI_SCAN_DIR=":$PHP_INI_DIR/app.conf.d"
 COPY --link frankenphp/conf.d/10-app.ini $PHP_INI_DIR/app.conf.d/
 COPY --link frankenphp/Caddyfile /etc/frankenphp/Caddyfile
 
-RUN curl -fsSL https://bun.sh/install | BUN_INSTALL="/usr" bash;
-
 # Dev image
 FROM frankenphp_base AS frankenphp_dev
 
@@ -60,6 +59,25 @@ RUN set -eux; \
 
 COPY --link frankenphp/conf.d/20-app.dev.ini $PHP_INI_DIR/app.conf.d/
 
+RUN curl -fsSL https://bun.sh/install | BUN_INSTALL="/usr" bash;
+
+# Frontend steps
+FROM bun_upstream AS bun_deps
+
+WORKDIR /app
+
+COPY --link package.json bun.lock ./
+
+RUN set -eux; \
+    bun install --frozen-lockfile; \
+    sync; \
+
+COPY --link . ./
+
+RUN set -eux; \
+    bun run build:ssr; \
+    sync;
+
 # Production image
 FROM frankenphp_base AS frankenphp_prod
 
@@ -76,16 +94,13 @@ RUN set -eux; \
 
 # copy sources
 COPY --link . ./
-RUN rm -Rf frankenphp/
+
+# install and build frontend dependencies
+COPY --from=bun_deps /app/public/build ./public/build
+COPY --from=bun_deps /app/bootstrap/ssr ./bootstrap/ssr
 
 RUN set -eux; \
     composer dump-autoload --classmap-authoritative --no-dev; sync;
-
-# install and build frontend dependencies
-RUN set -eux; \
-    bun install --frozen-lockfile; \
-    bun run build:ssr; \
-    sync;
 
 # entrypoint
 COPY frankenphp/entrypoint.sh /usr/local/bin/entrypoint.sh
