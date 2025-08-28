@@ -5,6 +5,8 @@ services:
       target: prod
       dockerfile: frankenphp/dockerfile
     restart: always
+    volumes:
+      - "$PWD/secrets:/app/secrets"
   
   database:
     restart: always
