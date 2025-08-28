@@ -22,6 +22,7 @@ return new class extends Migration
 
             $table->text('type');
             $table->integer('amount');
+            $table->text('reference')->nullable();
             $table->timestamps();
 
             /*

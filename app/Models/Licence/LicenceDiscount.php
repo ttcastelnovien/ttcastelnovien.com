@@ -28,6 +28,7 @@ class LicenceDiscount extends Model
     protected $fillable = [
         'type',
         'amount',
+        'reference',
         'licence_id',
         'season_id',
     ];
