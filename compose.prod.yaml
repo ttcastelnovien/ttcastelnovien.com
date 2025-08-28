@@ -3,7 +3,7 @@ services:
     build:
       context: .
       target: prod
-      dockerfile: frankenphp/dockerfile
+      dockerfile: frankenphp/Dockerfile
     labels:
       caddy: "ttcastelnovien.com"
       caddy.reverse_proxy: "{{upstreams 8000}}"
