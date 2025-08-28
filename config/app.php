@@ -40,4 +40,16 @@ return [
         'shared_drive_id' => env('GOOGLE_SHARED_DRIVE_ID'),
     ],
 
+    'superuser' => [
+        'firstname' => env('SUPERUSER_FIRSTNAME'),
+        'lastname' => env('SUPERUSER_LASTNAME'),
+        'licence' => env('SUPERUSER_LICENCE'),
+        'birth_date' => env('SUPERUSER_BIRTHDATE'),
+        'address' => env('SUPERUSER_ADDRESS'),
+        'zip_code' => env('SUPERUSER_ZIPCODE'),
+        'city' => env('SUPERUSER_CITY'),
+        'username' => env('SUPERUSER_USERNAME'),
+        'password' => env('SUPERUSER_PASSWORD'),
+    ],
+
 ];

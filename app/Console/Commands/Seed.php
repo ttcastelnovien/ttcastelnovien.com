@@ -1,19 +1,125 @@
 <?php
 
-namespace Database\Seeders;
+namespace App\Console\Commands;
 
+use App\Enums\UserRole;
+use App\Models\Accounting\Account;
 use App\Models\Clubs\Club;
-use App\Models\Clubs\Hall;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Database\Seeder;
+use App\Models\HumanResource\Person;
+use App\Models\Meta\Season;
+use App\Models\Security\User;
+use Illuminate\Console\Command;
+use Illuminate\Contracts\Filesystem\FileNotFoundException;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Hash;
+use Symfony\Component\Console\Command\Command as CommandAlias;
 
-class ClubSeeder extends Seeder
+class Seed extends Command
 {
-    use WithoutModelEvents;
+    /**
+     * The name and signature of the console command.
+     *
+     * @var string
+     */
+    protected $signature = 'app:seed';
 
-    public function run(): void
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
+    protected $description = 'Populate the database with defaults data.';
+
+    /**
+     * Execute the console command.
+     */
+    public function handle(): int
     {
-        $list = [
+        $this->info('Importing default seasons...');
+        $this->importSeasons();
+
+        $this->info('Importing default user...');
+        $this->importSuperUser();
+
+        $this->info('Importing default clubs and halls...');
+        $this->importClubs();
+
+        $this->info('Importing default pcg...');
+        $this->importPCG();
+
+        return CommandAlias::SUCCESS;
+    }
+
+    private function importSeasons(): void
+    {
+        collect([
+            [
+                'name' => '2025/2026',
+                'starts_at' => Carbon::create(year: 2025, month: 7),
+                'ends_at' => Carbon::create(year: 2026, month: 6, day: 30),
+            ],
+            [
+                'name' => '2026/2027',
+                'starts_at' => Carbon::create(year: 2026, month: 7),
+                'ends_at' => Carbon::create(year: 2027, month: 6, day: 30),
+            ],
+            [
+                'name' => '2027/2028',
+                'starts_at' => Carbon::create(year: 2027, month: 7),
+                'ends_at' => Carbon::create(year: 2028, month: 6, day: 30),
+            ],
+            [
+                'name' => '2028/2029',
+                'starts_at' => Carbon::create(year: 2028, month: 7),
+                'ends_at' => Carbon::create(year: 2029, month: 6, day: 30),
+            ],
+            [
+                'name' => '2029/2030',
+                'starts_at' => Carbon::create(year: 2029, month: 7),
+                'ends_at' => Carbon::create(year: 2030, month: 6, day: 30),
+            ],
+            [
+                'name' => '2030/2031',
+                'starts_at' => Carbon::create(year: 2030, month: 7),
+                'ends_at' => Carbon::create(year: 2031, month: 6, day: 30),
+            ],
+        ])
+            ->each(fn ($item) => Season::query()->createOrFirst(
+                attributes: ['name' => $item['name']],
+                values: $item,
+            ));
+    }
+
+    private function importSuperUser(): void
+    {
+        $person = Person::query()->createOrFirst(
+            attributes: ['licence_number' => config('app.superuser.licence')],
+            values: [
+                'first_name' => config('app.superuser.firstname'),
+                'last_name' => config('app.superuser.lastname'),
+                'licence_number' => config('app.superuser.licence'),
+                'birth_date' => config('app.superuser.birth_date'),
+                'address_line_1' => config('app.superuser.address'),
+                'postal_code' => config('app.superuser.zip_code'),
+                'city' => config('app.superuser.city'),
+            ]
+        );
+
+        User::query()->createOrFirst(
+            attributes: ['username' => config('app.superuser.username')],
+            values: [
+                'username' => config('app.superuser.username'),
+                'password' => Hash::make(config('app.superuser.password')),
+                'roles' => [UserRole::ADMIN, UserRole::HISTORY],
+                'person_id' => $person->id,
+            ]
+        );
+    }
+
+    private function importClubs(): void
+    {
+        collect([
             [
                 'halls' => [
                     [
@@ -553,17 +659,74 @@ class ClubSeeder extends Seeder
                     'short_name' => 'Villefagnan',
                 ],
             ],
-        ];
+        ])
+            ->each(function ($item) {
+                $club = Club::query()->createOrFirst(
+                    attributes: ['name' => $item['club']['name']],
+                    values: $item['club'],
+                );
 
-        foreach ($list as $item) {
-            $club = Club::factory()->create($item['club']);
+                foreach ($item['halls'] as $hall) {
+                    $club->halls()->createOrFirst(
+                        attributes: ['name' => $hall['name']],
+                        values: $hall,
+                    );
+                }
+            });
+    }
 
-            foreach ($item['halls'] as $hall) {
-                Hall::factory()->create([
-                    ...$hall,
-                    'club_id' => $club->id,
-                ]);
+    private function importPCG(): void
+    {
+        $path = database_path('seeder_data/pcg.json');
+
+        try {
+            $data = json_decode(File::get($path), associative: true);
+
+            foreach ($data as $item) {
+                $code = $this->normalizePCGCode($item['code']);
+
+                /** @var Account $account */
+                $account = Account::query()->firstOrCreate(
+                    ['code' => $code],
+                    [
+                        'name' => $item['name'],
+                        'code' => $code,
+                    ]
+                );
+
+                $this->importPCGChildren($item['items'], $account);
+            }
+        } catch (FileNotFoundException) {
+            return;
+        }
+    }
+
+    /**
+     * @param  array<int, array{name: string, code: string, items: array}>  $children
+     */
+    private function importPCGChildren(array $children, Account $parent): void
+    {
+        foreach ($children as $child) {
+            $code = $this->normalizePCGCode($child['code']);
+
+            /** @var Account $account */
+            $account = Account::query()->firstOrCreate(
+                ['code' => $code],
+                [
+                    'name' => $child['name'],
+                    'code' => $code,
+                    'parent_id' => $parent->id,
+                ]
+            );
+
+            if (array_key_exists('items', $child) && ! empty($child['items'])) {
+                $this->importPCGChildren($child['items'], $account);
             }
         }
+    }
+
+    private function normalizePCGCode(string $code): string
+    {
+        return str_pad($code, 7, '0');
     }
 }
