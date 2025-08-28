@@ -4,9 +4,19 @@ services:
       context: .
       target: prod
       dockerfile: frankenphp/dockerfile
+    labels:
+      caddy: "ttcastelnovien.com"
+      caddy.reverse_proxy: "{{upstreams 8000}}"
+    networks:
+      - reverse_proxy
+      - net_database
+      - net_cache
+      - net_gotenberg
     restart: always
     volumes:
-      - "$PWD/secrets:/app/secrets"
+      - "$PWD:/app"
+      - vol_caddy_data:/data
+      - vol_caddy_config:/config
   
   database:
     restart: always
@@ -16,3 +26,7 @@ services:
   
   gotenberg:
     restart: always
+
+networks:
+  reverse_proxy:
+    external: true
