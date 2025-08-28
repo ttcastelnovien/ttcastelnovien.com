@@ -70,7 +70,7 @@ COPY --link package.json bun.lock ./
 
 RUN set -eux; \
     bun install --frozen-lockfile; \
-    sync; \
+    sync;
 
 COPY --link . ./
 
@@ -90,7 +90,8 @@ COPY --link frankenphp/conf.d/20-app.prod.ini $PHP_INI_DIR/app.conf.d/
 # prevent the reinstallation of vendors at every changes in the source code
 COPY --link composer.* ./
 RUN set -eux; \
-    composer install --no-cache --prefer-dist --no-dev --no-autoloader --no-scripts --no-progress
+    composer install --no-cache --prefer-dist --no-dev --no-autoloader --no-scripts --no-progress; \
+    sync;
 
 # copy sources
 COPY --link . ./
