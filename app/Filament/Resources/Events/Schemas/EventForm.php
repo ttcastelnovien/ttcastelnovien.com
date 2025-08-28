@@ -56,7 +56,8 @@ class EventForm
                     ])
                         ->visibleJs(<<<'JS'
                             $get('all_day') === false
-                        JS)
+                        JS
+                        )
                         ->from('sm'),
                     Flex::make([
                         TimePicker::make('check_in_time')
@@ -74,7 +75,8 @@ class EventForm
                         ->rows(5)
                         ->visibleJs(<<<'JS'
                             $get('at_home') === false
-                        JS),
+                        JS
+                        ),
                     Flex::make([
                         TextInput::make('latitude')
                             ->label('Latitude')
@@ -85,7 +87,8 @@ class EventForm
                     ])
                         ->visibleJs(<<<'JS'
                             $get('at_home') === false
-                        JS)
+                        JS
+                        )
                         ->from('sm'),
                 ])->columns(1),
                 Fieldset::make('Meta')->components([
@@ -93,8 +96,8 @@ class EventForm
                     FileUpload::make('attachments')
                         ->label('Pièces jointes')
                         ->multiple()
-                        ->disk('local')
-                        ->visibility('private'),
+                        ->disk('public')
+                        ->visibility('public'),
                 ])->columns(1),
                 Fieldset::make('Participants')->components([
                     Select::make('groups')

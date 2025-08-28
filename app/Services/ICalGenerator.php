@@ -104,7 +104,7 @@ class ICalGenerator
                  */
                 if ($event->attachments) {
                     foreach ($event->attachments as $attachment) {
-                        $ev->attachment(Storage::disk('local')->temporaryUrl($attachment, now()->addDay()));
+                        $ev->attachment(Storage::disk('public')->url($attachment));
                     }
                 }
             });

@@ -17,9 +17,7 @@ class ClubInfolist
                 TextEntry::make('short_name')
                     ->label('Nom court'),
                 ImageEntry::make('logo')
-                    ->label('Logo')
-                    ->disk('local')
-                    ->visibility('private'),
+                    ->label('Logo'),
                 TextEntry::make('created_at')
                     ->label('Créé le')
                     ->dateTime(),

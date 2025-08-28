@@ -18,9 +18,7 @@ class ClubForm
                     ->required(),
                 FileUpload::make('logo')
                     ->label('Logo')
-                    ->image()
-                    ->disk('local')
-                    ->visibility('private'),
+                    ->image(),
             ]);
     }
 }

@@ -24,9 +24,7 @@ class ClubsTable
                     ->searchable(),
                 ImageColumn::make('logo')
                     ->label('Logo')
-                    ->circular()
-                    ->disk('local')
-                    ->visibility('private'),
+                    ->circular(),
                 TextColumn::make('halls_count')
                     ->label('Salles'),
                 TextColumn::make('created_at')
