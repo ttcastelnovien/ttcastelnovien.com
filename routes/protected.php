@@ -12,4 +12,7 @@ Route::middleware('auth')
 
         Route::get('files/auth/{path}', [FileController::class, 'authenticatedOnly'])
             ->name('files.authenticated_only');
+
+        Route::get('files/drive/{fileId}', [FileController::class, 'openFileFromDrive'])
+            ->name('files.open_from_drive');
     });

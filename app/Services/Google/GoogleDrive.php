@@ -15,6 +15,8 @@ use Google\Service\Drive\ModifyLabelsRequest;
 use Google\Service\Drive\ModifyLabelsResponse;
 use Google\Service\Drive\Operation;
 use Google\Service\Exception;
+use GuzzleHttp\Psr7\Response;
+use Illuminate\Http\UploadedFile;
 
 final class GoogleDrive
 {
@@ -24,10 +26,10 @@ final class GoogleDrive
 
     private static ?RootDrive $rootDrive = null;
 
-    private static function drive(): Drive
+    private static function init(): void
     {
         if (self::$drive instanceof Drive) {
-            return self::$drive;
+            return;
         }
 
         /*
@@ -37,9 +39,7 @@ final class GoogleDrive
         */
 
         self::$drive = new Drive(self::client());
-        self::$rootDrive = self::drive()->drives->get(config('app.google.shared_drive_id'));
-
-        return self::$drive;
+        self::$rootDrive = self::$drive->drives->get(config('app.google.shared_drive_id'));
     }
 
     /**
@@ -47,8 +47,37 @@ final class GoogleDrive
      */
     public static function copyFile($fileId, DriveFile $postBody, array $options = []): DriveFile
     {
-        return self::drive()->files->copy($fileId, $postBody, [
+        self::init();
+
+        return self::$drive->files->copy($fileId, $postBody, [
             ...$options,
+            'supportsAllDrives' => true,
+        ]);
+    }
+
+    /**
+     * @param  array<string>  $folders
+     *
+     * @throws Exception
+     */
+    public static function createFile(
+        DriveFile $metadata,
+        UploadedFile $file,
+        array $folders,
+        ?string $rootFolderId = null,
+        $options = []
+    ): DriveFile {
+        self::init();
+
+        $lastParentId = self::recursivelyCreateFolders($folders, $rootFolderId ?? self::$rootDrive->id);
+        $metadata->setParents([$lastParentId]);
+
+        return self::$drive->files->create($metadata, [
+            ...$options,
+            'data' => $file->getContent(),
+            'mimeType' => $file->getClientMimeType(),
+            'uploadType' => 'multipart',
+            'fields' => 'id',
             'supportsAllDrives' => true,
         ]);
     }
@@ -56,10 +85,21 @@ final class GoogleDrive
     /**
      * @throws Exception
      */
-    public static function createFile(DriveFile $postBody, $options = []): DriveFile
-    {
-        return self::drive()->files->create($postBody, [
+    public static function createFolder(
+        string $name,
+        string $parentId,
+        $options = []
+    ): DriveFile {
+        self::init();
+
+        $metadata = new DriveFile;
+        $metadata->setName($name);
+        $metadata->setMimeType('application/vnd.google-apps.folder');
+        $metadata->setParents([$parentId]);
+
+        return self::$drive->files->create($metadata, [
             ...$options,
+            'fields' => 'id',
             'supportsAllDrives' => true,
         ]);
     }
@@ -69,7 +109,9 @@ final class GoogleDrive
      */
     public static function deleteFile(string $fileId): void
     {
-        self::drive()->files->delete($fileId, [
+        self::init();
+
+        self::$drive->files->delete($fileId, [
             'supportsAllDrives' => true,
         ]);
     }
@@ -79,7 +121,9 @@ final class GoogleDrive
      */
     public static function downloadFile(string $fileId, $options = []): Operation
     {
-        return self::drive()->files->download($fileId, $options);
+        self::init();
+
+        return self::$drive->files->download($fileId, $options);
     }
 
     /**
@@ -87,7 +131,9 @@ final class GoogleDrive
      */
     public static function emptyTrash(): void
     {
-        self::drive()->files->emptyTrash([
+        self::init();
+
+        self::$drive->files->emptyTrash([
             'driveId' => self::$rootDrive->id,
         ]);
     }
@@ -97,7 +143,9 @@ final class GoogleDrive
      */
     public static function export(string $fileId, string $mimeType)
     {
-        return self::drive()->files->export($fileId, $mimeType);
+        self::init();
+
+        return self::$drive->files->export($fileId, $mimeType);
     }
 
     /**
@@ -105,7 +153,9 @@ final class GoogleDrive
      */
     public static function generateIds(int $count): GeneratedIds
     {
-        return self::drive()->files->generateIds([
+        self::init();
+
+        return self::$drive->files->generateIds([
             'count' => $count,
             'space' => 'drive',
             'type' => 'files',
@@ -115,9 +165,12 @@ final class GoogleDrive
     /**
      * @throws Exception
      */
-    public static function get(string $fileId, array $options = []): DriveFile
+    public static function getFileContent(string $fileId, array $options = []): Response
     {
-        return self::drive()->files->get($fileId, [
+        self::init();
+
+        /** @var Response */
+        return self::$drive->files->get($fileId, [
             ...$options,
             'alt' => 'media',
             'acknowledgeAbuse' => true,
@@ -128,9 +181,24 @@ final class GoogleDrive
     /**
      * @throws Exception
      */
+    public static function getFileMetadata(string $fileId, array $options = []): DriveFile
+    {
+        self::init();
+
+        return self::$drive->files->get($fileId, [
+            ...$options,
+            'supportsAllDrives' => true,
+        ]);
+    }
+
+    /**
+     * @throws Exception
+     */
     public static function listFiles(array $options = []): FileList
     {
-        return self::drive()->files->listFiles([
+        self::init();
+
+        return self::$drive->files->listFiles([
             ...$options,
             'corpora' => 'drive',
             'driveId' => self::$rootDrive->id,
@@ -145,7 +213,9 @@ final class GoogleDrive
      */
     public static function listLabels(string $fileId, array $options = []): LabelList
     {
-        return self::drive()->files->listLabels($fileId, $options);
+        self::init();
+
+        return self::$drive->files->listLabels($fileId, $options);
     }
 
     /**
@@ -153,7 +223,9 @@ final class GoogleDrive
      */
     public static function modifyLabels(string $fileId, ModifyLabelsRequest $postBody, array $options = []): ModifyLabelsResponse
     {
-        return self::drive()->files->modifyLabels($fileId, $postBody, $options);
+        self::init();
+
+        return self::$drive->files->modifyLabels($fileId, $postBody, $options);
     }
 
     /**
@@ -161,7 +233,9 @@ final class GoogleDrive
      */
     public static function update(string $fileId, DriveFile $postBody, array $options = []): DriveFile
     {
-        return self::drive()->files->update($fileId, $postBody, [
+        self::init();
+
+        return self::$drive->files->update($fileId, $postBody, [
             ...$options,
             'supportsAllDrives' => true,
         ]);
@@ -172,10 +246,35 @@ final class GoogleDrive
      */
     public static function watch(string $fileId, Channel $postBody, array $options = []): Channel
     {
-        return self::drive()->files->watch($fileId, $postBody, [
+        self::init();
+
+        return self::$drive->files->watch($fileId, $postBody, [
             ...$options,
             'acknowledgeAbuse' => true,
             'supportsAllDrives' => true,
         ]);
+    }
+
+    /**
+     * @throws Exception
+     */
+    private static function recursivelyCreateFolders(array $folders, string $parentId): string
+    {
+        $folder = array_shift($folders);
+
+        if ($folder === null) {
+            return $parentId;
+        }
+
+        $q = sprintf("name='%s' and mimeType='application/vnd.google-apps.folder' and '%s' in parents and trashed=false", $folder, $parentId);
+        $existingFolders = self::listFiles(['q' => $q]);
+
+        if (count($existingFolders->getFiles()) > 0) {
+            $currentFolderId = $existingFolders->getFiles()[0]->getId();
+        } else {
+            $currentFolderId = self::createFolder($folder, $parentId)->getId();
+        }
+
+        return self::recursivelyCreateFolders($folders, $currentFolderId);
     }
 }
