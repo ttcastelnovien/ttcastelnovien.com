@@ -83,7 +83,7 @@ RUN set -eux; \
 
 # install frontend dependencies
 RUN set -eux; \
-    bun install --production --frozen-lockfile; sync;
+    bun install --frozen-lockfile; sync;
 
 # entrypoint
 
