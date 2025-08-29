@@ -64,6 +64,7 @@ class LicenceForm
                     ->getOptionLabelFromRecordUsing(fn (LicenceFee $licenceFee) => "$licenceFee->name ($licenceFee->price)")
                     ->searchable(['name'])
                     ->preload()
+                    ->visibleOn('edit')
                     ->required(),
                 Repeater::make('licenceDiscounts')
                     ->label('Réductions appliquées')
@@ -73,6 +74,7 @@ class LicenceForm
                     ->table([
                         Repeater\TableColumn::make('Type'),
                         Repeater\TableColumn::make('Montant'),
+                        Repeater\TableColumn::make('Référence'),
                     ])
                     ->schema([
                         Select::make('type')
