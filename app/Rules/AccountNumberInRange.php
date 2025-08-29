@@ -2,7 +2,7 @@
 
 namespace App\Rules;
 
-use App\Models\Accounting\Account;
+use App\Models\Accounting\LedgerAccount;
 use Closure;
 use Illuminate\Contracts\Validation\DataAwareRule;
 use Illuminate\Contracts\Validation\ValidationRule;
@@ -28,7 +28,7 @@ class AccountNumberInRange implements DataAwareRule, ValidationRule
             return;
         }
 
-        $parent = Account::find($this->data['parent_id']);
+        $parent = LedgerAccount::find($this->data['parent_id']);
 
         if (is_null($parent)) {
             return;

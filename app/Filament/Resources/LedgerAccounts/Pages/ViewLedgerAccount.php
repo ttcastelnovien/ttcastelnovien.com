@@ -1,22 +1,22 @@
 <?php
 
-namespace App\Filament\Resources\Accounts\Pages;
+namespace App\Filament\Resources\LedgerAccounts\Pages;
 
-use App\Filament\Resources\Accounts\AccountResource;
+use App\Filament\Resources\LedgerAccounts\LedgerAccountResource;
 use Filament\Actions\Action;
 use Filament\Actions\EditAction;
 use Filament\Resources\Pages\ViewRecord;
 
-class ViewAccount extends ViewRecord
+class ViewLedgerAccount extends ViewRecord
 {
-    protected static string $resource = AccountResource::class;
+    protected static string $resource = LedgerAccountResource::class;
 
     protected function getHeaderActions(): array
     {
         return [
             Action::make('list')
                 ->label('Retour')
-                ->url(AccountResource::getUrl())
+                ->url(LedgerAccountResource::getUrl())
                 ->button()
                 ->color('gray'),
             EditAction::make(),

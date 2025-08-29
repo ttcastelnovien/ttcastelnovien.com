@@ -11,11 +11,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Account extends Model
+class LedgerAccount extends Model
 {
     use Blamable, HasUlids;
 
-    protected $table = 'accounts';
+    protected $table = 'ledger_accounts';
 
     /*
     |--------------------------------------------------------------------------
@@ -42,16 +42,16 @@ class Account extends Model
         return $this->belongsTo(Season::class);
     }
 
-    /** @return BelongsTo<Account> */
+    /** @return BelongsTo<LedgerAccount> */
     public function parent(): BelongsTo
     {
-        return $this->belongsTo(Account::class, 'parent_id');
+        return $this->belongsTo(LedgerAccount::class, 'parent_id');
     }
 
-    /** @return HasMany<Account> */
+    /** @return HasMany<LedgerAccount> */
     public function children(): HasMany
     {
-        return $this->hasMany(Account::class);
+        return $this->hasMany(LedgerAccount::class);
     }
 
     /*
@@ -71,7 +71,7 @@ class Account extends Model
     |--------------------------------------------------------------------------
     */
 
-    public static function nextAccountCode(Account $parent): string
+    public static function nextAccountCode(LedgerAccount $parent): string
     {
         $parentCodeTrimmed = rtrim($parent->code, '0');
 

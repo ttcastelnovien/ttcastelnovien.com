@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources\Accounts\Tables;
+namespace App\Filament\Resources\LedgerAccounts\Tables;
 
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
@@ -10,7 +10,7 @@ use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
-class AccountTable
+class LedgerAccountTable
 {
     public static function configure(Table $table): Table
     {

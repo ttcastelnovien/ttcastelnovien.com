@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('accounts', function (Blueprint $table) {
+        Schema::create('ledger_accounts', function (Blueprint $table) {
             $table->ulid('id')->primary();
 
             /*
@@ -41,19 +41,19 @@ return new class extends Migration
             $table->foreign('updated_by_id')->references('id')->on('users')->nullOnDelete();
         });
 
-        Schema::table('accounts', function (Blueprint $table) {
+        Schema::table('ledger_accounts', function (Blueprint $table) {
             /*
             |-------------------------------------------------------------------
             | Contraintes
             |-------------------------------------------------------------------
             */
 
-            $table->foreign('parent_id')->references('id')->on('accounts')->nullOnDelete();
+            $table->foreign('parent_id')->references('id')->on('ledger_accounts')->nullOnDelete();
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('accounts');
+        Schema::dropIfExists('ledger_accounts');
     }
 };

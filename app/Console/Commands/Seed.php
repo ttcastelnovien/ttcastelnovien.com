@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Enums\UserRole;
-use App\Models\Accounting\Account;
+use App\Models\Accounting\LedgerAccount;
 use App\Models\Clubs\Club;
 use App\Models\HumanResource\Person;
 use App\Models\Meta\Season;
@@ -685,8 +685,8 @@ class Seed extends Command
             foreach ($data as $item) {
                 $code = $this->normalizePCGCode($item['code']);
 
-                /** @var Account $account */
-                $account = Account::query()->firstOrCreate(
+                /** @var LedgerAccount $account */
+                $account = LedgerAccount::query()->firstOrCreate(
                     ['code' => $code],
                     [
                         'name' => $item['name'],
@@ -704,13 +704,13 @@ class Seed extends Command
     /**
      * @param  array<int, array{name: string, code: string, items: array}>  $children
      */
-    private function importPCGChildren(array $children, Account $parent): void
+    private function importPCGChildren(array $children, LedgerAccount $parent): void
     {
         foreach ($children as $child) {
             $code = $this->normalizePCGCode($child['code']);
 
-            /** @var Account $account */
-            $account = Account::query()->firstOrCreate(
+            /** @var LedgerAccount $account */
+            $account = LedgerAccount::query()->firstOrCreate(
                 ['code' => $code],
                 [
                     'name' => $child['name'],

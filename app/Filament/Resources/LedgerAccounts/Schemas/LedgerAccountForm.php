@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Filament\Resources\Accounts\Schemas;
+namespace App\Filament\Resources\LedgerAccounts\Schemas;
 
-use App\Models\Accounting\Account;
+use App\Models\Accounting\LedgerAccount;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
 
-class AccountForm
+class LedgerAccountForm
 {
     public static function configure(Schema $schema): Schema
     {
@@ -25,7 +25,7 @@ class AccountForm
                         name: 'parent',
                         modifyQueryUsing: fn ($query, $get) => $query->where('id', '!=', $get('id'))->orderBy('code'),
                     )
-                    ->getOptionLabelFromRecordUsing(fn (Account $account) => $account->full_name)
+                    ->getOptionLabelFromRecordUsing(fn (LedgerAccount $account) => $account->full_name)
                     ->searchable(['code', 'name']),
             ])->columns(1);
     }

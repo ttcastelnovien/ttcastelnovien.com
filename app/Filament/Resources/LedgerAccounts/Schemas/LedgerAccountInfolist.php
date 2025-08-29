@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Filament\Resources\Accounts\Schemas;
+namespace App\Filament\Resources\LedgerAccounts\Schemas;
 
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Schema;
 
-class AccountInfolist
+class LedgerAccountInfolist
 {
     public static function configure(Schema $schema): Schema
     {
