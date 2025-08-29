@@ -64,4 +64,21 @@ class Account extends Model
     {
         return sprintf('%s - %s', $this->code, $this->name);
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Query Builder
+    |--------------------------------------------------------------------------
+    */
+
+    public static function nextAccountCode(Account $parent): string
+    {
+        $parentCodeTrimmed = rtrim($parent->code, '0');
+
+        $result = static::query()
+            ->where('code', 'like', $parentCodeTrimmed.'%')
+            ->max('code');
+
+        return (string) ((int) $result + 1);
+    }
 }
