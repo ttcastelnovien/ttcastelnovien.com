@@ -55,7 +55,7 @@ class DriveFileUpload extends FileUpload
 
         $season = $this->season ?: Season::current()->first();
 
-        return GoogleDrive::createFile(
+        return GoogleDrive::uploadFile(
             metadata: $metadata,
             file: $state,
             folders: ($this->drivePathCallback)($get),
