@@ -29,4 +29,21 @@ enum PDFTemplate: string
             default => ['5mm', '5mm', '5mm', '5mm'],
         };
     }
+
+    /** @return list<string> */
+    public function getDestination(): array
+    {
+        return match ($this) {
+            self::FACTURE => ['COMPTABILITÉ', 'À TRAITER', 'FACTURES', 'CLIENTS'],
+            self::AVOIR => ['COMPTABILITÉ', 'À TRAITER', 'AVOIRS', 'CLIENTS'],
+            self::ATTESTATION_LICENCE => ['LICENCIÉS', '{full_name}', 'ADHÉSION'],
+            self::NOTE_FRAIS => ['COMPTABILITÉ', 'À TRAITER', 'NOTES DE FRAIS'],
+            self::RECU_DON => ['COMPTABILITÉ', 'À TRAITER', 'REÇUS DE DON'],
+            self::COMPTE_RESULTAT_CERFA => ['COMPTABILITÉ', 'EXPORTS', 'COMPTES DE RÉSULTAT', 'CERFA'],
+            self::COMPTE_RESULTAT_2020 => ['COMPTABILITÉ', 'EXPORTS', 'COMPTES DE RÉSULTAT', 'RÉFORME 2020'],
+            self::BILAN_FINANCIER => ['COMPTABILITÉ', 'EXPORTS', 'BILANS FINANCIERS'],
+            self::JOURNAL => ['COMPTABILITÉ', 'EXPORTS', 'JOURNAUX'],
+            self::BUDGET_PREVISIONNEL => ['COMPTABILITÉ', 'EXPORTS', 'BUDGETS PRÉVISIONNELS'],
+        };
+    }
 }
