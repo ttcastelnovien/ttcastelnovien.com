@@ -29,19 +29,22 @@ class MedicalCertificatesTable
                     ->label('Date du certificat')
                     ->date(),
             ])
-            ->filters([
-                //
-            ])
+            ->filters([])
             ->recordActions([
                 ActionGroup::make([
-                    ViewAction::make(),
-                    EditAction::make(),
-                    DeleteAction::make(),
+                    ViewAction::make()->color('gray'),
+                    EditAction::make()->color('primary'),
+                    DeleteAction::make()->color('danger'),
                     Action::make('Télécharger')
+                        ->color('info')
                         ->icon(Heroicon::ArrowDownTray)
                         ->url(fn ($record) => route('files.open_from_drive', ['fileId' => $record->file]))
                         ->openUrlInNewTab(),
-                ]),
+                ])
+                    ->label('Actions')
+                    ->color('gray')
+                    ->button()
+                    ->dropdownPlacement('top-end'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
