@@ -39,7 +39,7 @@ enum LicenceCategory: string implements HasLabel
         $currentYear = $season->starts_at->year;
         $birthYear = $birthDate->year;
 
-        if ($birthYear <= $currentYear - 8) {
+        if ($birthYear >= $currentYear - 8) {
             return LicenceCategory::POUSSIN;
         }
 
@@ -83,47 +83,47 @@ enum LicenceCategory: string implements HasLabel
             return LicenceCategory::JUNIOR_4;
         }
 
-        if ($birthYear >= $currentYear - 89) {
+        if ($birthYear <= $currentYear - 89) {
             return LicenceCategory::VETERAN_90;
         }
 
-        if ($birthYear >= $currentYear - 84) {
+        if ($birthYear <= $currentYear - 84) {
             return LicenceCategory::VETERAN_85;
         }
 
-        if ($birthYear >= $currentYear - 79) {
+        if ($birthYear <= $currentYear - 79) {
             return LicenceCategory::VETERAN_80;
         }
 
-        if ($birthYear >= $currentYear - 74) {
+        if ($birthYear <= $currentYear - 74) {
             return LicenceCategory::VETERAN_75;
         }
 
-        if ($birthYear >= $currentYear - 69) {
+        if ($birthYear <= $currentYear - 69) {
             return LicenceCategory::VETERAN_70;
         }
 
-        if ($birthYear >= $currentYear - 64) {
+        if ($birthYear <= $currentYear - 64) {
             return LicenceCategory::VETERAN_65;
         }
 
-        if ($birthYear >= $currentYear - 59) {
+        if ($birthYear <= $currentYear - 59) {
             return LicenceCategory::VETERAN_60;
         }
 
-        if ($birthYear >= $currentYear - 54) {
+        if ($birthYear <= $currentYear - 54) {
             return LicenceCategory::VETERAN_55;
         }
 
-        if ($birthYear >= $currentYear - 49) {
+        if ($birthYear <= $currentYear - 49) {
             return LicenceCategory::VETERAN_50;
         }
 
-        if ($birthYear >= $currentYear - 44) {
+        if ($birthYear <= $currentYear - 44) {
             return LicenceCategory::VETERAN_45;
         }
 
-        if ($birthYear >= $currentYear - 39) {
+        if ($birthYear <= $currentYear - 39) {
             return LicenceCategory::VETERAN_40;
         }
 
