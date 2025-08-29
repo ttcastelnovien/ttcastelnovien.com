@@ -62,6 +62,33 @@ final class GoogleDrive
      */
     public static function createFile(
         DriveFile $metadata,
+        string $fileContents,
+        array $folders,
+        ?string $rootFolderId = null,
+        $options = []
+    ): DriveFile {
+        self::init();
+
+        $lastParentId = self::recursivelyCreateFolders($folders, $rootFolderId ?? self::$rootDrive->id);
+        $metadata->setParents([$lastParentId]);
+
+        return self::$drive->files->create($metadata, [
+            ...$options,
+            'data' => $fileContents,
+            'mimeType' => $metadata->getMimeType(),
+            'uploadType' => 'multipart',
+            'fields' => 'id',
+            'supportsAllDrives' => true,
+        ]);
+    }
+
+    /**
+     * @param  array<string>  $folders
+     *
+     * @throws Exception
+     */
+    public static function uploadFile(
+        DriveFile $metadata,
         UploadedFile $file,
         array $folders,
         ?string $rootFolderId = null,
@@ -258,7 +285,7 @@ final class GoogleDrive
     /**
      * @throws Exception
      */
-    private static function recursivelyCreateFolders(array $folders, string $parentId): string
+    public static function recursivelyCreateFolders(array $folders, string $parentId): string
     {
         $folder = array_shift($folders);
 
