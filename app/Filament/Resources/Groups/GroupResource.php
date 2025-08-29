@@ -46,7 +46,8 @@ class GroupResource extends Resource
 
     public static function table(Table $table): Table
     {
-        return GroupTable::configure($table);
+        return GroupTable::configure($table)
+            ->defaultPaginationPageOption(50);
     }
 
     public static function getRelations(): array

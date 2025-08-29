@@ -28,7 +28,8 @@ class TrackedMailResource extends Resource
 
     public static function table(Table $table): Table
     {
-        return TrackedMailsTable::configure($table);
+        return TrackedMailsTable::configure($table)
+            ->defaultPaginationPageOption(100);
     }
 
     public static function getRelations(): array

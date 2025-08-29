@@ -47,7 +47,8 @@ class EventResource extends Resource
 
     public static function table(Table $table): Table
     {
-        return EventsTable::configure($table);
+        return EventsTable::configure($table)
+            ->defaultPaginationPageOption(50);
     }
 
     public static function getRelations(): array

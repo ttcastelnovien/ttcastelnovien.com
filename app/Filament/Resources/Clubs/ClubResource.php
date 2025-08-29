@@ -44,7 +44,8 @@ class ClubResource extends Resource
 
     public static function table(Table $table): Table
     {
-        return ClubsTable::configure($table);
+        return ClubsTable::configure($table)
+            ->defaultPaginationPageOption(50);
     }
 
     public static function getRelations(): array

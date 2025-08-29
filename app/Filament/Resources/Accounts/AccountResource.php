@@ -44,7 +44,8 @@ class AccountResource extends Resource
 
     public static function table(Table $table): Table
     {
-        return AccountTable::configure($table);
+        return AccountTable::configure($table)
+            ->defaultPaginationPageOption(50);
     }
 
     public static function getRelations(): array

@@ -37,7 +37,8 @@ class InvitationResource extends Resource
 
     public static function table(Table $table): Table
     {
-        return InvitationsTable::configure($table);
+        return InvitationsTable::configure($table)
+            ->defaultPaginationPageOption(50);
     }
 
     public static function getRelations(): array
