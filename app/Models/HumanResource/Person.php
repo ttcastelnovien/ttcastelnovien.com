@@ -3,6 +3,7 @@
 namespace App\Models\HumanResource;
 
 use App\Enums\Sex;
+use App\Models\Accounting\LedgerAccount;
 use App\Models\Communication\Event;
 use App\Models\Communication\Group;
 use App\Models\Licence\Licence;
@@ -13,6 +14,7 @@ use Database\Factories\HumanResource\PersonFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -54,6 +56,7 @@ class Person extends Model
         'father_name',
         'mother_name',
         'last_image_rights_authorization_date',
+        'client_ledger_account_id',
     ];
 
     /** @return array<string, string> */
@@ -64,6 +67,30 @@ class Person extends Model
             'birth_date' => 'date',
             'last_image_rights_authorization_date' => 'date',
         ];
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Lifecycle callbacks
+    |--------------------------------------------------------------------------
+    */
+
+    protected static function booted(): void
+    {
+        static::creating(function (Person $person) {
+            $parentAccount = LedgerAccount::query()->whereCode('4111000')->firstOrFail();
+
+            $ledgerAccount = LedgerAccount::query()->createOrFirst(
+                attributes: ['name' => $person->lastname_firstname],
+                values: [
+                    'name' => $person->lastname_firstname,
+                    'code' => LedgerAccount::nextAccountCode($parentAccount),
+                    'parent_id' => $parentAccount->id,
+                ],
+            );
+
+            $person->client_ledger_account_id = $ledgerAccount->id;
+        });
     }
 
     /*
@@ -122,6 +149,12 @@ class Person extends Model
     public function groups(): BelongsToMany
     {
         return $this->belongsToMany(Group::class);
+    }
+
+    /** @return BelongsTo<LedgerAccount> */
+    public function clientLedgerAccount(): BelongsTo
+    {
+        return $this->belongsTo(LedgerAccount::class, 'client_ledger_account_id');
     }
 
     /*
