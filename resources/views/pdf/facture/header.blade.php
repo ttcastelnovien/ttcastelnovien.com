@@ -75,13 +75,16 @@
             box-sizing: border-box;
             -webkit-print-color-adjust: exact;
         }
+
         h1, h2, h3, h4, h5, h6, p {
             margin: 0;
         }
+
         html {
             margin: 0;
             padding: 0;
         }
+
         body {
             font-family: "Bricolage Grotesque", sans-serif;
         }
@@ -133,15 +136,15 @@
             <table style="margin-left: auto; border-collapse: collapse;">
                 <tr style="border: 0.4mm solid {{ $primary['600'] }}; background-color: {{ $primary['600'] }}; color: white; text-transform: uppercase; font-size: 13pt; font-weight: 700; font-variant-numeric: tabular-nums slashed-zero;">
                     <td style="padding: 1.5mm 2mm; text-align: left;">Facture n°</td>
-                    <td style="padding: 1.5mm 2mm 1.5mm 5mm; text-align: right;">F202410-001</td>
+                    <td style="padding: 1.5mm 2mm 1.5mm 5mm; text-align: right;">{{ $invoice_number }}</td>
                 </tr>
                 <tr>
                     <td style="padding: 2mm 2mm 0.5mm 2mm; text-align: left;">Date d'émission</td>
-                    <td style="padding: 2mm 2mm 0.5mm 5mm; text-align: right; font-variant-numeric: tabular-nums slashed-zero;">01/10/2024</td>
+                    <td style="padding: 2mm 2mm 0.5mm 5mm; text-align: right; font-variant-numeric: tabular-nums slashed-zero;">{{ $invoice_date }}</td>
                 </tr>
                 <tr>
                     <td style="padding: 0.5mm 2mm; text-align: left;">Date d'échéance</td>
-                    <td style="padding: 0.5mm 2mm 0.5mm 5mm; text-align: right; font-variant-numeric: tabular-nums slashed-zero;">01/10/2024</td>
+                    <td style="padding: 0.5mm 2mm 0.5mm 5mm; text-align: right; font-variant-numeric: tabular-nums slashed-zero;">{{ $invoice_expiration_date }}</td>
                 </tr>
             </table>
         </td>
