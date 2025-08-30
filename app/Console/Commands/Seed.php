@@ -39,14 +39,14 @@ class Seed extends Command
         $this->info('Importing default seasons...');
         $this->importSeasons();
 
+        $this->info('Importing default pcg...');
+        $this->importPCG();
+
         $this->info('Importing default user...');
         $this->importSuperUser();
 
         $this->info('Importing default clubs and halls...');
         $this->importClubs();
-
-        $this->info('Importing default pcg...');
-        $this->importPCG();
 
         return CommandAlias::SUCCESS;
     }
