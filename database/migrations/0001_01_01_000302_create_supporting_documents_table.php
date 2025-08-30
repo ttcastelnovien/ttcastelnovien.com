@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('ledger_accounts', function (Blueprint $table) {
+        Schema::create('supporting_documents', function (Blueprint $table) {
             $table->ulid('id')->primary();
 
             /*
@@ -17,8 +17,17 @@ return new class extends Migration
             |-------------------------------------------------------------------
             */
 
-            $table->text('name');
-            $table->text('code');
+            $table->text('reference');
+            $table->text('type');
+            $table->integer('total_amount');
+            $table->date('date');
+            $table->date('due_date');
+            $table->date('paid_at')->nullable()->default(null);
+            $table->text('payment_method')->nullable()->default(null);
+            $table->text('payment_reference')->nullable()->default(null);
+            $table->text('payment_status')->nullable()->default(null);
+            $table->text('observations')->nullable()->default(null);
+            $table->text('file');
             $table->timestamps();
 
             /*
@@ -27,7 +36,9 @@ return new class extends Migration
             |-------------------------------------------------------------------
             */
 
-            $table->ulid('parent_id')->nullable()->default(null);
+            $table->ulid('journal_id');
+            $table->ulid('person_id')->nullable()->default(null);
+            $table->ulid('supplier_id')->nullable()->default(null);
             $table->ulid('created_by_id')->nullable()->default(null);
             $table->ulid('updated_by_id')->nullable()->default(null);
 
@@ -37,23 +48,16 @@ return new class extends Migration
             |-------------------------------------------------------------------
             */
 
+            $table->foreign('journal_id')->references('id')->on('journals')->restrictOnDelete();
+            $table->foreign('person_id')->references('id')->on('people')->nullOnDelete();
+            $table->foreign('supplier_id')->references('id')->on('suppliers')->nullOnDelete();
             $table->foreign('created_by_id')->references('id')->on('users')->nullOnDelete();
             $table->foreign('updated_by_id')->references('id')->on('users')->nullOnDelete();
-        });
-
-        Schema::table('ledger_accounts', function (Blueprint $table) {
-            /*
-            |-------------------------------------------------------------------
-            | Contraintes
-            |-------------------------------------------------------------------
-            */
-
-            $table->foreign('parent_id')->references('id')->on('ledger_accounts')->nullOnDelete();
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('ledger_accounts');
+        Schema::dropIfExists('supporting_documents');
     }
 };

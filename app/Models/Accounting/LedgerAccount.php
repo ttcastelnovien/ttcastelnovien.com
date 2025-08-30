@@ -6,6 +6,7 @@ namespace App\Models\Accounting;
 
 use App\Models\Meta\Season;
 use App\Models\Traits\Blamable;
+use Cknow\Money\Casts\MoneyIntegerCast;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -27,8 +28,18 @@ class LedgerAccount extends Model
     protected $fillable = [
         'name',
         'code',
+        'balance',
         'parent_id',
+        'default_journal_id',
     ];
+
+    /** @return array<string, string> */
+    protected function casts(): array
+    {
+        return [
+            'balance' => MoneyIntegerCast::class,
+        ];
+    }
 
     /*
     |--------------------------------------------------------------------------
@@ -46,6 +57,12 @@ class LedgerAccount extends Model
     public function parent(): BelongsTo
     {
         return $this->belongsTo(LedgerAccount::class, 'parent_id');
+    }
+
+    /** @return BelongsTo<Journal> */
+    public function defaultJournal(): BelongsTo
+    {
+        return $this->belongsTo(Journal::class, 'default_journal_id');
     }
 
     /** @return HasMany<LedgerAccount> */

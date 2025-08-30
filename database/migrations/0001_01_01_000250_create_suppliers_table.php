@@ -8,47 +8,23 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('people', function (Blueprint $table) {
+        Schema::create('suppliers', function (Blueprint $table) {
             $table->ulid('id')->primary();
 
             /*
             |-------------------------------------------------------------------
-            | Identité
+            | Colonnes
             |-------------------------------------------------------------------
             */
 
-            $table->text('first_name');
-            $table->text('last_name');
-            $table->text('sex')->default('H');
-            $table->text('birth_name')->nullable();
-            $table->date('birth_date');
-            $table->text('birth_city')->nullable();
-
-            /*
-            |-------------------------------------------------------------------
-            | Coordonnées
-            |-------------------------------------------------------------------
-            */
-
-            $table->text('email')->nullable();
-            $table->text('phone')->nullable();
+            $table->text('name');
+            $table->text('email');
+            $table->text('phone');
             $table->text('address_line_1');
-            $table->text('address_line_2')->nullable();
-            $table->text('address_line_3')->nullable();
+            $table->text('address_line_2')->nullable()->default(null);
+            $table->text('address_line_3')->nullable()->default(null);
             $table->text('postal_code');
             $table->text('city');
-
-            /*
-            |-------------------------------------------------------------------
-            | Administratif
-            |-------------------------------------------------------------------
-            */
-
-            $table->text('licence_number')->nullable();
-            $table->text('nationality')->default('FR');
-            $table->text('father_name')->nullable();
-            $table->text('mother_name')->nullable();
-            $table->date('last_image_rights_authorization_date')->nullable();
             $table->timestamps();
 
             /*
@@ -57,7 +33,8 @@ return new class extends Migration
             |-------------------------------------------------------------------
             */
 
-            $table->ulid('client_ledger_account_id');
+            $table->ulid('supplier_ledger_account_id');
+            $table->ulid('default_ledger_account_id')->nullable()->default(null);
             $table->ulid('created_by_id')->nullable()->default(null);
             $table->ulid('updated_by_id')->nullable()->default(null);
 
@@ -74,6 +51,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('people');
+        Schema::dropIfExists('suppliers');
     }
 };

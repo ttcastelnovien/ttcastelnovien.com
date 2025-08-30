@@ -1,17 +1,18 @@
 <?php
 
-namespace App\Models\Invoicing;
+namespace App\Models\Accounting;
 
+use App\Models\Traits\Blamable;
 use Cknow\Money\Casts\MoneyIntegerCast;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class InvoiceLine extends Model
+class AnalyticAccount extends Model
 {
-    use HasUlids;
+    use Blamable, HasUlids;
 
-    protected $table = 'invoice_lines';
+    protected $table = 'analytic_accounts';
 
     /*
     |--------------------------------------------------------------------------
@@ -21,21 +22,15 @@ class InvoiceLine extends Model
 
     /** @var list<string> */
     protected $fillable = [
-        'designation',
-        'description',
-        'quantity',
-        'unit_price',
-        'total_price',
-        'invoice_id',
+        'name',
+        'balance',
     ];
 
     /** @return array<string, string> */
     protected function casts(): array
     {
         return [
-            'quantity' => 'integer',
-            'unit_price' => MoneyIntegerCast::class,
-            'total_price' => MoneyIntegerCast::class,
+            'balance' => MoneyIntegerCast::class,
         ];
     }
 
@@ -45,9 +40,9 @@ class InvoiceLine extends Model
     |--------------------------------------------------------------------------
     */
 
-    /** @return BelongsTo<Invoice> */
-    public function invoice(): BelongsTo
+    /** @return HasMany<AnalyticAccountEntry> */
+    public function entries(): HasMany
     {
-        return $this->belongsTo(Invoice::class);
+        return $this->hasMany(AnalyticAccountEntry::class);
     }
 }

@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace App\Models\Accounting;
 
-use App\Enums\AccountingJournalType;
+use App\Enums\JournalType;
 use App\Models\Traits\Blamable;
+use Cknow\Money\Casts\MoneyIntegerCast;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
 
@@ -24,16 +25,17 @@ class Journal extends Model
     /** @var list<string> */
     protected $fillable = [
         'name',
+        'code',
         'type',
-        'debit_prefix',
-        'credit_prefix',
+        'start_balance',
     ];
 
     /** @return array<string, string> */
     protected function casts(): array
     {
         return [
-            'type' => AccountingJournalType::class,
+            'type' => JournalType::class,
+            'start_balance' => MoneyIntegerCast::class,
         ];
     }
 }

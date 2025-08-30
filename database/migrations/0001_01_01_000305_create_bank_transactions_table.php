@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('journals', function (Blueprint $table) {
+        Schema::create('bank_transactions', function (Blueprint $table) {
             $table->ulid('id')->primary();
 
             /*
@@ -17,10 +17,14 @@ return new class extends Migration
             |-------------------------------------------------------------------
             */
 
+            $table->date('date');
+            $table->text('type');
             $table->text('name');
-            $table->text('types');
-            $table->text('debit_prefix');
-            $table->text('credit_prefix');
+            $table->text('description');
+            $table->integer('credit');
+            $table->integer('debit');
+            $table->text('reference');
+            $table->boolean('reconciled')->default(false);
             $table->timestamps();
 
             /*
@@ -45,6 +49,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('journals');
+        Schema::dropIfExists('bank_transactions');
     }
 };

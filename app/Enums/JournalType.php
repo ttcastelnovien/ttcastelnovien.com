@@ -6,7 +6,7 @@ namespace App\Enums;
 
 use Filament\Support\Contracts\HasLabel;
 
-enum AccountingJournalType: string implements HasLabel
+enum JournalType: string implements HasLabel
 {
     case VENTES = 'ventes';
     case ACHATS = 'achats';
