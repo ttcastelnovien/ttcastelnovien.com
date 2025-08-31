@@ -9,12 +9,13 @@
             margin: 0;
             padding: 0;
         }
+
         html {
             background-color: #494949
         }
+
         body {
             width: 210mm;
-            height: 297mm;
             margin: 0 auto;
             padding: 5mm;
             box-sizing: border-box;
@@ -26,9 +27,9 @@
     </style>
 </head>
 <body>
-@include('pdf.note_frais.header')
-@include('pdf.note_frais.content')
-@include('pdf.note_frais.footer')
+@include('pdf.formulaire_licence.header')
+@include('pdf.formulaire_licence.content')
+@include('pdf.formulaire_licence.footer')
 </body>
 </html>
 
