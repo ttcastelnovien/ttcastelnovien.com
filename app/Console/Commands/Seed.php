@@ -3,12 +3,15 @@
 namespace App\Console\Commands;
 
 use App\Enums\UserRole;
+use App\Models\Accounting\LedgerAccount;
 use App\Models\Clubs\Club;
 use App\Models\HumanResource\Person;
 use App\Models\Meta\Season;
 use App\Models\Security\User;
 use Illuminate\Console\Command;
+use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
 use Symfony\Component\Console\Command\Command as CommandAlias;
 
@@ -35,6 +38,9 @@ class Seed extends Command
     {
         $this->info('Importing default seasons...');
         $this->importSeasons();
+
+        $this->info('Importing default pcg...');
+        $this->importPCG();
 
         $this->info('Importing default user...');
         $this->importSuperUser();
@@ -667,5 +673,60 @@ class Seed extends Command
                     );
                 }
             });
+    }
+
+    private function importPCG(): void
+    {
+        $path = database_path('seeder_data/pcg.json');
+
+        try {
+            $data = json_decode(File::get($path), associative: true);
+
+            foreach ($data as $item) {
+                $code = $this->normalizePCGCode($item['code']);
+
+                /** @var LedgerAccount $account */
+                $account = LedgerAccount::query()->firstOrCreate(
+                    ['code' => $code],
+                    [
+                        'name' => $item['name'],
+                        'code' => $code,
+                    ]
+                );
+
+                $this->importPCGChildren($item['items'], $account);
+            }
+        } catch (FileNotFoundException) {
+            return;
+        }
+    }
+
+    /**
+     * @param  array<int, array{name: string, code: string, items: array}>  $children
+     */
+    private function importPCGChildren(array $children, LedgerAccount $parent): void
+    {
+        foreach ($children as $child) {
+            $code = $this->normalizePCGCode($child['code']);
+
+            /** @var LedgerAccount $account */
+            $account = LedgerAccount::query()->firstOrCreate(
+                ['code' => $code],
+                [
+                    'name' => $child['name'],
+                    'code' => $code,
+                    'parent_id' => $parent->id,
+                ]
+            );
+
+            if (array_key_exists('items', $child) && ! empty($child['items'])) {
+                $this->importPCGChildren($child['items'], $account);
+            }
+        }
+    }
+
+    private function normalizePCGCode(string $code): string
+    {
+        return str_pad($code, 7, '0');
     }
 }

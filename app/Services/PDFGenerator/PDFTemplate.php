@@ -13,6 +13,8 @@ enum PDFTemplate: string
     case NOTE_FRAIS = 'note_frais';
     case RECU_DON = 'recu_don';
 
+    case FORMULAIRE_LICENCE = 'formulaire_licence';
+
     case COMPTE_RESULTAT_CERFA = 'compte_resultat_cerfa';
     case COMPTE_RESULTAT_2020 = 'compte_resultat_2020';
     case BUDGET_PREVISIONNEL = 'budget_previsionnel';
@@ -26,6 +28,7 @@ enum PDFTemplate: string
     {
         return match ($this) {
             self::FACTURE, self::AVOIR => ['40mm', '50mm', '5mm', '5mm'],
+            self::FORMULAIRE_LICENCE => ['35mm', '12mm', '5mm', '5mm'],
             default => ['5mm', '5mm', '5mm', '5mm'],
         };
     }
@@ -44,6 +47,7 @@ enum PDFTemplate: string
             self::BILAN_FINANCIER => ['COMPTABILITÉ', 'EXPORTS', 'BILANS FINANCIERS'],
             self::JOURNAL => ['COMPTABILITÉ', 'EXPORTS', 'JOURNAUX'],
             self::BUDGET_PREVISIONNEL => ['COMPTABILITÉ', 'EXPORTS', 'BUDGETS PRÉVISIONNELS'],
+            self::FORMULAIRE_LICENCE => [],
         };
     }
 }

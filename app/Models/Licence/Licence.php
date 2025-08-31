@@ -39,9 +39,7 @@ class Licence extends Pivot
         'has_health_declaration',
         /** Suivi administratif */
         'validated',
-        'sport_pass_validated',
-        /** Informations tarifaires */
-        'family_discount',
+        'observations',
         /** Relations */
         'person_id',
         'season_id',
@@ -118,7 +116,7 @@ class Licence extends Pivot
 
     public function getCategoryAttribute(): LicenceCategory
     {
-        return LicenceCategory::fromBirthDate($this->birth_date, $this->season);
+        return LicenceCategory::fromBirthDate($this->person->birth_date, $this->season);
     }
 
     public function getImageRightsAttribute(): ?bool

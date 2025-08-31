@@ -4,8 +4,6 @@ use App\Http\Controllers\Public\ICalController;
 use App\Http\Controllers\Public\InvitationController;
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Services\OFXParser\OFXParser;
-use App\Services\PDFGenerator\PDFGenerator;
-use App\Services\PDFGenerator\PDFTemplate;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Route;
@@ -42,12 +40,4 @@ Route::name('public.')
         Route::get('pdfe', function () {
             return response()->view('pdf.page_emulator');
         })->name('pdf.emulate');
-
-        Route::get('pdf', function () {
-            $filename = PDFGenerator::generate(PDFTemplate::AVOIR);
-
-            return response()->download($filename, 'facture.pdf', [
-                'Content-Type' => 'application/pdf',
-            ]);
-        })->name('pdf');
     });

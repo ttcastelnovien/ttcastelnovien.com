@@ -20,6 +20,7 @@ return new class extends Migration
 
             $table->string('licence_type')->default(LicenceType::LOISIR);
             $table->boolean('validated')->default(false);
+            $table->text('observations')->nullable()->default(null);
 
             /*
             |-------------------------------------------------------------------

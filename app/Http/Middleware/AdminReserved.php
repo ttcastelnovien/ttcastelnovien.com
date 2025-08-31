@@ -16,7 +16,7 @@ class AdminReserved
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if ($request->user()->role !== UserRole::ADMIN) {
+        if (! in_array(UserRole::ADMIN, $request->user()->roles->toArray(), true)) {
             return back(fallback: route('dashboard'))
                 ->with('error', 'La page demandée est réservée aux administrateurs.');
         }

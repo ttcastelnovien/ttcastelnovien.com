@@ -152,8 +152,11 @@ class LicenceInfolist
                                     '-' => 'gray',
                                 })
                                 ->inlineLabel(),
+                            TextEntry::make('observations')
+                                ->label('Observations')
+                                ->inlineLabel()
+                                ->markdown(),
                         ]),
-                        Tab::make('Paiements')->components([]),
                         Tab::make('Historique')->components([
                             TextEntry::make('created_at')
                                 ->label('Créée le')

@@ -66,7 +66,7 @@
     ];
 @endphp
 
-<!DOCTYPE html>
+    <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="utf-8">
@@ -99,10 +99,15 @@
     <tr>
         <td></td>
         <td style="vertical-align: top; padding-left: 5mm;">
-            <p style="font-weight: 700; margin-bottom: 2mm;">Mr. Jean Dupont</p>
-            <p>Appartement 12</p>
-            <p>165 rue de la Croix Nouvelle</p>
-            <p>16120 Châteauneuf-sur-Charente</p>
+            <p style="font-weight: 700; margin-bottom: 2mm;">{{ $client_designation  }}</p>
+            <p>{{ $client_address_line_1 }}</p>
+            @if ($client_address_line_2)
+                <p>{{ $client_address_line_2 }}</p>
+            @endif
+            @if ($client_address_line_3)
+                <p>{{ $client_address_line_3 }}</p>
+            @endif
+            <p>{{ $client_address_zipcode_city }}</p>
         </td>
     </tr>
 </table>
@@ -110,57 +115,66 @@
 <table style="width: 100%; margin-top: 10mm; margin-bottom: 10mm; table-layout: fixed; border-collapse: collapse;">
     <thead>
     <tr style="background-color: {{ $gray['100'] }}; vertical-align: middle;">
-        <th style="padding: 2mm 3mm; border: 2pt solid {{ $gray['600'] }}; text-align: left; width: 100%;">Désignation</th>
+        <th style="padding: 2mm 3mm; border: 2pt solid {{ $gray['600'] }}; text-align: left; width: 100%;">Désignation
+        </th>
         <th style="padding: 2mm 3mm; border: 2pt solid {{ $gray['600'] }}; text-align: center; width: 15mm;">Qté</th>
-        <th style="padding: 2mm 3mm; border: 2pt solid {{ $gray['600'] }}; text-align: right; width: 32mm;">P.U. H.T.</th>
-        <th style="padding: 2mm 3mm; border: 2pt solid {{ $gray['600'] }}; text-align: right; width: 32mm;">Total H.T.</th>
+        <th style="padding: 2mm 3mm; border: 2pt solid {{ $gray['600'] }}; text-align: right; width: 32mm;">P.U. H.T.
+        </th>
+        <th style="padding: 2mm 3mm; border: 2pt solid {{ $gray['600'] }}; text-align: right; width: 32mm;">Total H.T.
+        </th>
     </tr>
     </thead>
     <tbody>
-    <tr style="vertical-align: top;">
-        <td style="padding: 2mm 3mm; border: 2pt solid {{ $gray['600'] }}; text-align: left;">
-            <p style="font-weight: 500;">Cotisation 2024-2025</p>
-            <p style="margin-top: 1mm; font-size: 10pt; text-wrap: balance;">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolorum, perspiciatis.</p>
-        </td>
-        <td style="padding: 2mm 3mm; border: 2pt solid {{ $gray['600'] }}; text-align: center; font-variant-numeric: tabular-nums slashed-zero;">1</td>
-        <td style="padding: 2mm 3mm; border: 2pt solid {{ $gray['600'] }}; text-align: right; font-variant-numeric: tabular-nums slashed-zero;">@money(10000)</td>
-        <td style="padding: 2mm 3mm; border: 2pt solid {{ $gray['600'] }}; text-align: right; font-weight: 700; font-variant-numeric: tabular-nums slashed-zero;">@money(9999)</td>
-    </tr>
+    @foreach($lines as $line)
+        <tr style="vertical-align: top;">
+            <td style="padding: 2mm 3mm; border: 2pt solid {{ $gray['600'] }}; text-align: left;">
+                <p style="font-weight: 500;">{{ $line['designation']  }}</p>
+                @if ($line['description'])
+                    <p style="margin-top: 1mm; font-size: 10pt; text-wrap: balance;">{{ $line['description'] }}</p>
+                @endif
+            </td>
+            <td style="padding: 2mm 3mm; border: 2pt solid {{ $gray['600'] }}; text-align: center; font-variant-numeric: tabular-nums slashed-zero;">{{ $line['quantity'] }}</td>
+            <td style="padding: 2mm 3mm; border: 2pt solid {{ $gray['600'] }}; text-align: right; font-variant-numeric: tabular-nums slashed-zero;">@money($line['amount'])</td>
+            <td style="padding: 2mm 3mm; border: 2pt solid {{ $gray['600'] }}; text-align: right; font-weight: 700; font-variant-numeric: tabular-nums slashed-zero;">@money($line['total_amount'])</td>
+        </tr>
+    @endforeach
 
     <tr style="vertical-align: middle;">
         <td></td>
-        <td colspan="2" style="padding: 2mm 3mm; border: 2pt solid {{ $gray['600'] }}; text-align: left; text-transform: uppercase;">Total H.T.</td>
-        <td style="padding: 2mm 3mm; border: 2pt solid {{ $gray['600'] }}; font-weight: 700; text-align: right; font-variant-numeric: tabular-nums slashed-zero;">@money(1000000)</td>
+        <td colspan="2"
+            style="padding: 2mm 3mm; border: 2pt solid {{ $gray['600'] }}; text-align: left; text-transform: uppercase;">
+            Total H.T.
+        </td>
+        <td style="padding: 2mm 3mm; border: 2pt solid {{ $gray['600'] }}; font-weight: 700; text-align: right; font-variant-numeric: tabular-nums slashed-zero;">@money($totals['ht'])</td>
     </tr>
     <tr style="vertical-align: middle;">
         <td></td>
-        <td colspan="2" style="padding: 2mm 3mm; border: 2pt solid {{ $gray['600'] }}; text-align: left; text-transform: uppercase;">Total T.T.C.</td>
-        <td style="padding: 2mm 3mm; border: 2pt solid {{ $gray['600'] }}; font-weight: 700; text-align: right; font-variant-numeric: tabular-nums slashed-zero;">@money(1000000)</td>
-    </tr>
-    <tr style="vertical-align: middle;">
-        <td></td>
-        <td colspan="2" style="padding: 2mm 3mm; border: 2pt solid {{ $gray['600'] }}; border-bottom-color: {{ $primary['600'] }}; text-align: left; text-transform: uppercase;">Déjà payé</td>
-        <td style="padding: 2mm 3mm; border: 2pt solid {{ $gray['600'] }}; border-bottom-color: {{ $primary['600'] }}; font-weight: 700; text-align: right; font-variant-numeric: tabular-nums slashed-zero;">@money(-80000)</td>
-    </tr>
-    <tr style="vertical-align: middle; font-size: 12pt;">
-        <td></td>
-        <td colspan="2" style="padding: 2mm 3mm; border: 2pt solid {{ $primary['600'] }}; text-align: left; text-transform: uppercase; background-color: {{ $primary['600'] }}; color: white; font-weight: 700;">Reste dû</td>
-        <td style="padding: 2mm 3mm; border: 2pt solid {{ $primary['600'] }}; font-weight: 700; text-align: right; font-variant-numeric: tabular-nums slashed-zero; background-color: {{ $primary['600'] }}; color: white;">@money(1000000)</td>
+        <td colspan="2"
+            style="padding: 2mm 3mm; border: 2pt solid {{ $gray['600'] }}; text-align: left; text-transform: uppercase;">
+            Total T.T.C.
+        </td>
+        <td style="padding: 2mm 3mm; border: 2pt solid {{ $gray['600'] }}; font-weight: 700; text-align: right; font-variant-numeric: tabular-nums slashed-zero;">@money($totals['ttc'])</td>
     </tr>
 
     </tbody>
 </table>
 
-<table style="table-layout: fixed; width: 100%; font-size: 10pt; border-collapse: collapse; margin-top: 10mm; margin-bottom: 10mm;">
+<table
+    style="table-layout: fixed; width: 100%; font-size: 10pt; border-collapse: collapse; margin-top: 10mm; margin-bottom: 10mm;">
     <tr style="vertical-align: middle;">
-        <td colspan="2" style="padding: 1.5mm 4mm; border: 1pt dashed {{ $gray['500'] }}; background-color: {{ $gray['100'] }}; text-transform: uppercase; font-weight: 700; text-align: center">Méthodes de paiement acceptées</td>
+        <td colspan="2"
+            style="padding: 1.5mm 4mm; border: 1pt dashed {{ $gray['500'] }}; background-color: {{ $gray['100'] }}; text-transform: uppercase; font-weight: 700; text-align: center">
+            Méthodes de paiement acceptées
+        </td>
     </tr>
 
     <tr style="vertical-align: top;">
         <td style="padding: 3mm; border: 1pt dashed {{ $gray['500'] }};">
             <p style="margin-bottom: 2mm; font-weight: 600;">Paiement par carte bancaire</p>
             <p style="text-wrap: pretty;">
-                RDV sur <a target="_blank" href="https://www.helloasso.com/associations/tennis-de-table-castelnovien/paiements/paiement-flexible" style="text-decoration: none; color: {{ $primary['600'] }}; font-weight: 500;">https://aureldvx.net/helloasso</a>.
+                RDV sur <a target="_blank"
+                           href="https://www.helloasso.com/associations/tennis-de-table-castelnovien/paiements/paiement-flexible"
+                           style="text-decoration: none; color: {{ $primary['600'] }}; font-weight: 500;">go.ttcastelnovien.com/helloasso</a>.
                 Saisissez le montant à régler puis suivez la procédure indiquée.
                 La plateforme rajoute un pourcentage au montant renseigné que vous pouvez retirer si vous le souhaitez.
             </p>
@@ -169,8 +183,12 @@
         <td style="padding: 3mm; border: 1pt dashed {{ $gray['500'] }};">
             <p style="margin-bottom: 2mm; font-weight: 600;">Paiement par PayPal</p>
             <p style="text-wrap: pretty;">
-                RDV sur <a target="_blank" href="https://paypal.me/ttcastelnovien16/{{ str(money(100))->substr(0, -2) }}" style="text-decoration: none; color: {{ $primary['600'] }}; font-weight: 500;">paypal.me/ttcastelnovien16/{{ str(money(100))->substr(0, -2) }}</a> puis suivre la procédure indiquée.
-                Attention, bien sélectionner l’option <span style="color: {{ $info['500'] }}">« Envoi d’argent à un proche »</span> pour
+                RDV sur <a target="_blank"
+                           href="https://paypal.me/ttcastelnovien16/{{ str(money($totals['ttc']))->substr(0, -2) }}"
+                           style="text-decoration: none; color: {{ $primary['600'] }}; font-weight: 500;">paypal.me/ttcastelnovien16/{{ str(money($totals['ttc']))->substr(0, -2) }}</a>
+                puis suivre la procédure indiquée.
+                Attention, bien sélectionner l’option <span style="color: {{ $info['500'] }}">« Envoi d’argent à un proche »</span>
+                pour
                 ne pas avoir de commission,
                 et renseigner le numéro de facture dans l’objet du paiement.
             </p>
@@ -182,16 +200,28 @@
             <p style="margin-bottom: 2mm; font-weight: 600;">Paiement par virement bancaire</p>
             <table style="width: 100%; table-layout: fixed; border-collapse: collapse;">
                 <tr>
-                    <td style="line-height: 1; padding: 2mm 2mm 1.5mm; border: 1pt solid {{ $gray['400'] }}; width: 20mm; font-weight: 700;">IBAN</td>
-                    <td style="line-height: 1; padding: 2mm 2mm 1.5mm; border: 1pt solid {{ $gray['400'] }}; font-variant-numeric: tabular-nums slashed-zero;">FR76 1240 6001 2580 0257 9207 081</td>
+                    <td style="line-height: 1; padding: 2mm 2mm 1.5mm; border: 1pt solid {{ $gray['400'] }}; width: 20mm; font-weight: 700;">
+                        IBAN
+                    </td>
+                    <td style="line-height: 1; padding: 2mm 2mm 1.5mm; border: 1pt solid {{ $gray['400'] }}; font-variant-numeric: tabular-nums slashed-zero;">
+                        FR76 1240 6001 2580 0257 9207 081
+                    </td>
                 </tr>
                 <tr>
-                    <td style="line-height: 1; padding: 2mm 2mm 1.5mm; border: 1pt solid {{ $gray['400'] }}; width: 20mm; font-weight: 700;">BIC</td>
-                    <td style="line-height: 1; padding: 2mm 2mm 1.5mm; border: 1pt solid {{ $gray['400'] }}; font-variant-numeric: tabular-nums slashed-zero;">AGRIFRPP824</td>
+                    <td style="line-height: 1; padding: 2mm 2mm 1.5mm; border: 1pt solid {{ $gray['400'] }}; width: 20mm; font-weight: 700;">
+                        BIC
+                    </td>
+                    <td style="line-height: 1; padding: 2mm 2mm 1.5mm; border: 1pt solid {{ $gray['400'] }}; font-variant-numeric: tabular-nums slashed-zero;">
+                        AGRIFRPP824
+                    </td>
                 </tr>
                 <tr>
-                    <td style="line-height: 1; padding: 2mm 2mm 1.5mm; border: 1pt solid {{ $gray['400'] }}; width: 20mm; font-weight: 700;">Banque</td>
-                    <td style="line-height: 1; padding: 2mm 2mm 1.5mm; border: 1pt solid {{ $gray['400'] }}; font-variant-numeric: tabular-nums slashed-zero;">Crédit Agricole Charente-Périgord</td>
+                    <td style="line-height: 1; padding: 2mm 2mm 1.5mm; border: 1pt solid {{ $gray['400'] }}; width: 20mm; font-weight: 700;">
+                        Banque
+                    </td>
+                    <td style="line-height: 1; padding: 2mm 2mm 1.5mm; border: 1pt solid {{ $gray['400'] }}; font-variant-numeric: tabular-nums slashed-zero;">
+                        Crédit Agricole Charente-Périgord
+                    </td>
                 </tr>
             </table>
         </td>
@@ -199,7 +229,9 @@
         <td style="padding: 3mm; border: 1pt dashed {{ $gray['500'] }};">
             <p style="margin-bottom: 2mm; font-weight: 600;">Paiement par chèque</p>
             <p style="text-wrap: pretty;">
-                Mettre le chèque à l’ordre de <span style="color: {{ $info['500'] }}">Tennis de Table Castelnovien</span> et l’apporter lors des créneaux d’entraînement.
+                Mettre le chèque à l’ordre de <span
+                    style="color: {{ $info['500'] }}">Tennis de Table Castelnovien</span> et l’apporter lors des
+                créneaux d’entraînement.
             </p>
         </td>
     </tr>
