@@ -72,8 +72,8 @@ class Licence extends Pivot
             $season = Season::current()->first();
 
             $licenceFee = LicenceFee::query()
-                ->whereJsonContains('licence_types', $this->licence_type)
-                ->whereJsonContains('licence_categories', $this->category)
+                ->whereJsonContains('licence_types', $licence->licence_type)
+                ->whereJsonContains('licence_categories', $licence->category)
                 ->where('season_id', $season->id)
                 ->firstOrFail();
 
