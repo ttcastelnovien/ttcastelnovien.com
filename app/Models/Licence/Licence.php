@@ -70,6 +70,7 @@ class Licence extends Pivot
     {
         static::creating(function (Licence $licence) {
             $season = Season::current()->first();
+            $licence->season_id = $season->id;
 
             $licenceFee = LicenceFee::query()
                 ->whereJsonContains('licence_types', $licence->licence_type)
@@ -77,7 +78,6 @@ class Licence extends Pivot
                 ->where('season_id', $season->id)
                 ->firstOrFail();
 
-            $licence->season_id = $season->id;
             $licence->licence_fee_id = $licenceFee->id;
         });
     }
