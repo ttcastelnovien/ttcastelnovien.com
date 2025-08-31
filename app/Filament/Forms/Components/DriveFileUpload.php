@@ -22,7 +22,7 @@ class DriveFileUpload extends FileUpload
     protected function setUp(): void
     {
         $this->storeFiles(false)
-            ->dehydrateStateUsing(fn ($state, Get $get): string => $this->uploadToDrive($state, $get));
+            ->dehydrateStateUsing(fn ($state, Get $get) => $this->uploadToDrive($state, $get));
     }
 
     public function setDrivePath(\Closure $callback): static
