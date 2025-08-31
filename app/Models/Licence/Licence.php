@@ -39,9 +39,7 @@ class Licence extends Pivot
         'has_health_declaration',
         /** Suivi administratif */
         'validated',
-        'sport_pass_validated',
-        /** Informations tarifaires */
-        'family_discount',
+        'observations',
         /** Relations */
         'person_id',
         'season_id',

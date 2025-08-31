@@ -10,6 +10,7 @@ use App\Models\HumanResource\Person;
 use App\Models\Licence\Licence;
 use App\Models\Licence\LicenceFee;
 use App\Models\Meta\Season;
+use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -87,6 +88,13 @@ class LicenceForm
                             ->required(),
                         TextInput::make('reference')
                             ->label('Référence'),
+                    ]),
+                MarkdownEditor::make('observations')
+                    ->label('Observations')
+                    ->toolbarButtons([
+                        ['bold', 'italic', 'strike', 'link'],
+                        ['bulletList', 'orderedList'],
+                        ['undo', 'redo'],
                     ]),
                 Toggle::make('validated')
                     ->label('Validé FFTT')
