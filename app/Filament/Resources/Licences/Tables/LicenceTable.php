@@ -3,7 +3,9 @@
 namespace App\Filament\Resources\Licences\Tables;
 
 use App\Enums\UserRole;
+use App\Models\Licence\Licence;
 use App\Models\Meta\Season;
+use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -31,9 +33,6 @@ class LicenceTable
                 TextColumn::make('licence_type')
                     ->label('Type')
                     ->searchable(),
-                IconColumn::make('validated')
-                    ->label('Validé FFTT')
-                    ->boolean(),
                 CheckboxColumn::make('person.is_minor')
                     ->label('Mineur')
                     ->disabled(),
@@ -134,7 +133,17 @@ class LicenceTable
                 ActionGroup::make([
                     ViewAction::make(),
                     EditAction::make(),
-                ]),
+                    Action::make('print_licence_form')
+                        ->label('Imprimer le formulaire')
+                        ->color('info')
+                        ->icon(Heroicon::OutlinedPrinter)
+                        ->url(fn (Licence $record) => route('admin.gen.licence_form', ['licence' => $record]))
+                        ->openUrlInNewTab(),
+                ])
+                    ->color('gray')
+                    ->label('Actions')
+                    ->button()
+                    ->dropdownPlacement('top-end'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

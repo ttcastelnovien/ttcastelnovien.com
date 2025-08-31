@@ -9,14 +9,16 @@ use App\Models\Meta\Season;
 use App\Services\Google\GoogleDrive;
 use Google\Service\Drive\DriveFile;
 use Google\Service\Exception;
+use Gotenberg\Exceptions\GotenbergApiErrored;
 use Gotenberg\Exceptions\NativeFunctionErrored;
 use Gotenberg\Gotenberg;
 use Gotenberg\Stream;
 use Illuminate\Contracts\Support\Arrayable;
+use Psr\Http\Message\ResponseInterface;
 
 final class PDFGenerator
 {
-    public function generateForClient(
+    public static function generateForClient(
         PDFTemplate $template,
         array $destination,
         string $filename,
@@ -39,6 +41,46 @@ final class PDFGenerator
             filename: $filename,
             data: $data,
         );
+    }
+
+    /**
+     * @param  list<string>  $data
+     *
+     * @throws \RuntimeException
+     */
+    public static function generateInMemory(
+        PDFTemplate $template,
+        string $filename,
+        Arrayable|array $data = [],
+    ): ResponseInterface {
+        try {
+            $content = view(sprintf('pdf.%s.content', $template->value), $data)->render();
+            $header = view(sprintf('pdf.%s.header', $template->value), $data)->render();
+            $footer = view(sprintf('pdf.%s.footer', $template->value), $data)->render();
+        } catch (\Throwable $e) {
+            throw new \RuntimeException(
+                message: sprintf('Error rendering PDF template "%s": %s', $template->value, $e->getMessage()),
+                previous: $e
+            );
+        }
+
+        try {
+            $response = Gotenberg::chromium(config('app.gotenberg_url'))
+                ->pdf()
+                ->outputFilename($filename)
+                ->paperSize('210mm', '297mm')
+                ->margins(...$template->getMargins())
+                ->header(Stream::string('header.html', $header))
+                ->footer(Stream::string('footer.html', $footer))
+                ->html(Stream::string('index.html', $content));
+
+            return Gotenberg::send($response);
+        } catch (NativeFunctionErrored|GotenbergApiErrored $e) {
+            throw new \RuntimeException(
+                message: sprintf('Error generating PDF for template "%s": %s', $template->value, $e->getMessage()),
+                previous: $e
+            );
+        }
     }
 
     /**

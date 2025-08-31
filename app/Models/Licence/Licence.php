@@ -118,7 +118,7 @@ class Licence extends Pivot
 
     public function getCategoryAttribute(): LicenceCategory
     {
-        return LicenceCategory::fromBirthDate($this->birth_date, $this->season);
+        return LicenceCategory::fromBirthDate($this->person->birth_date, $this->season);
     }
 
     public function getImageRightsAttribute(): ?bool
