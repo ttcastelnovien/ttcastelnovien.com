@@ -46,8 +46,12 @@ class DriveFileUpload extends FileUpload
         return $this;
     }
 
-    private function uploadToDrive(TemporaryUploadedFile $state, Get $get): string
+    private function uploadToDrive(?TemporaryUploadedFile $state, Get $get): ?string
     {
+        if ($state === null) {
+            return null;
+        }
+
         $filename = ($this->fileNameCallback)($get).'.'.$state->getClientOriginalExtension();
 
         $metadata = new DriveFile;
