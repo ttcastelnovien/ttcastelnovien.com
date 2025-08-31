@@ -69,7 +69,16 @@ class Licence extends Pivot
     protected static function booted(): void
     {
         static::creating(function (Licence $licence) {
-            $licence->season_id = Season::current()->first()->id;
+            $season = Season::current()->first();
+
+            $licenceFee = LicenceFee::query()
+                ->whereJsonContains('licence_types', $this->licence_type)
+                ->whereJsonContains('licence_categories', $this->category)
+                ->where('season_id', $season->id)
+                ->firstOrFail();
+
+            $licence->season_id = $season->id;
+            $licence->licence_fee_id = $licenceFee->id;
         });
     }
 
