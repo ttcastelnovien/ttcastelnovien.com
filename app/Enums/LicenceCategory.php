@@ -39,95 +39,95 @@ enum LicenceCategory: string implements HasLabel
         $currentYear = $season->starts_at->year;
         $birthYear = $birthDate->year;
 
-        if ($birthYear >= $currentYear - 8) {
-            return LicenceCategory::POUSSIN;
+        if ($birthYear <= $currentYear - 90) {
+            return self::VETERAN_90;
         }
 
-        if ($birthYear === $currentYear - 9) {
-            return LicenceCategory::BENJAMIN_1;
+        if ($birthYear <= $currentYear - 85) {
+            return self::VETERAN_85;
         }
 
-        if ($birthYear === $currentYear - 10) {
-            return LicenceCategory::BENJAMIN_2;
+        if ($birthYear <= $currentYear - 80) {
+            return self::VETERAN_80;
         }
 
-        if ($birthYear === $currentYear - 11) {
-            return LicenceCategory::MINIME_1;
+        if ($birthYear <= $currentYear - 75) {
+            return self::VETERAN_75;
         }
 
-        if ($birthYear === $currentYear - 12) {
-            return LicenceCategory::MINIME_2;
+        if ($birthYear <= $currentYear - 70) {
+            return self::VETERAN_70;
         }
 
-        if ($birthYear === $currentYear - 13) {
-            return LicenceCategory::CADET_1;
+        if ($birthYear <= $currentYear - 65) {
+            return self::VETERAN_65;
         }
 
-        if ($birthYear === $currentYear - 14) {
-            return LicenceCategory::CADET_2;
+        if ($birthYear <= $currentYear - 60) {
+            return self::VETERAN_60;
         }
 
-        if ($birthYear === $currentYear - 15) {
-            return LicenceCategory::JUNIOR_1;
+        if ($birthYear <= $currentYear - 55) {
+            return self::VETERAN_55;
         }
 
-        if ($birthYear === $currentYear - 16) {
-            return LicenceCategory::JUNIOR_2;
+        if ($birthYear <= $currentYear - 50) {
+            return self::VETERAN_50;
         }
 
-        if ($birthYear === $currentYear - 17) {
-            return LicenceCategory::JUNIOR_3;
+        if ($birthYear <= $currentYear - 45) {
+            return self::VETERAN_45;
+        }
+
+        if ($birthYear <= $currentYear - 40) {
+            return self::VETERAN_40;
+        }
+
+        if ($birthYear <= $currentYear - 19) {
+            return self::SENIOR;
         }
 
         if ($birthYear === $currentYear - 18) {
-            return LicenceCategory::JUNIOR_4;
+            return self::JUNIOR_4;
         }
 
-        if ($birthYear <= $currentYear - 89) {
-            return LicenceCategory::VETERAN_90;
+        if ($birthYear === $currentYear - 17) {
+            return self::JUNIOR_3;
         }
 
-        if ($birthYear <= $currentYear - 84) {
-            return LicenceCategory::VETERAN_85;
+        if ($birthYear === $currentYear - 16) {
+            return self::JUNIOR_2;
         }
 
-        if ($birthYear <= $currentYear - 79) {
-            return LicenceCategory::VETERAN_80;
+        if ($birthYear === $currentYear - 15) {
+            return self::JUNIOR_1;
         }
 
-        if ($birthYear <= $currentYear - 74) {
-            return LicenceCategory::VETERAN_75;
+        if ($birthYear === $currentYear - 14) {
+            return self::CADET_2;
         }
 
-        if ($birthYear <= $currentYear - 69) {
-            return LicenceCategory::VETERAN_70;
+        if ($birthYear === $currentYear - 13) {
+            return self::CADET_1;
         }
 
-        if ($birthYear <= $currentYear - 64) {
-            return LicenceCategory::VETERAN_65;
+        if ($birthYear === $currentYear - 12) {
+            return self::MINIME_2;
         }
 
-        if ($birthYear <= $currentYear - 59) {
-            return LicenceCategory::VETERAN_60;
+        if ($birthYear === $currentYear - 11) {
+            return self::MINIME_1;
         }
 
-        if ($birthYear <= $currentYear - 54) {
-            return LicenceCategory::VETERAN_55;
+        if ($birthYear === $currentYear - 10) {
+            return self::BENJAMIN_2;
         }
 
-        if ($birthYear <= $currentYear - 49) {
-            return LicenceCategory::VETERAN_50;
+        if ($birthYear === $currentYear - 9) {
+            return self::BENJAMIN_1;
         }
 
-        if ($birthYear <= $currentYear - 44) {
-            return LicenceCategory::VETERAN_45;
-        }
-
-        if ($birthYear <= $currentYear - 39) {
-            return LicenceCategory::VETERAN_40;
-        }
-
-        return LicenceCategory::SENIOR;
+        return self::POUSSIN;
     }
 
     public function getLabel(): ?string
