@@ -92,7 +92,6 @@ class Person extends Model
             );
 
             $person->client_ledger_account_id = $ledgerAccount->id;
-            $person->saveQuietly();
         });
 
         static::updating(function (Person $person) {
@@ -108,8 +107,7 @@ class Person extends Model
                         ->firstOrFail();
 
                     $licence->licence_fee_id = $licenceFee->id;
-
-                    $licence->saveQuietly();
+                    $licence->save();
                 });
             }
 
@@ -117,12 +115,12 @@ class Person extends Model
                 $person->licences()->get()->each(function (Licence $licence) use ($person) {
                     $licence->first_name = $person->first_name;
                     $licence->last_name = $person->last_name;
-                    $licence->saveQuietly();
+                    $licence->save();
                 });
 
                 $ledgerAccount = $person->clientLedgerAccount;
                 $ledgerAccount->name = $person->lastname_firstname;
-                $ledgerAccount->saveQuietly();
+                $ledgerAccount->save();
             }
         });
     }
