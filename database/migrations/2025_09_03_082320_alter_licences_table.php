@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('licences', function (Blueprint $table) {
-            $table->text('category');
+            $table->text('category')->default('S');
             $table->boolean('is_minor')->default(false);
         });
     }
