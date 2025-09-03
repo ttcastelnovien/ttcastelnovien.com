@@ -22,6 +22,13 @@ class LicenceInfolist
                             TextEntry::make('licence_type')
                                 ->label('Type')
                                 ->inlineLabel(),
+                            TextEntry::make('category')
+                                ->label('Catégorie')
+                                ->inlineLabel(),
+                            IconEntry::make('is_minor')
+                                ->label('Mineur')
+                                ->boolean()
+                                ->inlineLabel(),
                             IconEntry::make('validated')
                                 ->label('Validé FFTT')
                                 ->boolean()

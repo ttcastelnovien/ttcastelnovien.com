@@ -45,14 +45,13 @@ class LicenceResource extends Resource
     public static function table(Table $table): Table
     {
         return LicenceTable::configure($table)
-            ->defaultPaginationPageOption(50);
+            ->paginated([10, 25, 50, 100, 'all'])
+            ->defaultPaginationPageOption(100);
     }
 
     public static function getRelations(): array
     {
-        return [
-            //
-        ];
+        return [];
     }
 
     public static function getPages(): array
