@@ -2,11 +2,13 @@
 
 namespace App\Models\HumanResource;
 
+use App\Enums\LicenceCategory;
 use App\Enums\Sex;
 use App\Models\Accounting\LedgerAccount;
 use App\Models\Communication\Event;
 use App\Models\Communication\Group;
 use App\Models\Licence\Licence;
+use App\Models\Licence\LicenceFee;
 use App\Models\Licence\MedicalCertificate;
 use App\Models\Security\User;
 use App\Models\Traits\Blamable;
@@ -90,6 +92,27 @@ class Person extends Model
             );
 
             $person->client_ledger_account_id = $ledgerAccount->id;
+        });
+
+        static::updating(function (Person $person) {
+            if (! $person->isDirty('birth_date')) {
+                return;
+            }
+
+            $person->licences()->get()->each(function (Licence $licence) {
+                $licence->category = LicenceCategory::fromBirthDate($licence->person->birth_date, $licence->season);
+                $licence->is_minor = LicenceCategory::isMinorCategory($licence->category);
+
+                $licenceFee = LicenceFee::query()
+                    ->whereJsonContains('licence_types', $licence->licence_type)
+                    ->whereJsonContains('licence_categories', $licence->category)
+                    ->where('season_id', $licence->season->id)
+                    ->firstOrFail();
+
+                $licence->licence_fee_id = $licenceFee->id;
+
+                $licence->save();
+            });
         });
     }
 
