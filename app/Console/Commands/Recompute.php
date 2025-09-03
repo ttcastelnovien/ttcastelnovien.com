@@ -41,14 +41,17 @@ class Recompute extends Command
         $licences = Licence::query()->whereSeasonId($season->id)->get();
 
         foreach ($licences as $licence) {
+            $licence->first_name = $licence->person->first_name;
+            $licence->last_name = $licence->person->last_name;
+            $licence->category = LicenceCategory::fromBirthDate($licence->person->birth_date, $licence->season);
+            $licence->is_minor = LicenceCategory::isMinorCategory($licence->category);
+
             $licenceFee = LicenceFee::query()
                 ->whereJsonContains('licence_types', $licence->licence_type)
                 ->whereJsonContains('licence_categories', $licence->category)
                 ->where('season_id', $season->id)
                 ->firstOrFail();
 
-            $licence->category = LicenceCategory::fromBirthDate($licence->person->birth_date, $licence->season);
-            $licence->is_minor = LicenceCategory::isMinorCategory($licence->category);
             $licence->licence_fee_id = $licenceFee->id;
             $licence->save();
         }
