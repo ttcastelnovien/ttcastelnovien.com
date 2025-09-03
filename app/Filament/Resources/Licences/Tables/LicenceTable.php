@@ -145,7 +145,18 @@ class LicenceTable
                     ->default(Season::current()->first()->id),
                 TernaryFilter::make('is_minor')
                     ->label('Mineur'),
+                SelectFilter::make('licence_type')
+                    ->label('Type de licence')
+                    ->multiple()
+                    ->options(LicenceType::class),
+                SelectFilter::make('category')
+                    ->label('Catégorie')
+                    ->multiple()
+                    ->options(LicenceCategory::class),
             ])
+            ->defaultSort(function (Builder $query): Builder {
+                return $query->orderBy('last_name')->orderBy('first_name');
+            })
             ->recordActions([
                 ActionGroup::make([
                     ViewAction::make(),
