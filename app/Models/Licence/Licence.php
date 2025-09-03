@@ -127,6 +127,16 @@ class Licence extends Pivot
     |--------------------------------------------------------------------------
     */
 
+    public function getFirstNameAttribute(): string
+    {
+        return $this->person->first_name;
+    }
+
+    public function getLastNameAttribute(): string
+    {
+        return $this->person->last_name;
+    }
+
     public function getFullNameAttribute(): string
     {
         return $this->person->full_name;
