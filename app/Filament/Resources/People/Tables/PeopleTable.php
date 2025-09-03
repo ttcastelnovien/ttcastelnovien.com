@@ -11,6 +11,7 @@ use App\Services\Mailer\Recipient;
 use App\Services\Mailer\TransactionalMailer;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
+use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Support\Icons\Heroicon;
@@ -111,6 +112,8 @@ class PeopleTable
                     ->color('gray')
                     ->dropdownPlacement('top-end'),
             ])
-            ->toolbarActions([]);
+            ->toolbarActions([
+                DeleteBulkAction::make(),
+            ]);
     }
 }
