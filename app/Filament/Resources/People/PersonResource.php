@@ -49,7 +49,8 @@ class PersonResource extends Resource
     public static function table(Table $table): Table
     {
         return PeopleTable::configure($table)
-            ->defaultPaginationPageOption(50);
+            ->paginated([10, 25, 50, 100, 'all'])
+            ->defaultPaginationPageOption(100);
     }
 
     public static function getRelations(): array

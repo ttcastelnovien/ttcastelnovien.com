@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\People\Tables;
 
 use App\Enums\MailObject;
+use App\Enums\Sex;
 use App\Enums\UserRole;
 use App\Models\HumanResource\Person;
 use App\Models\Security\Invitation;
@@ -10,14 +11,15 @@ use App\Services\Mailer\Recipient;
 use App\Services\Mailer\TransactionalMailer;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\CheckboxColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\URL;
 
 class PeopleTable
@@ -26,14 +28,13 @@ class PeopleTable
     {
         return $table
             ->columns([
-                TextColumn::make('licence_number')
-                    ->label('N° licence')
+                TextColumn::make('last_name')
+                    ->label('Nom')
+                    ->sortable()
                     ->searchable(),
                 TextColumn::make('first_name')
                     ->label('Prénom')
-                    ->searchable(),
-                TextColumn::make('last_name')
-                    ->label('Nom')
+                    ->sortable()
                     ->searchable(),
                 TextColumn::make('sex')
                     ->label('Sexe')
@@ -41,15 +42,21 @@ class PeopleTable
                 CheckboxColumn::make('is_minor')
                     ->label('Mineur')
                     ->disabled(),
-                TextColumn::make('email')
-                    ->label('E-mail')
-                    ->searchable(),
-                TextColumn::make('phone')
-                    ->label('Téléphone')
-                    ->formatStateUsing(fn (string $state) => preg_replace('/(\d{2})(?=\d)/', '$1 ', $state))
-                    ->searchable(),
             ])
-            ->filters([])
+            ->filters([
+                TernaryFilter::make('is_minor')
+                    ->label('Mineur')
+                    ->queries(
+                        true: fn (Builder $query) => $query->where('birth_date', '>', now()->subYears(19)),
+                        false: fn (Builder $query) => $query->where('birth_date', '<=', now()->subYears(19)),
+                    ),
+                SelectFilter::make('sex')
+                    ->options(Sex::class)
+                    ->label('Sexe'),
+            ])
+            ->defaultSort(function (Builder $query): Builder {
+                return $query->orderBy('last_name')->orderBy('first_name');
+            })
             ->recordActions([
                 ActionGroup::make([
                     ViewAction::make(),
@@ -98,12 +105,12 @@ class PeopleTable
                                 );
                             }
                         }),
-                ]),
+                ])
+                    ->label('Actions')
+                    ->button()
+                    ->color('gray')
+                    ->dropdownPlacement('top-end'),
             ])
-            ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                ]),
-            ]);
+            ->toolbarActions([]);
     }
 }

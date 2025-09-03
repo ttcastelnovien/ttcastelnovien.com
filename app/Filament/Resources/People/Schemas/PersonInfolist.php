@@ -25,7 +25,11 @@ class PersonInfolist
                         ]),
                         Tab::make('Coordonnées')->components([
                             TextEntry::make('email')->label('Adresse e-mail')->inlineLabel(),
-                            TextEntry::make('phone')->label('Téléphone')->inlineLabel(),
+                            TextEntry::make('phone')->label('Téléphone')->formatStateUsing(function (?string $state): ?string {
+                                return $state
+                                    ? trim(implode(' ', str_split(preg_replace('/\D+/', '', $state), 2)))
+                                    : null;
+                            })->inlineLabel(),
                             TextEntry::make('full_address')->label('Adresse')->inlineLabel()->html(),
                         ]),
                         Tab::make('Administratif')->components([

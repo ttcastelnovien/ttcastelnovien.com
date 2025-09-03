@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\Licences\Tables;
 
+use App\Enums\LicenceCategory;
+use App\Enums\LicenceType;
 use App\Enums\UserRole;
 use App\Models\Licence\Licence;
 use App\Models\Meta\Season;
@@ -16,6 +18,7 @@ use Filament\Tables\Columns\CheckboxColumn;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -32,12 +35,17 @@ class LicenceTable
                     ->label('Montant'),
                 TextColumn::make('licence_type')
                     ->label('Type')
+                    ->formatStateUsing(fn (LicenceType $state) => $state->value)
                     ->searchable(),
-                CheckboxColumn::make('person.is_minor')
+                TextColumn::make('category')
+                    ->label('Cat.')
+                    ->formatStateUsing(fn (LicenceCategory $state) => $state->value)
+                    ->searchable(),
+                CheckboxColumn::make('is_minor')
                     ->label('Mineur')
                     ->disabled(),
                 IconColumn::make('image_rights')
-                    ->label('Droit image')
+                    ->label('Image')
                     ->default('-')
                     ->icon(fn (mixed $state): Heroicon => match ($state) {
                         true => Heroicon::OutlinedCheckCircle,
@@ -50,7 +58,7 @@ class LicenceTable
                         '-' => 'gray',
                     }),
                 IconColumn::make('exit_authorization')
-                    ->label('Aut. sortie')
+                    ->label('Sortie')
                     ->default('-')
                     ->icon(fn (mixed $state): Heroicon => match ($state) {
                         true => Heroicon::OutlinedCheckCircle,
@@ -63,7 +71,7 @@ class LicenceTable
                         '-' => 'gray',
                     }),
                 IconColumn::make('care_authorization')
-                    ->label('Aut. soins')
+                    ->label('Soins')
                     ->default('-')
                     ->icon(fn (mixed $state): Heroicon => match ($state) {
                         true => Heroicon::OutlinedCheckCircle,
@@ -76,7 +84,7 @@ class LicenceTable
                         '-' => 'gray',
                     }),
                 IconColumn::make('transport_authorization')
-                    ->label('Aut. transport')
+                    ->label('Transport')
                     ->default('-')
                     ->icon(fn (mixed $state): Heroicon => match ($state) {
                         true => Heroicon::OutlinedCheckCircle,
@@ -102,7 +110,7 @@ class LicenceTable
                         '-' => 'gray',
                     }),
                 IconColumn::make('health_declaration')
-                    ->label('Auto-questionnaire')
+                    ->label('Questionnaire')
                     ->default('-')
                     ->icon(fn (mixed $state): Heroicon => match ($state) {
                         true => Heroicon::OutlinedCheckCircle,
@@ -128,6 +136,12 @@ class LicenceTable
                     ->preload()
                     ->selectablePlaceholder(false)
                     ->default(Season::current()->first()->id),
+                TernaryFilter::make('person.is_minor')
+                    ->label('Mineur')
+                    ->queries(
+                        true: fn (Builder $query) => $query->joinRelationship('person')->select('people')->where('people.birth_date', '>', now()->subYears(19)),
+                        false: fn (Builder $query) => $query->joinRelationship('person')->where('birth_date', '<=', now()->subYears(19)),
+                    ),
             ])
             ->recordActions([
                 ActionGroup::make([

@@ -12,8 +12,6 @@ enum LicenceType: string implements HasLabel
     case LOISIR = 'P';
     case COMPETITION = 'T';
     case DECOUVERTE = 'I';
-    case EVENEMENTIEL = 'E';
-    case LIBERTE = 'L';
 
     public function getLabel(): ?string
     {
@@ -22,8 +20,6 @@ enum LicenceType: string implements HasLabel
             LicenceType::LOISIR => 'Loisir',
             LicenceType::COMPETITION => 'Compétition',
             LicenceType::DECOUVERTE => 'Découverte',
-            LicenceType::EVENEMENTIEL => 'Événementielle',
-            LicenceType::LIBERTE => 'Liberté',
         };
     }
 }

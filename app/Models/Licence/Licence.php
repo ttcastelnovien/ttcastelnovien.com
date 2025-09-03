@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models\Licence;
 
 use App\Enums\LicenceCategory;
+use App\Enums\LicenceDiscountType;
 use App\Enums\LicenceType;
 use App\Models\HumanResource\Person;
 use App\Models\Meta\Season;
@@ -31,6 +32,8 @@ class Licence extends Pivot
     protected $fillable = [
         /** Informations sur la licence */
         'licence_type',
+        'category',
+        'is_minor',
         'has_image_rights',
         'has_exit_authorization',
         'has_care_authorization',
@@ -51,6 +54,9 @@ class Licence extends Pivot
     {
         return [
             'licence_type' => LicenceType::class,
+            'category' => LicenceCategory::class,
+            'is_minor' => 'boolean',
+            'validated' => 'boolean',
             'has_image_rights' => 'boolean',
             'has_exit_authorization' => 'boolean',
             'has_care_authorization' => 'boolean',
@@ -71,6 +77,9 @@ class Licence extends Pivot
         static::creating(function (Licence $licence) {
             $season = Season::current()->first();
             $licence->season_id = $season->id;
+
+            $licence->category = LicenceCategory::fromBirthDate($licence->person->birth_date, $licence->season);
+            $licence->is_minor = LicenceCategory::isMinorCategory($licence->category);
 
             $licenceFee = LicenceFee::query()
                 ->whereJsonContains('licence_types', $licence->licence_type)
@@ -121,11 +130,6 @@ class Licence extends Pivot
     public function getFullNameAttribute(): string
     {
         return $this->person->full_name;
-    }
-
-    public function getCategoryAttribute(): LicenceCategory
-    {
-        return LicenceCategory::fromBirthDate($this->person->birth_date, $this->season);
     }
 
     public function getImageRightsAttribute(): ?bool
@@ -307,8 +311,10 @@ class Licence extends Pivot
         $discounts = $this->licenceDiscounts()->get();
 
         if ($discounts->isNotEmpty()) {
-            $discounts->each(function ($discount) use (&$price) {
-                $price = $price->subtract($discount->amount);
+            $discounts->each(function (LicenceDiscount $discount) use (&$price) {
+                if ($discount->type === LicenceDiscountType::FAMILLE || $discount->type === LicenceDiscountType::CUSTOM) {
+                    $price = $price->subtract($discount->amount);
+                }
             });
         }
 
