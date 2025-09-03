@@ -85,7 +85,7 @@ class Seed extends Command
                 'ends_at' => Carbon::create(year: 2031, month: 6, day: 30),
             ],
         ])
-            ->each(fn ($item) => Season::query()->createOrFirst(
+            ->each(fn ($item) => Season::createOrFirst(
                 attributes: ['name' => $item['name']],
                 values: $item,
             ));
@@ -93,7 +93,7 @@ class Seed extends Command
 
     private function importSuperUser(): void
     {
-        $person = Person::query()->createOrFirst(
+        $person = Person::createOrFirst(
             attributes: ['licence_number' => config('app.superuser.licence')],
             values: [
                 'first_name' => config('app.superuser.firstname'),
@@ -106,7 +106,7 @@ class Seed extends Command
             ]
         );
 
-        User::query()->createOrFirst(
+        User::createOrFirst(
             attributes: ['username' => config('app.superuser.username')],
             values: [
                 'username' => config('app.superuser.username'),
@@ -661,7 +661,7 @@ class Seed extends Command
             ],
         ])
             ->each(function ($item) {
-                $club = Club::query()->createOrFirst(
+                $club = Club::createOrFirst(
                     attributes: ['name' => $item['club']['name']],
                     values: $item['club'],
                 );
@@ -685,8 +685,7 @@ class Seed extends Command
             foreach ($data as $item) {
                 $code = $this->normalizePCGCode($item['code']);
 
-                /** @var LedgerAccount $account */
-                $account = LedgerAccount::query()->firstOrCreate(
+                $account = LedgerAccount::firstOrCreate(
                     ['code' => $code],
                     [
                         'name' => $item['name'],
@@ -709,8 +708,7 @@ class Seed extends Command
         foreach ($children as $child) {
             $code = $this->normalizePCGCode($child['code']);
 
-            /** @var LedgerAccount $account */
-            $account = LedgerAccount::query()->firstOrCreate(
+            $account = LedgerAccount::firstOrCreate(
                 ['code' => $code],
                 [
                     'name' => $child['name'],

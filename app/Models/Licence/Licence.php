@@ -30,6 +30,9 @@ class Licence extends Pivot
 
     /** @var list<string> */
     protected $fillable = [
+        /** Informations sur la personne */
+        'first_name',
+        'last_name',
         /** Informations sur la licence */
         'licence_type',
         'category',
@@ -127,19 +130,14 @@ class Licence extends Pivot
     |--------------------------------------------------------------------------
     */
 
-    public function getFirstNameAttribute(): string
+    public function getFirstnameLastnameAttribute(): string
     {
-        return $this->person->first_name;
+        return trim($this->first_name).' '.trim(mb_strtoupper($this->last_name));
     }
 
-    public function getLastNameAttribute(): string
+    public function getLastnameFirstnameAttribute(): string
     {
-        return $this->person->last_name;
-    }
-
-    public function getFullNameAttribute(): string
-    {
-        return $this->person->full_name;
+        return trim(mb_strtoupper($this->last_name)).' '.trim($this->first_name);
     }
 
     public function getImageRightsAttribute(): ?bool
