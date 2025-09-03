@@ -78,6 +78,9 @@ class Licence extends Pivot
     protected static function booted(): void
     {
         static::creating(function (Licence $licence) {
+            $licence->first_name = $licence->person->first_name;
+            $licence->last_name = $licence->person->last_name;
+
             $season = Season::current()->first();
             $licence->season_id = $season->id;
 
