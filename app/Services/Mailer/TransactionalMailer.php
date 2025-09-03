@@ -11,7 +11,6 @@ use Brevo\Client\Api\TransactionalEmailsApi;
 use Brevo\Client\ApiException;
 use Brevo\Client\Configuration;
 use Brevo\Client\Model\SendSmtpEmail;
-use Illuminate\Http\UploadedFile;
 
 final class TransactionalMailer
 {
@@ -30,7 +29,7 @@ final class TransactionalMailer
     /**
      * @param  list<Recipient>  $recipients
      * @param  array<string, mixed>  $data
-     * @param  array<array-key, array{name: string, file: UploadedFile}>  $attachments
+     * @param  array<array-key, array{name: string, contents: string}>  $attachments
      */
     public static function send(
         MailObject $object,
@@ -43,11 +42,11 @@ final class TransactionalMailer
         $transactionalEmailOptions = [
             'sender' => ['name' => self::$senderName, 'email' => self::$senderEmail],
             'to' => array_map(fn (Recipient $recipient) => $recipient->toArray(), $recipients),
-            'attachments' => array_map(
-                /** @param array{name: string, file: UploadedFile} $attachment */
+            'attachment' => array_map(
+                /** @param array{name: string, contents: string} $attachment */
                 fn (array $attachment) => [
-                    'name' => sprintf('%s.%s', $attachment['name'], $attachment['file']->getClientOriginalExtension()),
-                    'content' => base64_encode($attachment['file']->getContent()),
+                    'name' => $attachment['name'],
+                    'content' => base64_encode($attachment['contents']),
                 ],
                 $attachments,
             ),

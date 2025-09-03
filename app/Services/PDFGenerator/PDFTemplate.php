@@ -29,6 +29,7 @@ enum PDFTemplate: string
         return match ($this) {
             self::FACTURE, self::AVOIR => ['40mm', '50mm', '5mm', '5mm'],
             self::FORMULAIRE_LICENCE => ['35mm', '12mm', '5mm', '5mm'],
+            self::ATTESTATION_LICENCE => ['70mm', '12mm', '5mm', '5mm'],
             default => ['5mm', '5mm', '5mm', '5mm'],
         };
     }
@@ -39,7 +40,7 @@ enum PDFTemplate: string
         return match ($this) {
             self::FACTURE => ['COMPTABILITÉ', 'À TRAITER', 'FACTURES', 'CLIENTS'],
             self::AVOIR => ['COMPTABILITÉ', 'À TRAITER', 'AVOIRS', 'CLIENTS'],
-            self::ATTESTATION_LICENCE => ['LICENCIÉS', '{full_name}', 'ADHÉSION'],
+            self::FORMULAIRE_LICENCE, self::ATTESTATION_LICENCE => ['LICENCIÉS', '{full_name}', 'ADHÉSION'],
             self::NOTE_FRAIS => ['COMPTABILITÉ', 'À TRAITER', 'NOTES DE FRAIS'],
             self::RECU_DON => ['COMPTABILITÉ', 'À TRAITER', 'REÇUS DE DON'],
             self::COMPTE_RESULTAT_CERFA => ['COMPTABILITÉ', 'EXPORTS', 'COMPTES DE RÉSULTAT', 'CERFA'],
@@ -47,7 +48,6 @@ enum PDFTemplate: string
             self::BILAN_FINANCIER => ['COMPTABILITÉ', 'EXPORTS', 'BILANS FINANCIERS'],
             self::JOURNAL => ['COMPTABILITÉ', 'EXPORTS', 'JOURNAUX'],
             self::BUDGET_PREVISIONNEL => ['COMPTABILITÉ', 'EXPORTS', 'BUDGETS PRÉVISIONNELS'],
-            self::FORMULAIRE_LICENCE => [],
         };
     }
 }

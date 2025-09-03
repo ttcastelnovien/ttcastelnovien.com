@@ -167,6 +167,11 @@ class LicenceTable
                         ->icon(Heroicon::OutlinedPrinter)
                         ->url(fn (Licence $record) => route('admin.gen.licence_form', ['licence' => $record]))
                         ->openUrlInNewTab(),
+                    Action::make('send_attestation')
+                        ->label('Envoyer l\'attestation')
+                        ->color('info')
+                        ->icon(Heroicon::OutlinedEnvelopeOpen)
+                        ->url(fn (Licence $record) => route('admin.gen.licence_attestation', ['licence' => $record])),
                 ])
                     ->color('gray')
                     ->label('Actions')

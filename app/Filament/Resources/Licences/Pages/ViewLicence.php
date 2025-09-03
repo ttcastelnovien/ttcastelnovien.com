@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Licences\Pages;
 use App\Filament\Resources\Licences\LicenceResource;
 use App\Models\Licence\Licence;
 use Filament\Actions\Action;
+use Filament\Actions\ActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Resources\Pages\ViewRecord;
@@ -33,12 +34,19 @@ class ViewLicence extends ViewRecord
                 ->url(fn ($record) => route('filament.admin.resources.people.view', $record->person))
                 ->color('gray')
                 ->icon(Heroicon::OutlinedEye),
-            Action::make('print_licence_form')
-                ->label('Formulaire')
-                ->color('gray')
-                ->icon(Heroicon::OutlinedPrinter)
-                ->url(fn (Licence $record) => route('admin.gen.licence_form', ['licence' => $record]))
-                ->openUrlInNewTab(),
+            ActionGroup::make([
+                Action::make('print_licence_form')
+                    ->label('Formulaire')
+                    ->color('gray')
+                    ->icon(Heroicon::OutlinedPrinter)
+                    ->url(fn (Licence $record) => route('admin.gen.licence_form', ['licence' => $record]))
+                    ->openUrlInNewTab(),
+                Action::make('send_attestation')
+                    ->label('Envoyer l\'attestation')
+                    ->color('gray')
+                    ->icon(Heroicon::OutlinedEnvelopeOpen)
+                    ->url(fn (Licence $record) => route('admin.gen.licence_attestation', ['licence' => $record])),
+            ])->label('Actions')->button()->color('info'),
             EditAction::make(),
             DeleteAction::make(),
         ];
