@@ -82,7 +82,7 @@ class Person extends Model
         static::creating(function (Person $person) {
             $parentAccount = LedgerAccount::query()->whereCode('4111000')->firstOrFail();
 
-            $ledgerAccount = LedgerAccount::query()->createOrFirst(
+            $ledgerAccount = LedgerAccount::createOrFirst(
                 attributes: ['name' => $person->lastname_firstname],
                 values: [
                     'name' => $person->lastname_firstname,
@@ -92,27 +92,38 @@ class Person extends Model
             );
 
             $person->client_ledger_account_id = $ledgerAccount->id;
+            $person->saveQuietly();
         });
 
         static::updating(function (Person $person) {
-            if (! $person->isDirty('birth_date')) {
-                return;
+            if ($person->isDirty('birth_date')) {
+                $person->licences()->get()->each(function (Licence $licence) {
+                    $licence->category = LicenceCategory::fromBirthDate($licence->person->birth_date, $licence->season);
+                    $licence->is_minor = LicenceCategory::isMinorCategory($licence->category);
+
+                    $licenceFee = LicenceFee::query()
+                        ->whereJsonContains('licence_types', $licence->licence_type)
+                        ->whereJsonContains('licence_categories', $licence->category)
+                        ->where('season_id', $licence->season->id)
+                        ->firstOrFail();
+
+                    $licence->licence_fee_id = $licenceFee->id;
+
+                    $licence->saveQuietly();
+                });
             }
 
-            $person->licences()->get()->each(function (Licence $licence) {
-                $licence->category = LicenceCategory::fromBirthDate($licence->person->birth_date, $licence->season);
-                $licence->is_minor = LicenceCategory::isMinorCategory($licence->category);
+            if ($person->isDirty(['first_name', 'last_name'])) {
+                $person->licences()->get()->each(function (Licence $licence) use ($person) {
+                    $licence->first_name = $person->first_name;
+                    $licence->last_name = $person->last_name;
+                    $licence->saveQuietly();
+                });
 
-                $licenceFee = LicenceFee::query()
-                    ->whereJsonContains('licence_types', $licence->licence_type)
-                    ->whereJsonContains('licence_categories', $licence->category)
-                    ->where('season_id', $licence->season->id)
-                    ->firstOrFail();
-
-                $licence->licence_fee_id = $licenceFee->id;
-
-                $licence->save();
-            });
+                $ledgerAccount = $person->clientLedgerAccount;
+                $ledgerAccount->name = $person->lastname_firstname;
+                $ledgerAccount->saveQuietly();
+            }
         });
     }
 
