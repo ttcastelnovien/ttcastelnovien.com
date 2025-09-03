@@ -28,18 +28,25 @@ class LicenceTable
     {
         return $table
             ->columns([
-                TextColumn::make('full_name')
+                TextColumn::make('last_name')
                     ->label('Nom')
+                    ->sortable()
+                    ->searchable(),
+                TextColumn::make('first_name')
+                    ->label('Prénom')
+                    ->sortable()
                     ->searchable(),
                 TextColumn::make('final_price')
                     ->label('Montant'),
                 TextColumn::make('licence_type')
                     ->label('Type')
                     ->formatStateUsing(fn (LicenceType $state) => $state->value)
+                    ->sortable()
                     ->searchable(),
                 TextColumn::make('category')
                     ->label('Cat.')
                     ->formatStateUsing(fn (LicenceCategory $state) => $state->value)
+                    ->sortable()
                     ->searchable(),
                 CheckboxColumn::make('is_minor')
                     ->label('Mineur')
@@ -136,12 +143,8 @@ class LicenceTable
                     ->preload()
                     ->selectablePlaceholder(false)
                     ->default(Season::current()->first()->id),
-                TernaryFilter::make('person.is_minor')
-                    ->label('Mineur')
-                    ->queries(
-                        true: fn (Builder $query) => $query->joinRelationship('person')->select('people')->where('people.birth_date', '>', now()->subYears(19)),
-                        false: fn (Builder $query) => $query->joinRelationship('person')->where('birth_date', '<=', now()->subYears(19)),
-                    ),
+                TernaryFilter::make('is_minor')
+                    ->label('Mineur'),
             ])
             ->recordActions([
                 ActionGroup::make([
