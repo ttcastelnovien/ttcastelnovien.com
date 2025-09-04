@@ -14,6 +14,7 @@ use App\Filament\Resources\People\Schemas\PersonInfolist;
 use App\Filament\Resources\People\Tables\PeopleTable;
 use App\Models\HumanResource\Person;
 use BackedEnum;
+use Filament\Resources\RelationManagers\RelationGroup;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -58,8 +59,10 @@ class PersonResource extends Resource
         return [
             LicencesRelationManager::class,
             MedicalCertificatesRelationManager::class,
-            ParentsRelationManager::class,
-            ChildrenRelationManager::class,
+            RelationGroup::make('Famille', [
+                ParentsRelationManager::class,
+                ChildrenRelationManager::class,
+            ]),
         ];
     }
 
