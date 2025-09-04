@@ -79,4 +79,15 @@ class Season extends Model
     {
         return $this->hasMany(Licence::class);
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Accessors
+    |--------------------------------------------------------------------------
+    */
+
+    public function getYearsAttribute(): string
+    {
+        return $this->starts_at->format('Y').'-'.$this->ends_at->format('Y');
+    }
 }

@@ -101,4 +101,45 @@ class LicenceForm
                     ->hiddenOn(Operation::Create),
             ])->columns(1);
     }
+
+    public static function configureFromRelationManager(Schema $schema): Schema
+    {
+        return $schema
+            ->components([
+                Select::make('licence_type')
+                    ->label('Type')
+                    ->options(LicenceType::class)
+                    ->default('P')
+                    ->required(),
+                Repeater::make('licenceDiscounts')
+                    ->label('Réductions appliquées')
+                    ->relationship()
+                    ->itemLabel(fn (array $state): ?string => $state['name'] ?? null)
+                    ->defaultItems(0)
+                    ->table([
+                        Repeater\TableColumn::make('Type'),
+                        Repeater\TableColumn::make('Montant'),
+                        Repeater\TableColumn::make('Référence'),
+                    ])
+                    ->schema([
+                        Select::make('type')
+                            ->label('Type de réduction')
+                            ->options(LicenceDiscountType::class)
+                            ->preload()
+                            ->required(),
+                        MoneyInput::make('amount')
+                            ->label('Montant de la réduction')
+                            ->required(),
+                        TextInput::make('reference')
+                            ->label('Référence'),
+                    ]),
+                MarkdownEditor::make('observations')
+                    ->label('Observations')
+                    ->toolbarButtons([
+                        ['bold', 'italic', 'strike', 'link'],
+                        ['bulletList', 'orderedList'],
+                        ['undo', 'redo'],
+                    ]),
+            ])->columns(1);
+    }
 }
