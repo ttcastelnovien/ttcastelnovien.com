@@ -71,6 +71,10 @@ class PersonForm
                         ->label('Nom du père si pas FR'),
                     TextInput::make('mother_name')
                         ->label('Nom de la mère si pas FR'),
+                    TextInput::make('clothing_size')
+                        ->label('Taille de vêtement'),
+                    TextInput::make('pants_size')
+                        ->label('Taille de pantalon'),
                 ]),
                 Fieldset::make('Famille')->components([
                     Select::make('parents')

@@ -2,6 +2,7 @@
 
 namespace App\Models\HumanResource;
 
+use App\Enums\ClothingSize;
 use App\Enums\LicenceCategory;
 use App\Enums\Sex;
 use App\Models\Accounting\LedgerAccount;
@@ -57,6 +58,8 @@ class Person extends Model
         'nationality',
         'father_name',
         'mother_name',
+        'clothing_size',
+        'pants_size',
         'last_image_rights_authorization_date',
         'client_ledger_account_id',
     ];
@@ -68,6 +71,8 @@ class Person extends Model
             'sex' => Sex::class,
             'birth_date' => 'date',
             'last_image_rights_authorization_date' => 'date',
+            'clothing_size' => ClothingSize::class,
+            'pants_size' => ClothingSize::class,
         ];
     }
 
