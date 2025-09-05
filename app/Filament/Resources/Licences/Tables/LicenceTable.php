@@ -28,11 +28,11 @@ class LicenceTable
     {
         return $table
             ->columns([
-                TextColumn::make('last_name')
+                TextColumn::make('lastname')
                     ->label('Nom')
                     ->sortable()
                     ->searchable(),
-                TextColumn::make('first_name')
+                TextColumn::make('firstname')
                     ->label('Prénom')
                     ->sortable()
                     ->searchable(),
@@ -155,7 +155,7 @@ class LicenceTable
                     ->options(LicenceCategory::class),
             ])
             ->defaultSort(function (Builder $query): Builder {
-                return $query->orderBy('last_name')->orderBy('first_name');
+                return $query->orderBy('lastname')->orderBy('firstname');
             })
             ->recordActions([
                 ActionGroup::make([

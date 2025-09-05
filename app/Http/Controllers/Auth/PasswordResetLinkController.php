@@ -63,9 +63,9 @@ class PasswordResetLinkController extends Controller
         foreach ($recipients as $recipient) {
             TransactionalMailer::send(
                 object: MailObject::FORGOT_PASSWORD,
-                recipients: [new Recipient($recipient->email, $recipient->full_name)],
+                recipients: [new Recipient($recipient->email, $recipient->firstname_lastname)],
                 data: [
-                    'firstname' => $user->person->first_name,
+                    'firstname' => $user->person->firstname,
                     'email' => $recipient->email,
                     'confirm_url' => URL::signedRoute(
                         name: 'password.reset',

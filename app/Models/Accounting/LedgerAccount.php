@@ -33,6 +33,11 @@ class LedgerAccount extends Model
         'default_journal_id',
     ];
 
+    /** @var list<string> */
+    protected $appends = [
+        'fullname',
+    ];
+
     /** @return array<string, string> */
     protected function casts(): array
     {
@@ -69,17 +74,6 @@ class LedgerAccount extends Model
     public function children(): HasMany
     {
         return $this->hasMany(LedgerAccount::class);
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Accessors
-    |--------------------------------------------------------------------------
-    */
-
-    public function getFullNameAttribute(): string
-    {
-        return sprintf('%s - %s', $this->code, $this->name);
     }
 
     /*

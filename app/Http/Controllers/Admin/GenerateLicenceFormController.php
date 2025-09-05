@@ -14,7 +14,7 @@ class GenerateLicenceFormController extends Controller
 {
     public function __invoke(Licence $licence)
     {
-        $filename = Str::snake(sprintf('formulaire_licence%s%s', $licence->person->last_name, $licence->person->first_name));
+        $filename = Str::snake(sprintf('formulaire_licence%s%s', $licence->person->lastname, $licence->person->firstname));
 
         $response = PDFGenerator::generateInMemory(
             template: PDFTemplate::FORMULAIRE_LICENCE,

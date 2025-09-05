@@ -12,6 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('licences', function (Blueprint $table) {
+            /*
+            |-------------------------------------------------------------------
+            | Colonnes
+            |-------------------------------------------------------------------
+            */
+
             $table->text('first_name')->default('');
             $table->text('last_name')->default('');
         });

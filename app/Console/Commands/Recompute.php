@@ -40,9 +40,10 @@ class Recompute extends Command
         $season = Season::current()->first();
         $licences = Licence::query()->whereSeasonId($season->id)->get();
 
+        /** @var Licence $licence */
         foreach ($licences as $licence) {
-            $licence->first_name = $licence->person->first_name;
-            $licence->last_name = $licence->person->last_name;
+            $licence->firstname = $licence->person->firstname;
+            $licence->lastname = $licence->person->lastname;
             $licence->category = LicenceCategory::fromBirthDate($licence->person->birth_date, $licence->season);
             $licence->is_minor = LicenceCategory::isMinorCategory($licence->category);
 

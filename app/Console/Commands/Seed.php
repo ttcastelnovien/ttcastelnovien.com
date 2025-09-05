@@ -96,8 +96,8 @@ class Seed extends Command
         $person = Person::createOrFirst(
             attributes: ['licence_number' => config('app.superuser.licence')],
             values: [
-                'first_name' => config('app.superuser.firstname'),
-                'last_name' => config('app.superuser.lastname'),
+                'firstname' => config('app.superuser.firstname'),
+                'lastname' => config('app.superuser.lastname'),
                 'licence_number' => config('app.superuser.licence'),
                 'birth_date' => config('app.superuser.birth_date'),
                 'address_line_1' => config('app.superuser.address'),

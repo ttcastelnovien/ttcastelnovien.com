@@ -22,11 +22,11 @@ class LicenceFeeResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Tarifs de licence';
 
-    protected static string|UnitEnum|null $navigationGroup = NavigationGroup::SPORTIF;
+    protected static string|UnitEnum|null $navigationGroup = NavigationGroup::GESTION_HUMAINE;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedTicket;
 
-    protected static ?int $navigationSort = 200;
+    protected static ?int $navigationSort = 400;
 
     protected static ?string $recordTitleAttribute = 'name';
 
