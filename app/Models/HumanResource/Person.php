@@ -2,6 +2,7 @@
 
 namespace App\Models\HumanResource;
 
+use App\Enums\ClothingSize;
 use App\Enums\LicenceCategory;
 use App\Enums\Sex;
 use App\Models\Accounting\LedgerAccount;
@@ -40,8 +41,8 @@ class Person extends Model
 
     /** @var list<string> */
     protected $fillable = [
-        'first_name',
-        'last_name',
+        'firstname',
+        'lastname',
         'sex',
         'birth_name',
         'birth_date',
@@ -57,8 +58,16 @@ class Person extends Model
         'nationality',
         'father_name',
         'mother_name',
+        'clothing_size',
+        'pants_size',
         'last_image_rights_authorization_date',
         'client_ledger_account_id',
+    ];
+
+    /** @var list<string> */
+    protected $appends = [
+        'lastname_firstname',
+        'firstname_lastname',
     ];
 
     /** @return array<string, string> */
@@ -68,6 +77,8 @@ class Person extends Model
             'sex' => Sex::class,
             'birth_date' => 'date',
             'last_image_rights_authorization_date' => 'date',
+            'clothing_size' => ClothingSize::class,
+            'pants_size' => ClothingSize::class,
         ];
     }
 
@@ -81,11 +92,12 @@ class Person extends Model
     {
         static::creating(function (Person $person) {
             $parentAccount = LedgerAccount::query()->whereCode('4111000')->firstOrFail();
+            $personFullname = mb_strtoupper($person->lastname).' '.$person->firstname;
 
-            $ledgerAccount = LedgerAccount::createOrFirst(
-                attributes: ['name' => $person->lastname_firstname],
+            $ledgerAccount = LedgerAccount::query()->createOrFirst(
+                attributes: ['name' => $personFullname],
                 values: [
-                    'name' => $person->lastname_firstname,
+                    'name' => $personFullname,
                     'code' => LedgerAccount::nextAccountCode($parentAccount),
                     'parent_id' => $parentAccount->id,
                 ],
@@ -111,10 +123,10 @@ class Person extends Model
                 });
             }
 
-            if ($person->isDirty(['first_name', 'last_name'])) {
+            if ($person->isDirty(['firstname', 'lastname'])) {
                 $person->licences()->get()->each(function (Licence $licence) use ($person) {
-                    $licence->first_name = $person->first_name;
-                    $licence->last_name = $person->last_name;
+                    $licence->firstname = $person->firstname;
+                    $licence->lastname = $person->lastname;
                     $licence->save();
                 });
 
@@ -194,16 +206,6 @@ class Person extends Model
     | Accessors
     |--------------------------------------------------------------------------
     */
-
-    public function getFullNameAttribute(): string
-    {
-        return trim($this->first_name).' '.trim(mb_strtoupper($this->last_name));
-    }
-
-    public function getLastnameFirstnameAttribute(): string
-    {
-        return trim(mb_strtoupper($this->last_name)).' '.trim($this->first_name);
-    }
 
     public function getIsMinorAttribute(): bool
     {

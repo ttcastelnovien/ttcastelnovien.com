@@ -114,11 +114,11 @@ class EventForm
                         ->label('Membres')
                         ->relationship(
                             name: 'people',
-                            modifyQueryUsing: fn ($query, $get) => $query->where('id', '!=', $get('id'))->orderBy('first_name')->orderBy('last_name')
+                            modifyQueryUsing: fn ($query, $get) => $query->where('id', '!=', $get('id'))->orderBy('lastname')->orderBy('firstname')
                         )
                         ->multiple()
-                        ->getOptionLabelFromRecordUsing(fn (Person $person) => $person->full_name)
-                        ->searchable(['first_name', 'last_name'])
+                        ->getOptionLabelFromRecordUsing(fn (Person $person) => $person->lastname_firstname)
+                        ->searchable(['lastname_firstname'])
                         ->preload(),
                 ])->columns(1),
                 Select::make('season')

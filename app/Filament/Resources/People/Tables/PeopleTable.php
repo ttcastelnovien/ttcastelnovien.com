@@ -29,11 +29,11 @@ class PeopleTable
     {
         return $table
             ->columns([
-                TextColumn::make('last_name')
+                TextColumn::make('lastname')
                     ->label('Nom')
                     ->sortable()
                     ->searchable(),
-                TextColumn::make('first_name')
+                TextColumn::make('firstname')
                     ->label('Prénom')
                     ->sortable()
                     ->searchable(),
@@ -56,7 +56,7 @@ class PeopleTable
                     ->label('Sexe'),
             ])
             ->defaultSort(function (Builder $query): Builder {
-                return $query->orderBy('last_name')->orderBy('first_name');
+                return $query->orderBy('lastname')->orderBy('firstname');
             })
             ->recordActions([
                 ActionGroup::make([
@@ -93,9 +93,9 @@ class PeopleTable
                             foreach ($recipients as $recipient) {
                                 TransactionalMailer::send(
                                     object: MailObject::INVITATION,
-                                    recipients: [new Recipient($recipient->email, $recipient->full_name)],
+                                    recipients: [new Recipient($recipient->email, $recipient->firstname_lastname)],
                                     data: [
-                                        'firstname' => $person->first_name,
+                                        'firstname' => $person->firstname,
                                         'email' => $recipient->email,
                                         'confirm_url' => URL::signedRoute(
                                             name: 'public.invite.show',

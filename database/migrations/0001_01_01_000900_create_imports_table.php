@@ -42,6 +42,7 @@ return new class extends Migration
             | Contraintes
             |-------------------------------------------------------------------
             */
+
             $table->foreign('user_id')->references('id')->on('users')->cascadeOnDelete();
         });
     }

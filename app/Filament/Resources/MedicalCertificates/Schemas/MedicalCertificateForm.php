@@ -20,10 +20,10 @@ class MedicalCertificateForm
                     ->label('Personne')
                     ->relationship(
                         name: 'person',
-                        modifyQueryUsing: fn ($query, $get) => $query->where('id', '!=', $get('id'))->orderBy('first_name')->orderBy('last_name')
+                        modifyQueryUsing: fn ($query, $get) => $query->where('id', '!=', $get('id'))->orderBy('lastname')->orderBy('firstname')
                     )
-                    ->getOptionLabelFromRecordUsing(fn (Person $person) => $person->full_name)
-                    ->searchable(['first_name', 'last_name'])
+                    ->getOptionLabelFromRecordUsing(fn (Person $person) => $person->lastname_firstname)
+                    ->searchable(['lastname_firstname'])
                     ->preload()
                     ->required(),
                 TextInput::make('doctor_name')

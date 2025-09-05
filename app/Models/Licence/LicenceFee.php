@@ -57,6 +57,20 @@ class LicenceFee extends Model
         static::creating(function (LicenceFee $licenceFee) {
             $licenceFee->season_id = Season::current()->first()->id;
         });
+
+        static::updating(function (LicenceFee $licenceFee) {
+            $licenceFee->licences()->each(function (Licence $licence) use ($licenceFee) {
+                $licence->amount = $licenceFee->price;
+
+                $discountedPrice = $licenceFee->price;
+
+                $licence->licenceDiscounts()->each(function (LicenceDiscount $discount) use (&$discountedPrice) {
+                    $discountedPrice->subtract($discount->amount);
+                });
+
+                $licence->discounted_amount = $discountedPrice->isNegative() ? 0 : $discountedPrice;
+            });
+        });
     }
 
     /*
