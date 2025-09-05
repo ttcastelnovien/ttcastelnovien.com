@@ -64,12 +64,6 @@ class Person extends Model
         'client_ledger_account_id',
     ];
 
-    /** @var list<string> */
-    protected $appends = [
-        'lastname_firstname',
-        'firstname_lastname',
-    ];
-
     /** @return array<string, string> */
     protected function casts(): array
     {
