@@ -52,12 +52,6 @@ class Licence extends Pivot
         'licence_fee_id',
     ];
 
-    /** @var list<string> */
-    protected $appends = [
-        'firstname_lastname',
-        'lastname_firstname',
-    ];
-
     /** @return array<string, string> */
     protected function casts(): array
     {

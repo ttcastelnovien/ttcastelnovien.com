@@ -33,11 +33,6 @@ class LedgerAccount extends Model
         'default_journal_id',
     ];
 
-    /** @var list<string> */
-    protected $appends = [
-        'fullname',
-    ];
-
     /** @return array<string, string> */
     protected function casts(): array
     {
