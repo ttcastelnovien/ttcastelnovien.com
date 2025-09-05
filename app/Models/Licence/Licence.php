@@ -319,7 +319,7 @@ class Licence extends Pivot
 
         if ($discounts->isNotEmpty()) {
             $discounts->each(function (LicenceDiscount $discount) use (&$price) {
-                if ($discount->type === LicenceDiscountType::FAMILLE || $discount->type === LicenceDiscountType::CUSTOM) {
+                if ($discount->type === LicenceDiscountType::FAMILLE) {
                     $price = $price->subtract($discount->amount);
                 }
             });
