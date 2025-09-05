@@ -11,21 +11,21 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('ledger_accounts', function (Blueprint $table) {
-            $table->text('fullname')->storedAs('concat(code, \' - \', name)')->after('code');
+            $table->text('fullname')->storedAs("code || ' - ' || name")->after('code');
         });
 
         Schema::table('people', function (Blueprint $table) {
             $table->renameColumn('first_name', 'firstname');
             $table->renameColumn('last_name', 'lastname');
-            $table->text('firstname_lastname')->storedAs("concat(firstname, ' ', upper(lastname))")->after('lastname');
-            $table->text('lastname_firstname')->storedAs("concat(upper(lastname), ' ', firstname)")->after('firstname_lastname');
+            $table->text('firstname_lastname')->storedAs("firstname || ' ' || upper(lastname)")->after('lastname');
+            $table->text('lastname_firstname')->storedAs("upper(lastname) || ' ' || firstname")->after('firstname_lastname');
         });
 
         Schema::table('licences', function (Blueprint $table) {
             $table->renameColumn('first_name', 'firstname');
             $table->renameColumn('last_name', 'lastname');
-            $table->text('firstname_lastname')->storedAs("concat(firstname, ' ', upper(lastname))")->after('lastname');
-            $table->text('lastname_firstname')->storedAs("concat(upper(lastname), ' ', firstname)")->after('firstname_lastname');
+            $table->text('firstname_lastname')->storedAs("firstname || ' ' || upper(lastname)")->after('lastname');
+            $table->text('lastname_firstname')->storedAs("upper(lastname) || ' ' || firstname")->after('firstname_lastname');
         });
     }
 

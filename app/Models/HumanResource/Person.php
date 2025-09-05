@@ -92,11 +92,12 @@ class Person extends Model
     {
         static::creating(function (Person $person) {
             $parentAccount = LedgerAccount::query()->whereCode('4111000')->firstOrFail();
+            $personFullname = mb_strtoupper($person->lastname).' '.$person->firstname;
 
-            $ledgerAccount = LedgerAccount::createOrFirst(
-                attributes: ['name' => $person->lastname_firstname],
+            $ledgerAccount = LedgerAccount::query()->createOrFirst(
+                attributes: ['name' => $personFullname],
                 values: [
-                    'name' => $person->lastname_firstname,
+                    'name' => $personFullname,
                     'code' => LedgerAccount::nextAccountCode($parentAccount),
                     'parent_id' => $parentAccount->id,
                 ],
