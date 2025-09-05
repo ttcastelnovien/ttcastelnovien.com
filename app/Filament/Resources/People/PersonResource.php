@@ -35,7 +35,7 @@ class PersonResource extends Resource
 
     protected static ?int $navigationSort = 100;
 
-    protected static ?string $recordTitleAttribute = 'full_name';
+    protected static ?string $recordTitleAttribute = 'lastname_firstname';
 
     public static function form(Schema $schema): Schema
     {

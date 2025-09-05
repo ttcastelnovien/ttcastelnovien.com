@@ -17,10 +17,10 @@ class PersonForm
         return $schema
             ->components([
                 Fieldset::make('Identité')->components([
-                    TextInput::make('first_name')
+                    TextInput::make('firstname')
                         ->label('Prénom')
                         ->required(),
-                    TextInput::make('last_name')
+                    TextInput::make('lastname')
                         ->label('Nom')
                         ->required(),
                     Select::make('sex')
@@ -82,10 +82,10 @@ class PersonForm
                         ->multiple()
                         ->relationship(
                             name: 'parents',
-                            modifyQueryUsing: fn ($query, $get) => $query->where('id', '!=', $get('id'))->orderBy('first_name')->orderBy('last_name')
+                            modifyQueryUsing: fn ($query, $get) => $query->where('id', '!=', $get('id'))->orderBy('lastname')->orderBy('firstname')
                         )
-                        ->getOptionLabelFromRecordUsing(fn (Person $person) => $person->full_name)
-                        ->searchable(['first_name', 'last_name'])
+                        ->getOptionLabelFromRecordUsing(fn (Person $person) => $person->lastname_firstname)
+                        ->searchable(['lastname_firstname'])
                         ->preload()
                         ->createOptionForm(fn (Schema $schema) => self::configure($schema)),
                     Select::make('children')
@@ -93,10 +93,10 @@ class PersonForm
                         ->multiple()
                         ->relationship(
                             name: 'children',
-                            modifyQueryUsing: fn ($query, $get) => $query->where('id', '!=', $get('id'))->orderBy('first_name')->orderBy('last_name')
+                            modifyQueryUsing: fn ($query, $get) => $query->where('id', '!=', $get('id'))->orderBy('lastname')->orderBy('firstname')
                         )
-                        ->getOptionLabelFromRecordUsing(fn (Person $person) => $person->full_name)
-                        ->searchable(['first_name', 'last_name'])
+                        ->getOptionLabelFromRecordUsing(fn (Person $person) => $person->lastname_firstname)
+                        ->searchable(['lastname_firstname'])
                         ->preload()
                         ->createOptionForm(fn (Schema $schema) => self::configure($schema)),
                 ]),

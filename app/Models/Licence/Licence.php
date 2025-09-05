@@ -31,8 +31,8 @@ class Licence extends Pivot
     /** @var list<string> */
     protected $fillable = [
         /** Informations sur la personne */
-        'first_name',
-        'last_name',
+        'firstname',
+        'lastname',
         /** Informations sur la licence */
         'licence_type',
         'category',
@@ -50,6 +50,12 @@ class Licence extends Pivot
         'person_id',
         'season_id',
         'licence_fee_id',
+    ];
+
+    /** @var list<string> */
+    protected $appends = [
+        'firstname_lastname',
+        'lastname_firstname',
     ];
 
     /** @return array<string, string> */
@@ -78,8 +84,8 @@ class Licence extends Pivot
     protected static function booted(): void
     {
         static::creating(function (Licence $licence) {
-            $licence->first_name = $licence->person->first_name;
-            $licence->last_name = $licence->person->last_name;
+            $licence->firstname = $licence->person->firstname;
+            $licence->lastname = $licence->person->lastname;
 
             $season = Season::current()->first();
             $licence->season_id = $season->id;
@@ -132,16 +138,6 @@ class Licence extends Pivot
     | Accessors
     |--------------------------------------------------------------------------
     */
-
-    public function getFirstnameLastnameAttribute(): string
-    {
-        return trim($this->first_name).' '.trim(mb_strtoupper($this->last_name));
-    }
-
-    public function getLastnameFirstnameAttribute(): string
-    {
-        return trim(mb_strtoupper($this->last_name)).' '.trim($this->first_name);
-    }
 
     public function getImageRightsAttribute(): ?bool
     {

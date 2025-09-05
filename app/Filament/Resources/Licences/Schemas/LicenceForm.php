@@ -30,10 +30,10 @@ class LicenceForm
                     ->label('Personne')
                     ->relationship(
                         name: 'person',
-                        modifyQueryUsing: fn ($query, $get) => $query->where('id', '!=', $get('id'))->orderBy('first_name')->orderBy('last_name')
+                        modifyQueryUsing: fn ($query, $get) => $query->where('id', '!=', $get('id'))->orderBy('lastname')->orderBy('firstname')
                     )
-                    ->getOptionLabelFromRecordUsing(fn (Person $person) => $person->is_minor ? "$person->full_name (mineur)" : $person->full_name)
-                    ->searchable(['first_name', 'last_name'])
+                    ->getOptionLabelFromRecordUsing(fn (Person $person) => $person->is_minor ? "$person->lastname_firstname (mineur)" : $person->lastname_firstname)
+                    ->searchable(['lastname_firstname'])
                     ->preload()
                     ->createOptionForm(fn (Schema $schema) => PersonForm::configure($schema))
                     ->required(),

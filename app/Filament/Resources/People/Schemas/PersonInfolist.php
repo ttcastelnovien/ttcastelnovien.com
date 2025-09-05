@@ -16,8 +16,8 @@ class PersonInfolist
                 Tabs::make('Tabs')
                     ->tabs([
                         Tab::make('Identité')->components([
-                            TextEntry::make('first_name')->label('Prénom')->inlineLabel(),
-                            TextEntry::make('last_name')->label('Nom')->inlineLabel(),
+                            TextEntry::make('firstname')->label('Prénom')->inlineLabel(),
+                            TextEntry::make('lastname')->label('Nom')->inlineLabel(),
                             TextEntry::make('sex')->label('Sexe')->inlineLabel(),
                             TextEntry::make('birth_name')->label('Nom de naissance')->inlineLabel(),
                             TextEntry::make('birth_date')->date()->label('Date de naissance')->inlineLabel(),

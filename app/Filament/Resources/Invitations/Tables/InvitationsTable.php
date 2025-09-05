@@ -12,7 +12,7 @@ class InvitationsTable
     {
         return $table
             ->columns([
-                TextColumn::make('person.full_name')
+                TextColumn::make('person.lastname_firstname')
                     ->label('Personne'),
                 TextColumn::make('roles')
                     ->label('Rôles'),

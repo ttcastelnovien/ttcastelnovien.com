@@ -41,8 +41,8 @@ class Person extends Model
 
     /** @var list<string> */
     protected $fillable = [
-        'first_name',
-        'last_name',
+        'firstname',
+        'lastname',
         'sex',
         'birth_name',
         'birth_date',
@@ -62,6 +62,12 @@ class Person extends Model
         'pants_size',
         'last_image_rights_authorization_date',
         'client_ledger_account_id',
+    ];
+
+    /** @var list<string> */
+    protected $appends = [
+        'lastname_firstname',
+        'firstname_lastname',
     ];
 
     /** @return array<string, string> */
@@ -116,10 +122,10 @@ class Person extends Model
                 });
             }
 
-            if ($person->isDirty(['first_name', 'last_name'])) {
+            if ($person->isDirty(['firstname', 'lastname'])) {
                 $person->licences()->get()->each(function (Licence $licence) use ($person) {
-                    $licence->first_name = $person->first_name;
-                    $licence->last_name = $person->last_name;
+                    $licence->firstname = $person->firstname;
+                    $licence->lastname = $person->lastname;
                     $licence->save();
                 });
 
@@ -199,16 +205,6 @@ class Person extends Model
     | Accessors
     |--------------------------------------------------------------------------
     */
-
-    public function getFullNameAttribute(): string
-    {
-        return trim($this->first_name).' '.trim(mb_strtoupper($this->last_name));
-    }
-
-    public function getLastnameFirstnameAttribute(): string
-    {
-        return trim(mb_strtoupper($this->last_name)).' '.trim($this->first_name);
-    }
 
     public function getIsMinorAttribute(): bool
     {
