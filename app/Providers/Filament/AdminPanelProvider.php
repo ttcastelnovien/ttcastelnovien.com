@@ -2,7 +2,6 @@
 
 namespace App\Providers\Filament;
 
-use App\Filament\Enum\NavigationGroup;
 use Filament\Actions\Action;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -64,14 +63,6 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
-            ])
-            ->navigationGroups([
-                NavigationGroup::GESTION_HUMAINE->getLabel(),
-                NavigationGroup::COMMUNICATION->getLabel(),
-                NavigationGroup::COMPTABILITE->getLabel(),
-                NavigationGroup::SPORTIF->getLabel(),
-                NavigationGroup::DOCUMENTAIRE->getLabel(),
-                NavigationGroup::META->getLabel(),
             ])
             ->userMenuItems([
                 Action::make('dashboard')

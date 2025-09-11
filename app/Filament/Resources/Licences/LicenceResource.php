@@ -32,6 +32,16 @@ class LicenceResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'lastname_firstname';
 
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
+    }
+
+    public static function getNavigationBadgeColor(): ?string
+    {
+        return 'gray';
+    }
+
     public static function form(Schema $schema): Schema
     {
         return LicenceForm::configure($schema);
