@@ -20,7 +20,7 @@ use Illuminate\Database\Eloquent\Builder;
 
 class LicenceForm
 {
-    public static function configure(Schema $schema): Schema
+    public static function configure(Schema $schema, bool $fromRelationManager = false): Schema
     {
         return $schema
             ->components([
@@ -34,6 +34,7 @@ class LicenceForm
                     ->searchable(['lastname_firstname'])
                     ->preload()
                     ->createOptionForm(fn (Schema $schema) => PersonForm::configure($schema))
+                    ->hidden($fromRelationManager)
                     ->required(),
                 Select::make('type')
                     ->label('Type')
@@ -110,36 +111,6 @@ class LicenceForm
                 Toggle::make('validated')
                     ->label('Validé FFTT')
                     ->hiddenOn(Operation::Create),
-            ])->columns(1);
-    }
-
-    public static function configureFromRelationManager(Schema $schema): Schema
-    {
-        return $schema
-            ->components([
-                Select::make('type')
-                    ->label('Type')
-                    ->options(LicenceType::class)
-                    ->default('P')
-                    ->required(),
-                Repeater::make('licenceDiscounts')
-                    ->label('Réductions appliquées')
-                    ->relationship()
-                    ->itemLabel(fn (array $state): ?string => $state['name'] ?? null)
-                    ->defaultItems(0)
-                    ->table([
-                        Repeater\TableColumn::make('Type'),
-                        Repeater\TableColumn::make('Montant'),
-                        Repeater\TableColumn::make('Référence'),
-                    ])
-                    ->schema(fn (Schema $schema) => LicenceDiscountForm::configure($schema)->getComponents()),
-                MarkdownEditor::make('observations')
-                    ->label('Observations')
-                    ->toolbarButtons([
-                        ['bold', 'italic', 'strike', 'link'],
-                        ['bulletList', 'orderedList'],
-                        ['undo', 'redo'],
-                    ]),
             ])->columns(1);
     }
 }

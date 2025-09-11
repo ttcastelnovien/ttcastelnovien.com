@@ -24,7 +24,7 @@ class LicencesRelationManager extends RelationManager
 
     public function form(Schema $schema): Schema
     {
-        return LicenceForm::configureFromRelationManager($schema);
+        return LicenceForm::configure($schema, fromRelationManager: true);
     }
 
     public function table(Table $table): Table
