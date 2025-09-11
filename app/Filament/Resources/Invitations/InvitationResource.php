@@ -22,11 +22,11 @@ class InvitationResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Invitations';
 
-    protected static string|UnitEnum|null $navigationGroup = NavigationGroup::GESTION_HUMAINE;
+    protected static string|UnitEnum|null $navigationGroup = NavigationGroup::SECURITY;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedLink;
 
-    protected static ?int $navigationSort = 400;
+    protected static ?int $navigationSort = 200;
 
     protected static ?string $recordTitleAttribute = 'name';
 
