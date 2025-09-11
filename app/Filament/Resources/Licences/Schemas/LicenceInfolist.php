@@ -51,10 +51,12 @@ class LicenceInfolist
                             RepeatableEntry::make('licenceDiscounts')
                                 ->label('Réductions appliquées')
                                 ->schema([
-                                    TextEntry::make('type')->label('Type'),
+                                    TextEntry::make('type.name')->label('Type'),
                                     TextEntry::make('amount')->label('Montant')->money('EUR', divideBy: 100),
                                     TextEntry::make('reference')->label('Référence'),
-                                ]),
+                                ])
+                                ->columns(3)
+                                ->inlineLabel(),
                             TextEntry::make('observations')
                                 ->label('Observations')
                                 ->inlineLabel()

@@ -2,9 +2,8 @@
 
 namespace App\Filament\Resources\Licences\Schemas;
 
-use App\Enums\LicenceDiscountType;
 use App\Enums\LicenceType;
-use App\Filament\Forms\Components\MoneyInput;
+use App\Filament\Resources\LicenceDiscounts\Schemas\LicenceDiscountForm;
 use App\Filament\Resources\People\Schemas\PersonForm;
 use App\Models\HumanResource\Person;
 use App\Models\Licence\Licence;
@@ -13,7 +12,6 @@ use App\Models\Meta\Season;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Fieldset;
 use Filament\Schemas\Schema;
@@ -101,18 +99,7 @@ class LicenceForm
                         Repeater\TableColumn::make('Montant'),
                         Repeater\TableColumn::make('Référence'),
                     ])
-                    ->schema([
-                        Select::make('type')
-                            ->label('Type de réduction')
-                            ->relationship(name: 'type', titleAttribute: 'name')
-                            ->preload()
-                            ->required(),
-                        MoneyInput::make('amount')
-                            ->label('Montant de la réduction')
-                            ->required(),
-                        TextInput::make('reference')
-                            ->label('Référence'),
-                    ]),
+                    ->schema(fn (Schema $schema) => LicenceDiscountForm::configure($schema)->getComponents()),
                 MarkdownEditor::make('observations')
                     ->label('Observations')
                     ->toolbarButtons([
@@ -145,18 +132,7 @@ class LicenceForm
                         Repeater\TableColumn::make('Montant'),
                         Repeater\TableColumn::make('Référence'),
                     ])
-                    ->schema([
-                        Select::make('type')
-                            ->label('Type de réduction')
-                            ->options(LicenceDiscountType::class)
-                            ->preload()
-                            ->required(),
-                        MoneyInput::make('amount')
-                            ->label('Montant de la réduction')
-                            ->required(),
-                        TextInput::make('reference')
-                            ->label('Référence'),
-                    ]),
+                    ->schema(fn (Schema $schema) => LicenceDiscountForm::configure($schema)->getComponents()),
                 MarkdownEditor::make('observations')
                     ->label('Observations')
                     ->toolbarButtons([
