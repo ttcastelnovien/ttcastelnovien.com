@@ -17,12 +17,14 @@ return new class extends Migration
             |-------------------------------------------------------------------
             */
 
-            $table->text('first_name');
-            $table->text('last_name');
+            $table->text('firstname');
+            $table->text('lastname');
             $table->text('sex')->default('H');
             $table->text('birth_name')->nullable();
             $table->date('birth_date');
             $table->text('birth_city')->nullable();
+            $table->text('firstname_lastname')->storedAs("firstname || ' ' || upper(lastname)");
+            $table->text('lastname_firstname')->storedAs("upper(lastname) || ' ' || firstname");
 
             /*
             |-------------------------------------------------------------------
@@ -49,6 +51,8 @@ return new class extends Migration
             $table->text('father_name')->nullable();
             $table->text('mother_name')->nullable();
             $table->date('last_image_rights_authorization_date')->nullable();
+            $table->text('clothing_size')->nullable()->default(null);
+            $table->text('pants_size')->nullable()->default(null);
             $table->timestamps();
 
             /*

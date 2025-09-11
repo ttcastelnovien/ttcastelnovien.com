@@ -20,6 +20,7 @@ return new class extends Migration
             $table->text('name');
             $table->text('code');
             $table->integer('balance')->default(0);
+            $table->text('fullname')->storedAs("code || ' - ' || name");
             $table->timestamps();
 
             /*

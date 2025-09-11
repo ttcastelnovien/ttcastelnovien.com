@@ -20,8 +20,8 @@ return new class extends Migration
             $table->date('date');
             $table->text('name');
             $table->text('description')->nullable();
-            $table->integer('credit');
-            $table->integer('debit');
+            $table->integer('credit')->nullable()->default(null);
+            $table->integer('debit')->nullable()->default(null);
             $table->boolean('reconciled')->default(false);
             $table->timestamps();
 
