@@ -10,7 +10,7 @@ NPM := PHP + " npm"
 
 # Recompile assets (CSS/JS) on every change
 dev:
-    {{ NPM }} run dev
+    {{ COMPOSER }} run-script dev
 
 # Compile and optimize assets for production
 build:
