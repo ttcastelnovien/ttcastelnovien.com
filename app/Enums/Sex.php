@@ -18,4 +18,12 @@ enum Sex: string implements HasLabel
             self::Femme => 'Femme',
         };
     }
+
+    public function getPrefix(): string
+    {
+        return match ($this) {
+            self::Homme => 'M.',
+            self::Femme => 'Mme',
+        };
+    }
 }
