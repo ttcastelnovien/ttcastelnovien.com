@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\People\Schemas;
 
+use App\Enums\ClothingSize;
 use App\Enums\Sex;
 use App\Models\HumanResource\Person;
 use Filament\Forms\Components\DatePicker;
@@ -17,11 +18,11 @@ class PersonForm
         return $schema
             ->components([
                 Fieldset::make('Identité')->components([
-                    TextInput::make('firstname')
-                        ->label('Prénom')
-                        ->required(),
                     TextInput::make('lastname')
                         ->label('Nom')
+                        ->required(),
+                    TextInput::make('firstname')
+                        ->label('Prénom')
                         ->required(),
                     Select::make('sex')
                         ->label('Sexe')
@@ -71,10 +72,12 @@ class PersonForm
                         ->label('Nom du père si pas FR'),
                     TextInput::make('mother_name')
                         ->label('Nom de la mère si pas FR'),
-                    TextInput::make('clothing_size')
-                        ->label('Taille de vêtement'),
-                    TextInput::make('pants_size')
-                        ->label('Taille de pantalon'),
+                    Select::make('clothing_size')
+                        ->label('Taille de vêtement')
+                        ->options(ClothingSize::class),
+                    Select::make('pants_size')
+                        ->label('Taille de pantalon')
+                        ->options(ClothingSize::class),
                 ]),
                 Fieldset::make('Famille')->components([
                     Select::make('parents')
