@@ -28,6 +28,7 @@ class LicenceFeeTable
                     ->badge(),
                 TextColumn::make('licence_categories')
                     ->label('Catégories d\'âge')
+                    ->wrap()
                     ->badge(),
                 TextColumn::make('price')
                     ->label('Prix')
