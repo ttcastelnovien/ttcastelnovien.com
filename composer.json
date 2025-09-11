@@ -14,6 +14,7 @@
         "ext-intl": "*",
         "ext-libxml": "*",
         "ext-simplexml": "*",
+        "afatmustafa/blade-hugeicons": "^1.0",
         "cknow/laravel-money": "8.4.0",
         "codeat3/blade-maki-icons": "1.9.0",
         "filament/filament": "4.0.4",
