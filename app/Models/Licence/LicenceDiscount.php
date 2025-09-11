@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Models\Licence;
 
-use App\Enums\LicenceDiscountType;
 use App\Models\Meta\Season;
 use App\Models\Traits\Blamable;
 use Cknow\Money\Casts\MoneyIntegerCast;
@@ -26,10 +25,10 @@ class LicenceDiscount extends Model
 
     /** @var list<string> */
     protected $fillable = [
-        'type',
         'amount',
         'reference',
         'licence_id',
+        'licence_discount_type_id',
         'season_id',
     ];
 
@@ -37,7 +36,6 @@ class LicenceDiscount extends Model
     protected function casts(): array
     {
         return [
-            'type' => LicenceDiscountType::class,
             'amount' => MoneyIntegerCast::class,
         ];
     }
@@ -71,6 +69,12 @@ class LicenceDiscount extends Model
     public function licence(): BelongsTo
     {
         return $this->belongsTo(Licence::class, 'licence_id', 'id', 'licenceDiscounts');
+    }
+
+    /** @return BelongsTo<LicenceDiscountType> */
+    public function type(): BelongsTo
+    {
+        return $this->belongsTo(LicenceDiscountType::class, 'licence_discount_type_id');
     }
 
     /*
