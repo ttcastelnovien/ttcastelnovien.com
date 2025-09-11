@@ -37,7 +37,7 @@ class LicenceForm
                     ->preload()
                     ->createOptionForm(fn (Schema $schema) => PersonForm::configure($schema))
                     ->required(),
-                Select::make('licence_type')
+                Select::make('type')
                     ->label('Type')
                     ->options(LicenceType::class)
                     ->default('P')
@@ -45,12 +45,36 @@ class LicenceForm
                 Fieldset::make('Documents obtenus')
                     ->hiddenOn(Operation::Create)
                     ->schema([
-                        Toggle::make('has_image_rights')->label('Droit à l\'image')->hidden(fn (?Licence $record) => is_null($record->image_rights)),
-                        Toggle::make('has_exit_authorization')->label('Autorisation de sortie')->hidden(fn (?Licence $record) => is_null($record->exit_authorization)),
-                        Toggle::make('has_care_authorization')->label('Autorisation de soins')->hidden(fn (?Licence $record) => is_null($record->care_authorization)),
-                        Toggle::make('has_transport_authorization')->label('Autorisation de transport')->hidden(fn (?Licence $record) => is_null($record->transport_authorization)),
-                        Toggle::make('has_medical_certificate')->label('Certificat médical')->hidden(fn (?Licence $record) => is_null($record->medical_certificate)),
-                        Toggle::make('has_health_declaration')->label('Auto-questionnaire')->hidden(fn (?Licence $record) => is_null($record->health_declaration)),
+                        Select::make('has_image_rights')
+                            ->label('Droit à l\'image')
+                            ->nullable()
+                            ->options([true => 'Accepté', false => 'Refusé'])
+                            ->visible(fn (?Licence $record) => $record->needs_image_rights),
+                        Select::make('has_exit_authorization')
+                            ->label('Autorisation de sortie')
+                            ->nullable()
+                            ->options([true => 'Accepté', false => 'Refusé'])
+                            ->visible(fn (?Licence $record) => $record->needs_exit_authorization),
+                        Select::make('has_care_authorization')
+                            ->label('Autorisation de soins')
+                            ->nullable()
+                            ->options([true => 'Accepté', false => 'Refusé'])
+                            ->visible(fn (?Licence $record) => $record->needs_care_authorization),
+                        Select::make('has_transport_authorization')
+                            ->label('Autorisation de transport')
+                            ->nullable()
+                            ->options([true => 'Accepté', false => 'Refusé'])
+                            ->visible(fn (?Licence $record) => $record->needs_transport_authorization),
+                        Select::make('has_medical_certificate')
+                            ->label('Certificat médical')
+                            ->nullable()
+                            ->options([true => 'Accepté', false => 'Refusé'])
+                            ->visible(fn (?Licence $record) => $record->needs_medical_certificate),
+                        Select::make('has_health_declaration')
+                            ->label('Auto-questionnaire')
+                            ->nullable()
+                            ->options([true => 'Accepté', false => 'Refusé'])
+                            ->visible(fn (?Licence $record) => $record->needs_health_declaration),
                     ]),
                 Select::make('licence_fee_id')
                     ->label('Tarif de base')
@@ -80,7 +104,7 @@ class LicenceForm
                     ->schema([
                         Select::make('type')
                             ->label('Type de réduction')
-                            ->options(LicenceDiscountType::class)
+                            ->relationship(name: 'type', titleAttribute: 'name')
                             ->preload()
                             ->required(),
                         MoneyInput::make('amount')
@@ -106,7 +130,7 @@ class LicenceForm
     {
         return $schema
             ->components([
-                Select::make('licence_type')
+                Select::make('type')
                     ->label('Type')
                     ->options(LicenceType::class)
                     ->default('P')
