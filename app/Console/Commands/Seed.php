@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Enums\JournalType;
 use App\Enums\UserRole;
+use App\Models\Accounting\AnalyticAccount;
 use App\Models\Accounting\Journal;
 use App\Models\Accounting\LedgerAccount;
 use App\Models\Clubs\Club;
@@ -53,7 +54,8 @@ class Seed extends Command
         $this->importClubs();
 
         $this->info('Importing accounting defaults...');
-        $this->importAccounting();
+        $this->importAccountingJournals();
+        $this->importAnalyticAccounting();
 
         return CommandAlias::SUCCESS;
     }
@@ -682,7 +684,7 @@ class Seed extends Command
             });
     }
 
-    private function importAccounting(): void
+    private function importAccountingJournals(): void
     {
         $currency = new Currency(config('money.defaultCurrency'));
 
@@ -728,6 +730,23 @@ class Seed extends Command
             Journal::query()->createOrFirst(
                 attributes: ['name' => $journal['name']],
                 values: $journal,
+            );
+        }
+    }
+
+    private function importAnalyticAccounting(): void
+    {
+        $accounts = [
+            'Fonctionnement',
+            'Cotisations',
+            'Jeunes',
+            'Bric à Brac',
+        ];
+
+        foreach ($accounts as $account) {
+            AnalyticAccount::query()->createOrFirst(
+                attributes: ['name' => $account],
+                values: ['name' => $account],
             );
         }
     }
