@@ -46,6 +46,18 @@ class ViewLicence extends ViewRecord
                     ->color('gray')
                     ->icon(Heroicon::OutlinedEnvelopeOpen)
                     ->url(fn (Licence $record) => route('admin.gen.licence_attestation', ['licence' => $record])),
+                Action::make('generate_invoice')
+                    ->label('Générer la facture')
+                    ->color('gray')
+                    ->icon(Heroicon::OutlinedBanknotes)
+                    ->visible(fn (Licence $record) => is_null($record->invoice_id))
+                    ->url(fn (Licence $record) => route('admin.gen.licence_invoice', ['licence' => $record])),
+                Action::make('view_invoice')
+                    ->label('Voir la facture')
+                    ->color('gray')
+                    ->icon(Heroicon::OutlinedDocument)
+                    ->visible(fn (Licence $record) => ! is_null($record->invoice_id))
+                    ->url(fn (Licence $record) => route('admin.gen.licence_invoice', ['licence' => $record])),
             ])->label('Actions')->button()->color('info'),
             EditAction::make(),
             DeleteAction::make(),
