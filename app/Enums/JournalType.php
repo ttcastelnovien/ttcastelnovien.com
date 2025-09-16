@@ -26,4 +26,16 @@ enum JournalType: string implements HasLabel
             self::DIVERS => 'Divers',
         };
     }
+
+    public function prefix(): string
+    {
+        return match ($this) {
+            self::VENTES => 'VEN',
+            self::ACHATS => 'ACH',
+            self::ESPECES => 'ESP',
+            self::BANQUE => 'BNK',
+            self::CARTE_BANCAIRE => 'CB',
+            self::DIVERS => 'DIV',
+        };
+    }
 }
