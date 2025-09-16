@@ -99,7 +99,13 @@
     <tr>
         <td></td>
         <td style="vertical-align: top; padding-left: 5mm;">
-            <p style="font-weight: 700; margin-bottom: 2mm;">{{ $client_designation  }}</p>
+            <p style="font-weight: 700; margin-bottom: 2mm;">
+                <span>{{ $client_designation  }}</span>
+                @if ($secondary_client_designation)
+                    <br>
+                    <span>{{ $secondary_client_designation }}</span>
+                @endif
+            </p>
             <p>{{ $client_address_line_1 }}</p>
             @if ($client_address_line_2)
                 <p>{{ $client_address_line_2 }}</p>
@@ -134,8 +140,8 @@
                 @endif
             </td>
             <td style="padding: 2mm 3mm; border: 2pt solid {{ $gray['600'] }}; text-align: center; font-variant-numeric: tabular-nums slashed-zero;">{{ $line['quantity'] }}</td>
-            <td style="padding: 2mm 3mm; border: 2pt solid {{ $gray['600'] }}; text-align: right; font-variant-numeric: tabular-nums slashed-zero;">@money($line['amount'])</td>
-            <td style="padding: 2mm 3mm; border: 2pt solid {{ $gray['600'] }}; text-align: right; font-weight: 700; font-variant-numeric: tabular-nums slashed-zero;">@money($line['total_amount'])</td>
+            <td style="padding: 2mm 3mm; border: 2pt solid {{ $gray['600'] }}; text-align: right; font-variant-numeric: tabular-nums slashed-zero;">{{ $line['amount'] }}</td>
+            <td style="padding: 2mm 3mm; border: 2pt solid {{ $gray['600'] }}; text-align: right; font-weight: 700; font-variant-numeric: tabular-nums slashed-zero;">{{ $line['total_amount'] }}</td>
         </tr>
     @endforeach
 

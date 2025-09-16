@@ -18,7 +18,7 @@ class GenerateLicenceAttestationController extends Controller
 {
     public function __invoke(Licence $licence)
     {
-        $filename = Str::snake(sprintf('attestation_licence%s%s', $licence->person->last_name, $licence->person->first_name));
+        $filename = Str::snake(sprintf('attestation_licence%s%s', $licence->person->lastname, $licence->person->firstname));
 
         $response = PDFGenerator::generateInMemory(
             template: PDFTemplate::ATTESTATION_LICENCE,
@@ -33,7 +33,7 @@ class GenerateLicenceAttestationController extends Controller
         if ($licence->person->email !== null) {
             $recipients[] = new Recipient(
                 email: $licence->person->email,
-                name: $licence->person->full_name,
+                name: $licence->person->firstname_lastname,
             );
         }
 
@@ -42,7 +42,7 @@ class GenerateLicenceAttestationController extends Controller
                 if ($parent->email !== null) {
                     $recipients[] = new Recipient(
                         email: $parent->email,
-                        name: $parent->full_name,
+                        name: $parent->firstname_lastname,
                     );
                 }
             });
@@ -56,7 +56,7 @@ class GenerateLicenceAttestationController extends Controller
             object: MailObject::ATTESTATION_LICENCE,
             recipients: $recipients,
             data: [
-                'firstname' => $licence->person->first_name,
+                'firstname' => $licence->person->firstname,
             ],
             attachments: [
                 ['name' => $filename.'.pdf', 'contents' => $response->getBody()->getContents()],

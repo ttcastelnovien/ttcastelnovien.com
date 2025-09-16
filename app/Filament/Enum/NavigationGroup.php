@@ -13,6 +13,7 @@ enum NavigationGroup implements HasLabel
     case COMPTABILITE;
     case SPORTIF;
     case DOCUMENTAIRE;
+    case SECURITY;
     case META;
 
     public function getLabel(): string
@@ -24,6 +25,7 @@ enum NavigationGroup implements HasLabel
             self::SPORTIF => 'Sportif',
             self::DOCUMENTAIRE => 'Documentaire',
             self::META => 'Meta',
+            self::SECURITY => 'Sécurité',
         };
     }
 }

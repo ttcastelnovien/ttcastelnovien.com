@@ -2,7 +2,7 @@
 
 namespace App\Providers\Filament;
 
-use App\Filament\Enum\NavigationGroup;
+use App\Models\Security\User;
 use Filament\Actions\Action;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -16,6 +16,7 @@ use Filament\Support\Facades\FilamentTimezone;
 use Filament\Support\Icons\Heroicon;
 use Filament\Widgets\AccountWidget;
 use Filament\Widgets\FilamentInfoWidget;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -28,6 +29,8 @@ class AdminPanelProvider extends PanelProvider
     public function panel(Panel $panel): Panel
     {
         FilamentTimezone::set('Europe/Paris');
+
+        $this->app->bind(Authenticatable::class, User::class);
 
         return $panel
             ->default()
@@ -65,19 +68,12 @@ class AdminPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
             ])
-            ->navigationGroups([
-                NavigationGroup::GESTION_HUMAINE->getLabel(),
-                NavigationGroup::COMMUNICATION->getLabel(),
-                NavigationGroup::COMPTABILITE->getLabel(),
-                NavigationGroup::SPORTIF->getLabel(),
-                NavigationGroup::DOCUMENTAIRE->getLabel(),
-                NavigationGroup::META->getLabel(),
-            ])
             ->userMenuItems([
                 Action::make('dashboard')
                     ->url(fn (): string => route('dashboard'))
                     ->icon(Heroicon::OutlinedArrowUturnLeft),
             ])
+            ->databaseNotifications()
             ->sidebarCollapsibleOnDesktop();
     }
 }

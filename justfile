@@ -10,7 +10,7 @@ NPM := PHP + " npm"
 
 # Recompile assets (CSS/JS) on every change
 dev:
-    {{ NPM }} run dev
+    {{ COMPOSER }} run-script dev
 
 # Compile and optimize assets for production
 build:
@@ -56,8 +56,8 @@ npm +arguments:
 install: install_php install_front
 
 # Review possible dependencies to upgrade
-ncu:
-    {{ NPM }} run deps:upgrade
+deps:
+    {{ NPM }} run deps
 
 # Review possible dependencies to upgrade
 outdated:

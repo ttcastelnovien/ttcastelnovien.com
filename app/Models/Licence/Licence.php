@@ -5,16 +5,17 @@ declare(strict_types=1);
 namespace App\Models\Licence;
 
 use App\Enums\LicenceCategory;
-use App\Enums\LicenceDiscountType;
+use App\Enums\LicenceDocumentStatus;
 use App\Enums\LicenceType;
+use App\Models\Accounting\SupportingDocument;
 use App\Models\HumanResource\Person;
 use App\Models\Meta\Season;
 use App\Models\Traits\Blamable;
+use Cknow\Money\Casts\MoneyIntegerCast;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\Pivot;
-use Illuminate\Support\Collection;
 
 class Licence extends Pivot
 {
@@ -31,12 +32,19 @@ class Licence extends Pivot
     /** @var list<string> */
     protected $fillable = [
         /** Informations sur la personne */
-        'first_name',
-        'last_name',
+        'firstname',
+        'lastname',
         /** Informations sur la licence */
-        'licence_type',
+        'type',
         'category',
         'is_minor',
+        /** Documents */
+        'needs_image_rights',
+        'needs_exit_authorization',
+        'needs_care_authorization',
+        'needs_transport_authorization',
+        'needs_medical_certificate',
+        'needs_health_declaration',
         'has_image_rights',
         'has_exit_authorization',
         'has_care_authorization',
@@ -46,7 +54,11 @@ class Licence extends Pivot
         /** Suivi administratif */
         'validated',
         'observations',
+        /** Suivi trésorerie */
+        'amount',
+        'discounted_amount',
         /** Relations */
+        'invoice_id',
         'person_id',
         'season_id',
         'licence_fee_id',
@@ -56,16 +68,24 @@ class Licence extends Pivot
     protected function casts(): array
     {
         return [
-            'licence_type' => LicenceType::class,
+            'type' => LicenceType::class,
             'category' => LicenceCategory::class,
             'is_minor' => 'boolean',
             'validated' => 'boolean',
+            'needs_image_rights' => 'boolean',
+            'needs_exit_authorization' => 'boolean',
+            'needs_care_authorization' => 'boolean',
+            'needs_transport_authorization' => 'boolean',
+            'needs_medical_certificate' => 'boolean',
+            'needs_health_declaration' => 'boolean',
             'has_image_rights' => 'boolean',
             'has_exit_authorization' => 'boolean',
             'has_care_authorization' => 'boolean',
             'has_transport_authorization' => 'boolean',
             'has_medical_certificate' => 'boolean',
             'has_health_declaration' => 'boolean',
+            'amount' => MoneyIntegerCast::class,
+            'discounted_amount' => MoneyIntegerCast::class,
         ];
     }
 
@@ -78,8 +98,8 @@ class Licence extends Pivot
     protected static function booted(): void
     {
         static::creating(function (Licence $licence) {
-            $licence->first_name = $licence->person->first_name;
-            $licence->last_name = $licence->person->last_name;
+            $licence->firstname = $licence->person->firstname;
+            $licence->lastname = $licence->person->lastname;
 
             $season = Season::current()->first();
             $licence->season_id = $season->id;
@@ -88,104 +108,79 @@ class Licence extends Pivot
             $licence->is_minor = LicenceCategory::isMinorCategory($licence->category);
 
             $licenceFee = LicenceFee::query()
-                ->whereJsonContains('licence_types', $licence->licence_type)
+                ->whereJsonContains('licence_types', $licence->type)
                 ->whereJsonContains('licence_categories', $licence->category)
                 ->where('season_id', $season->id)
                 ->firstOrFail();
 
             $licence->licence_fee_id = $licenceFee->id;
+            $licence->amount = $licenceFee->price;
+            $licence->discounted_amount = $licenceFee->price;
+
+            $licence->licenceDiscounts()->each(function (LicenceDiscount $discount) use ($licence) {
+                if ($discount->type->invoice_deductible) {
+                    $licence->discounted_amount = $licence->discounted_amount->subtract($discount->amount);
+                }
+            });
+
+            $licence->initializeImageRights();
+            $licence->initializeAuthorizations();
+            $licence->initializeHealthDocuments();
+        });
+
+        static::updating(function (Licence $licence) {
+            $licence->discounted_amount = $licence->amount;
+
+            $licence->licenceDiscounts()->each(function (LicenceDiscount $discount) use ($licence) {
+                if ($discount->type->invoice_deductible) {
+                    $licence->discounted_amount = $licence->discounted_amount->subtract($discount->amount);
+                }
+            });
+
+            $licence->initializeImageRights();
+            $licence->initializeAuthorizations();
+            $licence->initializeHealthDocuments();
         });
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Relations
-    |--------------------------------------------------------------------------
-    */
-
-    /** @return BelongsTo<Person> */
-    public function person(): BelongsTo
-    {
-        return $this->belongsTo(Person::class);
-    }
-
-    /** @return BelongsTo<Season> */
-    public function season(): BelongsTo
-    {
-        return $this->belongsTo(Season::class);
-    }
-
-    /** @return BelongsTo<LicenceFee> */
-    public function licenceFee(): BelongsTo
-    {
-        return $this->belongsTo(LicenceFee::class);
-    }
-
-    /** @return HasMany<LicenceDiscount> */
-    public function licenceDiscounts(): HasMany
-    {
-        return $this->hasMany(LicenceDiscount::class, 'licence_id', 'id');
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Accessors
-    |--------------------------------------------------------------------------
-    */
-
-    public function getFirstnameLastnameAttribute(): string
-    {
-        return trim($this->first_name).' '.trim(mb_strtoupper($this->last_name));
-    }
-
-    public function getLastnameFirstnameAttribute(): string
-    {
-        return trim(mb_strtoupper($this->last_name)).' '.trim($this->first_name);
-    }
-
-    public function getImageRightsAttribute(): ?bool
+    public function initializeImageRights(): void
     {
         if ($this->person->last_image_rights_authorization_date) {
             $futureAuthorizationDate = $this->person->last_image_rights_authorization_date->addYears(5);
             $referenceDate = $this->season->starts_at;
 
             if ($futureAuthorizationDate->isAfter($referenceDate)) {
-                return null;
+                $this->needs_image_rights = false;
+
+                return;
             }
         }
 
-        return $this->has_image_rights;
+        $this->needs_image_rights = true;
     }
 
-    public function getExitAuthorizationAttribute(): ?bool
+    public function initializeAuthorizations(): void
     {
-        if (! $this->person->is_minor) {
-            return null;
+        $this->needs_exit_authorization = $this->person->is_minor;
+        $this->needs_care_authorization = $this->person->is_minor;
+        $this->needs_transport_authorization = $this->person->is_minor;
+    }
+
+    public function initializeHealthDocuments(): void
+    {
+        /*
+        |--------------------------------------------------------------------------
+        | Si l'auto-questionnaire a été rendu, mais qu'il est positif, alors
+        | il faut demander un nouveau certificat médical.
+        |--------------------------------------------------------------------------
+        */
+
+        if ($this->has_health_declaration === false) {
+            $this->needs_medical_certificate = true;
+
+            return;
         }
 
-        return $this->has_exit_authorization;
-    }
-
-    public function getCareAuthorizationAttribute(): ?bool
-    {
-        if (! $this->person->is_minor) {
-            return null;
-        }
-
-        return $this->has_care_authorization;
-    }
-
-    public function getTransportAuthorizationAttribute(): ?bool
-    {
-        if (! $this->person->is_minor) {
-            return null;
-        }
-
-        return $this->has_transport_authorization;
-    }
-
-    public function getMedicalCertificateAttribute(): ?bool
-    {
         /*
         |--------------------------------------------------------------------------
         | Si le dernier certificat médical connu date d'après le début
@@ -197,7 +192,10 @@ class Licence extends Pivot
         $lastCertificateDate = $lastCertificate?->date;
 
         if ($lastCertificateDate !== null && $lastCertificateDate->isAfter($this->season->starts_at)) {
-            return true;
+            $this->needs_medical_certificate = false;
+            $this->needs_health_declaration = false;
+
+            return;
         }
 
         /*
@@ -222,7 +220,10 @@ class Licence extends Pivot
                 inclusive: true,
             )
         ) {
-            return null;
+            $this->needs_medical_certificate = false;
+            $this->needs_health_declaration = true;
+
+            return;
         }
 
         /*
@@ -235,7 +236,10 @@ class Licence extends Pivot
         $previousSeason = $this->season->previousSeason()->first();
 
         if ($previousSeason === null) {
-            return $this->has_medical_certificate;
+            $this->needs_medical_certificate = true;
+            $this->needs_health_declaration = false;
+
+            return;
         }
 
         /*
@@ -249,7 +253,10 @@ class Licence extends Pivot
         $previousCategory = LicenceCategory::fromBirthDate($this->person->birth_date, $previousSeason);
 
         if ($previousCategory !== $licenceCategory) {
-            return $this->has_medical_certificate;
+            $this->needs_medical_certificate = true;
+            $this->needs_health_declaration = false;
+
+            return;
         }
 
         /*
@@ -263,7 +270,10 @@ class Licence extends Pivot
         */
 
         if ($lastCertificateDate !== null && $lastCertificateDate->addYears(5)->isAfter($this->season->starts_at)) {
-            return null;
+            $this->needs_medical_certificate = false;
+            $this->needs_health_declaration = true;
+
+            return;
         }
 
         /*
@@ -272,62 +282,161 @@ class Licence extends Pivot
         |--------------------------------------------------------------------------
         */
 
-        return $this->has_medical_certificate;
+        $this->needs_medical_certificate = true;
+        $this->needs_health_declaration = false;
     }
 
-    public function getHealthDeclarationAttribute(): ?bool
+    /*
+    |--------------------------------------------------------------------------
+    | Relations
+    |--------------------------------------------------------------------------
+    */
+
+    /** @return BelongsTo<Person> */
+    public function person(): BelongsTo
     {
-        if ($this->has_health_declaration === null) {
-            return $this->has_health_declaration;
-        }
-
-        /*
-        |--------------------------------------------------------------------------
-        | Si un certificat médical est nécessaire, on ne demande pas
-        | l'auto-questionnaire de santé.
-        |--------------------------------------------------------------------------
-        */
-
-        if ($this->medical_certificate !== null) {
-            return null;
-        }
-
-        /*
-        |--------------------------------------------------------------------------
-        | Si le dernier certificat médical connu date d'après le début
-        | de la saison en cours, on ne demande pas l'auto-questionnaire.
-        |--------------------------------------------------------------------------
-        */
-
-        $lastCertificate = $this->person->medicalCertificates()->latest()->first();
-        $lastCertificateDate = $lastCertificate?->date;
-
-        if ($lastCertificateDate !== null && $lastCertificateDate->isAfter($this->season->starts_at)) {
-            return null;
-        }
-
-        /*
-        |--------------------------------------------------------------------------
-        | Sinon l'auto-questionnaire de santé annuel est obligatoire.
-        |--------------------------------------------------------------------------
-        */
-
-        return $this->has_health_declaration;
+        return $this->belongsTo(Person::class);
     }
 
-    public function getFinalPriceAttribute(): string
+    /** @return BelongsTo<Season> */
+    public function season(): BelongsTo
     {
-        $price = $this->licenceFee->price;
-        /** @var Collection<LicenceDiscount> $discounts */
-        $discounts = $this->licenceDiscounts()->get();
+        return $this->belongsTo(Season::class);
+    }
 
-        if ($discounts->isNotEmpty()) {
-            $discounts->each(function (LicenceDiscount $discount) use (&$price) {
-                if ($discount->type === LicenceDiscountType::FAMILLE || $discount->type === LicenceDiscountType::CUSTOM) {
-                    $price = $price->subtract($discount->amount);
-                }
-            });
+    /** @return BelongsTo<SupportingDocument> */
+    public function invoice(): BelongsTo
+    {
+        return $this->belongsTo(SupportingDocument::class, 'invoice_id');
+    }
+
+    /** @return BelongsTo<LicenceFee> */
+    public function licenceFee(): BelongsTo
+    {
+        return $this->belongsTo(LicenceFee::class);
+    }
+
+    /** @return HasMany<LicenceDiscount> */
+    public function licenceDiscounts(): HasMany
+    {
+        return $this->hasMany(LicenceDiscount::class, 'licence_id', 'id');
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Accessors
+    |--------------------------------------------------------------------------
+    */
+
+    public function getImageRightsAttribute(): LicenceDocumentStatus
+    {
+        if ($this->needs_image_rights === false) {
+            return LicenceDocumentStatus::NOT_NECESSARY;
         }
+
+        if (is_null($this->has_image_rights)) {
+            return LicenceDocumentStatus::PENDING;
+        }
+
+        if (! $this->has_image_rights) {
+            return LicenceDocumentStatus::REJECTED;
+        }
+
+        return LicenceDocumentStatus::ACCEPTED;
+    }
+
+    public function getExitAuthorizationAttribute(): LicenceDocumentStatus
+    {
+        if ($this->needs_exit_authorization === false) {
+            return LicenceDocumentStatus::NOT_NECESSARY;
+        }
+
+        if (is_null($this->has_exit_authorization)) {
+            return LicenceDocumentStatus::PENDING;
+        }
+
+        if (! $this->has_exit_authorization) {
+            return LicenceDocumentStatus::REJECTED;
+        }
+
+        return LicenceDocumentStatus::ACCEPTED;
+    }
+
+    public function getCareAuthorizationAttribute(): LicenceDocumentStatus
+    {
+        if ($this->needs_care_authorization === false) {
+            return LicenceDocumentStatus::NOT_NECESSARY;
+        }
+
+        if (is_null($this->has_care_authorization)) {
+            return LicenceDocumentStatus::PENDING;
+        }
+
+        if (! $this->has_care_authorization) {
+            return LicenceDocumentStatus::REJECTED;
+        }
+
+        return LicenceDocumentStatus::ACCEPTED;
+    }
+
+    public function getTransportAuthorizationAttribute(): LicenceDocumentStatus
+    {
+        if ($this->needs_transport_authorization === false) {
+            return LicenceDocumentStatus::NOT_NECESSARY;
+        }
+
+        if (is_null($this->has_transport_authorization)) {
+            return LicenceDocumentStatus::PENDING;
+        }
+
+        if (! $this->has_transport_authorization) {
+            return LicenceDocumentStatus::REJECTED;
+        }
+
+        return LicenceDocumentStatus::ACCEPTED;
+    }
+
+    public function getMedicalCertificateAttribute(): LicenceDocumentStatus
+    {
+        if ($this->needs_medical_certificate === false) {
+            return LicenceDocumentStatus::NOT_NECESSARY;
+        }
+
+        if (is_null($this->has_medical_certificate)) {
+            return LicenceDocumentStatus::PENDING;
+        }
+
+        if (! $this->has_medical_certificate) {
+            return LicenceDocumentStatus::REJECTED;
+        }
+
+        return LicenceDocumentStatus::ACCEPTED;
+    }
+
+    public function getHealthDeclarationAttribute(): LicenceDocumentStatus
+    {
+        if ($this->needs_health_declaration === false) {
+            return LicenceDocumentStatus::NOT_NECESSARY;
+        }
+
+        if (is_null($this->has_health_declaration)) {
+            return LicenceDocumentStatus::PENDING;
+        }
+
+        if (! $this->has_health_declaration) {
+            return LicenceDocumentStatus::REJECTED;
+        }
+
+        return LicenceDocumentStatus::ACCEPTED;
+    }
+
+    public function getRemainingAmountAttribute(): string
+    {
+        $price = $this->amount;
+
+        $this->licenceDiscounts()->each(function (LicenceDiscount $discount) use (&$price) {
+            $price = $price->subtract($discount->amount);
+        });
 
         return $price->formatByIntl();
     }

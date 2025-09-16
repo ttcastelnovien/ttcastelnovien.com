@@ -60,6 +60,23 @@ class SupportingDocument extends Model
 
     /*
     |--------------------------------------------------------------------------
+    | Lifecycle callbacks
+    |--------------------------------------------------------------------------
+    */
+
+    protected static function booted(): void
+    {
+        static::creating(function (SupportingDocument $document) {
+            if ($document->total_amount->isZero()) {
+                $document->payment_status = PaymentStatus::PAID;
+            } else {
+                $document->payment_status = PaymentStatus::WAITING;
+            }
+        });
+    }
+
+    /*
+    |--------------------------------------------------------------------------
     | Relations
     |--------------------------------------------------------------------------
     */
@@ -86,5 +103,31 @@ class SupportingDocument extends Model
     public function journalEntries(): HasMany
     {
         return $this->hasMany(JournalEntry::class);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Query Builder
+    |--------------------------------------------------------------------------
+    */
+
+    public static function nextDocumentReference(SupportingDocumentType $documentType): string
+    {
+        $prefix = $documentType->getPrefix();
+        $dateReference = date('ym');
+
+        $result = static::query()
+            ->where('reference', 'like', $prefix.$dateReference.'%')
+            ->max('reference');
+
+        if (is_null($result)) {
+            return $prefix.$dateReference.'0001';
+        }
+
+        $result = substr($result, -4);
+        $result = (int) $result + 1;
+        $result = str_pad($result, 4, '0', STR_PAD_LEFT);
+
+        return $prefix.$dateReference.$result;
     }
 }

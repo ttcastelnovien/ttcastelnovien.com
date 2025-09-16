@@ -52,4 +52,15 @@ class AnalyticAccountEntry extends Model
     {
         return $this->belongsTo(AnalyticAccount::class);
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Accessors
+    |--------------------------------------------------------------------------
+    */
+
+    public function getNameAttribute(): string
+    {
+        return sprintf('%s - %s', $this->analyticAccount->name, $this->entry->name);
+    }
 }

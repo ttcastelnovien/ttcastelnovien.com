@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('imports', function (Blueprint $table): void {
-            $table->ulid('id')->primary();
+            $table->id();
 
             /*
             |-------------------------------------------------------------------
@@ -42,6 +42,7 @@ return new class extends Migration
             | Contraintes
             |-------------------------------------------------------------------
             */
+
             $table->foreign('user_id')->references('id')->on('users')->cascadeOnDelete();
         });
     }

@@ -2,17 +2,22 @@
 
 namespace App\Console\Commands;
 
+use App\Enums\JournalType;
 use App\Enums\UserRole;
+use App\Models\Accounting\AnalyticAccount;
+use App\Models\Accounting\Journal;
 use App\Models\Accounting\LedgerAccount;
 use App\Models\Clubs\Club;
 use App\Models\HumanResource\Person;
 use App\Models\Meta\Season;
 use App\Models\Security\User;
+use Cknow\Money\Money;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
+use Money\Currency;
 use Symfony\Component\Console\Command\Command as CommandAlias;
 
 class Seed extends Command
@@ -47,6 +52,10 @@ class Seed extends Command
 
         $this->info('Importing default clubs and halls...');
         $this->importClubs();
+
+        $this->info('Importing accounting defaults...');
+        $this->importAccountingJournals();
+        $this->importAnalyticAccounting();
 
         return CommandAlias::SUCCESS;
     }
@@ -85,7 +94,7 @@ class Seed extends Command
                 'ends_at' => Carbon::create(year: 2031, month: 6, day: 30),
             ],
         ])
-            ->each(fn ($item) => Season::createOrFirst(
+            ->each(fn ($item) => Season::query()->createOrFirst(
                 attributes: ['name' => $item['name']],
                 values: $item,
             ));
@@ -93,11 +102,11 @@ class Seed extends Command
 
     private function importSuperUser(): void
     {
-        $person = Person::createOrFirst(
+        $person = Person::query()->createOrFirst(
             attributes: ['licence_number' => config('app.superuser.licence')],
             values: [
-                'first_name' => config('app.superuser.firstname'),
-                'last_name' => config('app.superuser.lastname'),
+                'firstname' => config('app.superuser.firstname'),
+                'lastname' => config('app.superuser.lastname'),
                 'licence_number' => config('app.superuser.licence'),
                 'birth_date' => config('app.superuser.birth_date'),
                 'address_line_1' => config('app.superuser.address'),
@@ -106,7 +115,7 @@ class Seed extends Command
             ]
         );
 
-        User::createOrFirst(
+        User::query()->createOrFirst(
             attributes: ['username' => config('app.superuser.username')],
             values: [
                 'username' => config('app.superuser.username'),
@@ -661,7 +670,7 @@ class Seed extends Command
             ],
         ])
             ->each(function ($item) {
-                $club = Club::createOrFirst(
+                $club = Club::query()->createOrFirst(
                     attributes: ['name' => $item['club']['name']],
                     values: $item['club'],
                 );
@@ -675,6 +684,73 @@ class Seed extends Command
             });
     }
 
+    private function importAccountingJournals(): void
+    {
+        $currency = new Currency(config('money.defaultCurrency'));
+
+        $journals = [
+            [
+                'name' => 'Achats',
+                'type' => JournalType::ACHATS,
+                'start_balance' => new Money(0, $currency),
+            ],
+            [
+                'name' => 'Ventes',
+                'type' => JournalType::VENTES,
+                'start_balance' => new Money(0, $currency),
+            ],
+            [
+                'name' => 'Opérations diverses',
+                'type' => JournalType::DIVERS,
+                'start_balance' => new Money(0, $currency),
+            ],
+            [
+                'name' => 'Compte courant CA',
+                'type' => JournalType::BANQUE,
+                'start_balance' => new Money(153891, $currency),
+            ],
+            [
+                'name' => 'Livret A CA',
+                'type' => JournalType::BANQUE,
+                'start_balance' => new Money(154625, $currency),
+            ],
+            [
+                'name' => 'Caisse',
+                'type' => JournalType::ESPECES,
+                'start_balance' => new Money(196150, $currency),
+            ],
+            [
+                'name' => 'Carte bancaire CA',
+                'type' => JournalType::CARTE_BANCAIRE,
+                'start_balance' => new Money(0, $currency),
+            ],
+        ];
+
+        foreach ($journals as $journal) {
+            Journal::query()->createOrFirst(
+                attributes: ['name' => $journal['name']],
+                values: $journal,
+            );
+        }
+    }
+
+    private function importAnalyticAccounting(): void
+    {
+        $accounts = [
+            'Fonctionnement',
+            'Cotisations',
+            'Jeunes',
+            'Bric à Brac',
+        ];
+
+        foreach ($accounts as $account) {
+            AnalyticAccount::query()->createOrFirst(
+                attributes: ['name' => $account],
+                values: ['name' => $account],
+            );
+        }
+    }
+
     private function importPCG(): void
     {
         $path = database_path('seeder_data/pcg.json');
@@ -683,17 +759,7 @@ class Seed extends Command
             $data = json_decode(File::get($path), associative: true);
 
             foreach ($data as $item) {
-                $code = $this->normalizePCGCode($item['code']);
-
-                $account = LedgerAccount::firstOrCreate(
-                    ['code' => $code],
-                    [
-                        'name' => $item['name'],
-                        'code' => $code,
-                    ]
-                );
-
-                $this->importPCGChildren($item['items'], $account);
+                $this->importPCGChildren($item['items']);
             }
         } catch (FileNotFoundException) {
             return;
@@ -703,17 +769,17 @@ class Seed extends Command
     /**
      * @param  array<int, array{name: string, code: string, items: array}>  $children
      */
-    private function importPCGChildren(array $children, LedgerAccount $parent): void
+    private function importPCGChildren(array $children, ?LedgerAccount $parent = null): void
     {
         foreach ($children as $child) {
             $code = $this->normalizePCGCode($child['code']);
 
-            $account = LedgerAccount::firstOrCreate(
+            $account = LedgerAccount::query()->createOrFirst(
                 ['code' => $code],
                 [
                     'name' => $child['name'],
                     'code' => $code,
-                    'parent_id' => $parent->id,
+                    'parent_id' => $parent?->id,
                 ]
             );
 

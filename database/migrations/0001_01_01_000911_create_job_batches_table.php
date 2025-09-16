@@ -9,7 +9,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('job_batches', function (Blueprint $table) {
-            $table->ulid('id')->primary();
+            $table->string('id')->primary();
 
             /*
             |-------------------------------------------------------------------

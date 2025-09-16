@@ -115,7 +115,7 @@
                             <tr style="vertical-align: top;">
                                 <td style="width: 38mm; font-weight: 600; margin-right: 2mm;">Nom</td>
                                 <td style="text-wrap: pretty; margin-left: 2mm; border-bottom: 1pt solid {{ $gray['300'] }}; font-variant-numeric: tabular-nums slashed-zero;">
-                                    {{ $licence->person->last_name }}
+                                    {{ $licence->person->lastname }}
                                 </td>
                             </tr>
                         </table>
@@ -125,7 +125,7 @@
                             <tr style="vertical-align: top;">
                                 <td style="width: 38mm; font-weight: 600; margin-right: 2mm;">Nom de naissance</td>
                                 <td style="text-wrap: pretty; margin-left: 2mm; border-bottom: 1pt solid {{ $gray['300'] }}; font-variant-numeric: tabular-nums slashed-zero;">
-                                    {{ $licence->person->birth_name ?? $licence->person->last_name }}
+                                    {{ $licence->person->birth_name ?? $licence->person->lastname }}
                                 </td>
                             </tr>
                         </table>
@@ -135,7 +135,7 @@
                             <tr style="vertical-align: top;">
                                 <td style="width: 38mm; font-weight: 600; margin-right: 2mm;">Prénom</td>
                                 <td style="text-wrap: pretty; margin-left: 2mm; border-bottom: 1pt solid {{ $gray['300'] }}; font-variant-numeric: tabular-nums slashed-zero;">
-                                    {{ $licence->person->first_name }}
+                                    {{ $licence->person->firstname }}
                                 </td>
                             </tr>
                         </table>
@@ -267,7 +267,7 @@
                                 <tr style="vertical-align: top;">
                                     <td style="width: 38mm; font-weight: 600; margin-right: 2mm;">Nom</td>
                                     <td style="text-wrap: pretty; margin-left: 2mm; border-bottom: 1pt solid {{ $gray['300'] }}; font-variant-numeric: tabular-nums slashed-zero;">
-                                        {{ $first_parent?->last_name ?? '' }}
+                                        {{ $first_parent?->lastname ?? '' }}
                                     </td>
                                 </tr>
                             </table>
@@ -277,7 +277,7 @@
                                 <tr style="vertical-align: top;">
                                     <td style="width: 38mm; font-weight: 600; margin-right: 2mm;">Prénom</td>
                                     <td style="text-wrap: pretty; margin-left: 2mm; border-bottom: 1pt solid {{ $gray['300'] }}; font-variant-numeric: tabular-nums slashed-zero;">
-                                        {{ $first_parent?->first_name ?? '' }}
+                                        {{ $first_parent?->firstname ?? '' }}
                                     </td>
                                 </tr>
                             </table>
@@ -319,7 +319,7 @@
                                 <tr style="vertical-align: top;">
                                     <td style="width: 38mm; font-weight: 600; margin-right: 2mm;">Nom</td>
                                     <td style="text-wrap: pretty; margin-left: 2mm; border-bottom: 1pt solid {{ $gray['300'] }}; font-variant-numeric: tabular-nums slashed-zero;">
-                                        {{ $second_parent?->last_name ?? '' }}
+                                        {{ $second_parent?->lastname ?? '' }}
                                     </td>
                                 </tr>
                             </table>
@@ -329,7 +329,7 @@
                                 <tr style="vertical-align: top;">
                                     <td style="width: 38mm; font-weight: 600; margin-right: 2mm;">Prénom</td>
                                     <td style="text-wrap: pretty; margin-left: 2mm; border-bottom: 1pt solid {{ $gray['300'] }}; font-variant-numeric: tabular-nums slashed-zero;">
-                                        {{ $second_parent?->first_name ?? '' }}
+                                        {{ $second_parent?->firstname ?? '' }}
                                     </td>
                                 </tr>
                             </table>

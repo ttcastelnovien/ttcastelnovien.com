@@ -144,7 +144,7 @@
                 </tr>
                 <tr>
                     <td style="padding: 0.5mm 2mm; text-align: left;">Date d'échéance</td>
-                    <td style="padding: 0.5mm 2mm 0.5mm 5mm; text-align: right; font-variant-numeric: tabular-nums slashed-zero;">{{ $invoice_expiration_date }}</td>
+                    <td style="padding: 0.5mm 2mm 0.5mm 5mm; text-align: right; font-variant-numeric: tabular-nums slashed-zero;">{{ $invoice_due_date }}</td>
                 </tr>
             </table>
         </td>

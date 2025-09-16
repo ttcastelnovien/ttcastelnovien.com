@@ -13,20 +13,39 @@ class LedgerAccountForm
     {
         return $schema
             ->components([
-                TextInput::make('code')
-                    ->label('Code')
-                    ->required(),
                 TextInput::make('name')
                     ->label('Nom')
                     ->required(),
+                TextInput::make('code')
+                    ->label('Code')
+                    ->length(7),
                 Select::make('parent_id')
                     ->label('Compte parent')
-                    ->relationship(
-                        name: 'parent',
-                        modifyQueryUsing: fn ($query, $get) => $query->where('id', '!=', $get('id'))->orderBy('code'),
-                    )
-                    ->getOptionLabelFromRecordUsing(fn (LedgerAccount $account) => $account->full_name)
-                    ->searchable(['code', 'name']),
+                    ->nullable()
+                    ->relationship(name: 'parent', titleAttribute: 'fullname')
+                    ->getSearchResultsUsing(function (Select $component, string $search): array {
+                        $terms = preg_split('/\s+/', trim($search), -1, PREG_SPLIT_NO_EMPTY);
+                        $query = LedgerAccount::query();
+
+                        foreach ($terms as $term) {
+                            if (preg_match('/^\d+$/', $term)) {
+                                $query->where('code', 'ilike', "$term%");
+                            } else {
+                                $query->where('name', 'ilike', "%$term%");
+                            }
+                        }
+
+                        if ($record = $component->getRecord()) {
+                            $query->where($record->getQualifiedKeyName(), '!=', $record->getKey());
+                        }
+
+                        return $query
+                            ->limit(20)
+                            ->orderBy('code')
+                            ->pluck('fullname', 'id')
+                            ->all();
+                    })
+                    ->searchable(),
             ])->columns(1);
     }
 }

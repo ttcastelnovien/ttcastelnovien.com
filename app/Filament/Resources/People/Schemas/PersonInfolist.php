@@ -16,8 +16,8 @@ class PersonInfolist
                 Tabs::make('Tabs')
                     ->tabs([
                         Tab::make('Identité')->components([
-                            TextEntry::make('first_name')->label('Prénom')->inlineLabel(),
-                            TextEntry::make('last_name')->label('Nom')->inlineLabel(),
+                            TextEntry::make('firstname')->label('Prénom')->inlineLabel(),
+                            TextEntry::make('lastname')->label('Nom')->inlineLabel(),
                             TextEntry::make('sex')->label('Sexe')->inlineLabel(),
                             TextEntry::make('birth_name')->label('Nom de naissance')->inlineLabel(),
                             TextEntry::make('birth_date')->date()->label('Date de naissance')->inlineLabel(),
@@ -38,6 +38,8 @@ class PersonInfolist
                             TextEntry::make('nationality')->label('Nationalité')->inlineLabel(),
                             TextEntry::make('father_name')->label('Nom du père si pas FR')->inlineLabel(),
                             TextEntry::make('mother_name')->label('Nom de la mère si pas FR')->inlineLabel(),
+                            TextEntry::make('clothing_size')->label('Taille de vêtement')->inlineLabel(),
+                            TextEntry::make('pants_size')->label('Taille de pantalon')->inlineLabel(),
                         ]),
                         Tab::make('Historique')->components([
                             TextEntry::make('created_at')->dateTime()->label('Créée le')->inlineLabel(),

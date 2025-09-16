@@ -106,14 +106,16 @@ final class PDFGenerator
         }
 
         try {
-            $response = Gotenberg::chromium(config('app.gotenberg_url'))
-                ->pdf()
-                ->outputFilename($filename)
-                ->paperSize('210mm', '297mm')
-                ->margins(...$template->getMargins())
-                ->header(Stream::string('header.html', $header))
-                ->footer(Stream::string('footer.html', $footer))
-                ->html(Stream::string('index.html', $content));
+            $response = Gotenberg::send(
+                Gotenberg::chromium(config('app.gotenberg_url'))
+                    ->pdf()
+                    ->outputFilename($filename)
+                    ->paperSize('210mm', '297mm')
+                    ->margins(...$template->getMargins())
+                    ->header(Stream::string('header.html', $header))
+                    ->footer(Stream::string('footer.html', $footer))
+                    ->html(Stream::string('index.html', $content))
+            );
 
             $metadata = new DriveFile;
             $metadata->setName($filename);
@@ -127,7 +129,7 @@ final class PDFGenerator
             );
 
             return $file->getId();
-        } catch (NativeFunctionErrored|Exception $e) {
+        } catch (GotenbergApiErrored|NativeFunctionErrored|Exception $e) {
             throw new \RuntimeException(
                 message: sprintf('Error generating PDF for template "%s": %s', $template->value, $e->getMessage()),
                 previous: $e

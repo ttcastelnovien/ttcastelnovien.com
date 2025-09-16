@@ -28,9 +28,9 @@ class LedgerAccountResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUserGroup;
 
-    protected static ?int $navigationSort = 100;
+    protected static ?int $navigationSort = 200;
 
-    protected static ?string $recordTitleAttribute = 'full_name';
+    protected static ?string $recordTitleAttribute = 'fullname';
 
     public static function form(Schema $schema): Schema
     {

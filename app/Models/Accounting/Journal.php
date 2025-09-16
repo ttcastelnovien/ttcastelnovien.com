@@ -38,4 +38,38 @@ class Journal extends Model
             'start_balance' => MoneyIntegerCast::class,
         ];
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Lifecycle callbacks
+    |--------------------------------------------------------------------------
+    */
+
+    protected static function booted(): void
+    {
+        static::creating(function (Journal $journal): void {
+            $journal->code = static::nextJournalCode($journal->type);
+        });
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Query Builder
+    |--------------------------------------------------------------------------
+    */
+
+    public static function nextJournalCode(JournalType $type): string
+    {
+        $result = static::query()
+            ->where('code', 'like', $type->prefix().'%')
+            ->max('code');
+
+        if (is_null($result)) {
+            return $type->prefix().'1';
+        }
+
+        $prevIndex = (int) str_replace($type->prefix(), '', $result);
+
+        return $type->prefix().($prevIndex + 1);
+    }
 }
