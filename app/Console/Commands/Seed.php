@@ -759,17 +759,7 @@ class Seed extends Command
             $data = json_decode(File::get($path), associative: true);
 
             foreach ($data as $item) {
-                $code = $this->normalizePCGCode($item['code']);
-
-                $account = LedgerAccount::query()->createOrFirst(
-                    ['code' => $code],
-                    [
-                        'name' => $item['name'],
-                        'code' => $code,
-                    ]
-                );
-
-                $this->importPCGChildren($item['items'], $account);
+                $this->importPCGChildren($item['items']);
             }
         } catch (FileNotFoundException) {
             return;
@@ -779,7 +769,7 @@ class Seed extends Command
     /**
      * @param  array<int, array{name: string, code: string, items: array}>  $children
      */
-    private function importPCGChildren(array $children, LedgerAccount $parent): void
+    private function importPCGChildren(array $children, ?LedgerAccount $parent = null): void
     {
         foreach ($children as $child) {
             $code = $this->normalizePCGCode($child['code']);
@@ -789,7 +779,7 @@ class Seed extends Command
                 [
                     'name' => $child['name'],
                     'code' => $code,
-                    'parent_id' => $parent->id,
+                    'parent_id' => $parent?->id,
                 ]
             );
 
