@@ -43,6 +43,15 @@ return new class extends Migration
             $table->foreign('default_journal_id')->references('id')->on('journals')->nullOnDelete();
             $table->foreign('created_by_id')->references('id')->on('users')->nullOnDelete();
             $table->foreign('updated_by_id')->references('id')->on('users')->nullOnDelete();
+
+            /*
+            |-------------------------------------------------------------------
+            | Indexes
+            |-------------------------------------------------------------------
+            */
+
+            $table->index('code');
+            $table->index('name');
         });
 
         Schema::table('ledger_accounts', function (Blueprint $table) {
